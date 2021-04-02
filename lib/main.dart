@@ -1,63 +1,164 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MaterialApp(
+    home: Home()
+  ));
 }
 
-class MyApp extends StatelessWidget {
+class Home extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+  _HomeState createState() => _HomeState();
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
+class _HomeState extends State<Home> {
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int count = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('IOU'),
+        centerTitle: true,
+        backgroundColor: Colors.grey[850],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
+      body: Column(
+        children: [
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget> [
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    child : FlatButton(
+                    onPressed: (){
+                      setState(() {
+                        count += 1;
+                      });
+                    },
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                      color: Colors.amber,
+                    child: Text('Adrien'
+                        '\n$count',),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: FlatButton(
+                      onPressed: (){
+                      setState(() {
+                      count += 1;
+                      });
+                      },
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                      color: Colors.blue,
+                      child: Text('Billy\n$count'),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.all(10),
+                    child: FlatButton(
+                      onPressed: (){
+                        setState(() {
+                          count += 1;
+                        });
+                      },
+                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                      color: Colors.red,
+                      child:  Text('Jules\n$count'),
+                    ),
+                  ),
+                ),
+              ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget> [
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child : FlatButton(
+                    onPressed: (){},
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                    color: Colors.white,
+                    child: Text('Steven',),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: FlatButton(
+                    onPressed: (){},
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                    color: Colors.cyan,
+                    child: Text('Samuel'),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: FlatButton(
+                    onPressed: (){},
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                    color: Colors.deepOrange,
+                    child:  Text('Sarah'),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget> [
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child : FlatButton(
+                    onPressed: (){},
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                    color: Colors.amber,
+                    child: Text('Arthur',),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: FlatButton(
+                    onPressed: (){},
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                    color: Colors.blue,
+                    child: Text('Fabrizio'),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(10),
+                  child: FlatButton(
+                    onPressed: (){},
+                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
+                    color: Colors.red,
+                    child:  Text('Leo',),
+                ),
+              ),
+              ),
+            ],
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
+
+
+//
