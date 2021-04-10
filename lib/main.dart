@@ -2,9 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: Home()
-  ));
+  runApp(MaterialApp(home: Home()));
 }
 
 class Home extends StatefulWidget {
@@ -13,8 +11,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-  int count = 0;
+  int balance = 0;
+  int amountToPay = 0;
+  Color c = Colors.amber;
+  final myController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -25,140 +25,83 @@ class _HomeState extends State<Home> {
         centerTitle: true,
         backgroundColor: Colors.grey[850],
       ),
-      body: Column(
-        children: [
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget> [
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    child : FlatButton(
-                    onPressed: (){
-                      setState(() {
-                        count += 1;
-                      });
-                    },
-                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                      color: Colors.amber,
-                    child: Text('Adrien'
-                        '\n$count',),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        child: Column(
+          children: [
+            Card(
+              clipBehavior: Clip.antiAlias,
+              semanticContainer: true,
+              elevation: 5,
+              child: Column(
+                children: [
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          keyboardType: TextInputType.numberWithOptions(
+                            signed: false,
+                            decimal: true,
+                          ),
+                          controller: myController,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Enter the amount to pay'),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          icon: const Icon(Icons.trending_up),
+                          onPressed: () {
+                            setState(() {
+                              double tmp = double.parse(
+                                  myController.text.replaceAll(',', '.')) *
+                                  100;
+                              balance = tmp.toInt();
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [Text("$balance")],
+                  ),
+                  SizedBox(
+                    height: 50,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: <Widget>[
+                      ClipOval(
+                        child : Material(
+                          color : c,
+                        child: InkWell(
+                          splashColor: Colors.red, // inkwell color
+                          child: SizedBox(width: 56, height: 56, child: Icon(Icons.people)),
+                          onTap:(
+                              ) {
+                            setState(() {
+                              c = Colors.red;
+                            });
+                          },
+
+                        ),
+                      ),
+                      ),
+
+                      ],
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    child: FlatButton(
-                      onPressed: (){
-                      setState(() {
-                      count += 1;
-                      });
-                      },
-                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                      color: Colors.blue,
-                      child: Text('Billy\n$count'),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: EdgeInsets.all(10),
-                    child: FlatButton(
-                      onPressed: (){
-                        setState(() {
-                          count += 1;
-                        });
-                      },
-                      padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                      color: Colors.red,
-                      child:  Text('Jules\n$count'),
-                    ),
-                  ),
-                ),
-              ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget> [
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  child : FlatButton(
-                    onPressed: (){},
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                    color: Colors.white,
-                    child: Text('Steven',),
-                  ),
-                ),
+                ],
               ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  child: FlatButton(
-                    onPressed: (){},
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                    color: Colors.cyan,
-                    child: Text('Samuel'),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  child: FlatButton(
-                    onPressed: (){},
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                    color: Colors.deepOrange,
-                    child:  Text('Sarah'),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget> [
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  child : FlatButton(
-                    onPressed: (){},
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                    color: Colors.amber,
-                    child: Text('Arthur',),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  child: FlatButton(
-                    onPressed: (){},
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                    color: Colors.blue,
-                    child: Text('Fabrizio'),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.all(10),
-                  child: FlatButton(
-                    onPressed: (){},
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 50),
-                    color: Colors.red,
-                    child:  Text('Leo',),
-                ),
-              ),
-              ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),)
+      ,
     );
   }
 }
-
 
 //
