@@ -101,7 +101,7 @@ class _HomeState extends State<Home> {
                       ),
                       Expanded(
                         flex: 1,
-                        child: IconButton(                                              //send btn
+                        child: IconButton(
                           icon: const Icon(Icons.trending_up),
                           onPressed: () {
                             setState(() {
@@ -119,7 +119,7 @@ class _HomeState extends State<Home> {
                   ),
                   Row(
                     children: [
-                      Text((amountToPay > 0)
+                      Text((amountToPay >= 0)
                           ? "Each people owe $displayableAmountToPayPerUser euros"
                           : (amountToPay == -2) ? "please select user(s)" : "Enter an amount")
                     ],
@@ -146,10 +146,12 @@ class _HomeState extends State<Home> {
                                   nbSelectedUsers--;
                                 double tmp;
                                 try {
-                                  tmp = double.parse(myController.text..replaceAll(',', '.')) * 100;
+                                  tmp = double.parse(myController.text.replaceAll(',', '.')) * 100;
                                 }
                                 on Exception catch (_) {
+                                  print(_.toString());
                                   amountToPay = -1;
+                                  print("error");
                                   return;
                                 }
                                 amountToPay = tmp.toInt();
