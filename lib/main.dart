@@ -5,6 +5,8 @@ void main() {
   runApp(MaterialApp(home: Home()));
 }
 
+
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -69,6 +71,27 @@ class _HomeState extends State<Home> {
                           decoration: InputDecoration(
                               border: OutlineInputBorder(),
                               hintText: 'Enter the amount to pay'),
+                          onChanged: (String str) {setState(() {
+                            double tmp;
+                            try {
+                              tmp = double.parse(
+                                  myController.text.replaceAll(',', '.')) *
+                                  100;
+                            }
+                            on Exception catch (_) {
+                              tmp = -2;
+                            }
+                            balance = tmp.toInt();
+                            num nbSelected = 0;
+                            userList.forEach((User user) {
+                              if (user._isSelected) nbSelected++;
+                            });
+                            if (nbSelected == 0)
+                              balance = -1;
+                            else
+                              balance = balance ~/ nbSelected;
+                            dbalance = balance / 100;
+                          });},
                         ),
                       ),
                       Expanded(
@@ -101,7 +124,7 @@ class _HomeState extends State<Home> {
                     children: [
                       Text((balance > 0)
                           ? "Each people owe $dbalance euros"
-                          : "please select some users")
+                          : (dbalance == -1) ? "please select user(s)" : "Enter an amount")
                     ],
                   ),
                   SizedBox(
@@ -119,11 +142,16 @@ class _HomeState extends State<Home> {
                           return InkWell(
                             onTap: () {
                               setState(() {
+                                double tmp;
                                 userList[index]._isSelected = !userList[index]._isSelected;
-                                double tmp = double.parse(
-                                    myController.text.replaceAll(',', '.')) *
-                                    100;
-
+                                try {
+                                  tmp = double.parse(
+                                      myController.text.replaceAll(',', '.')) *
+                                      100;
+                                }
+                                on Exception catch (_) {
+                                  tmp = -2;
+                                }
                                 balance = tmp.toInt();
                                 num nbSelected = 0;
                                 userList.forEach((User user) {
