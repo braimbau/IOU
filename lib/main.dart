@@ -31,7 +31,6 @@ class User {
 class _HomeState extends State<Home> {
   int balance = -1;
   double dbalance;
-  int isSelected = -1;
   int amountToPay = 0;
   final myController = TextEditingController();
   List<User> userList = List<User>.empty(growable: true);
@@ -107,16 +106,34 @@ class _HomeState extends State<Home> {
                   ),
                   SizedBox(
                     height: 75,
-                    child: ListView.builder(
+                    child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.all(8),
                         itemCount: userList.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        return SizedBox(
+                          width: 4,
+                        );
+                      },
                         itemBuilder: (BuildContext context, int index) {
                           return InkWell(
                             onTap: () {
                               setState(() {
-                                userList[index]._isSelected =
-                                    !userList[index]._isSelected;
+                                userList[index]._isSelected = !userList[index]._isSelected;
+                                double tmp = double.parse(
+                                    myController.text.replaceAll(',', '.')) *
+                                    100;
+
+                                balance = tmp.toInt();
+                                num nbSelected = 0;
+                                userList.forEach((User user) {
+                                  if (user._isSelected) nbSelected++;
+                                });
+                                if (nbSelected == 0)
+                                  balance = -1;
+                                else
+                                  balance = balance ~/ nbSelected;
+                                dbalance = balance / 100;
                               });
                             },
                             child: CircleAvatar(
@@ -128,7 +145,12 @@ class _HomeState extends State<Home> {
                                       NetworkImage(userList[index]._url),
                                 )),
                           );
-                        }),
+
+                        },
+
+
+
+                        ),
                   ),
                 ],
               ),
