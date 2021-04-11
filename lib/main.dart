@@ -75,7 +75,7 @@ class _HomeState extends State<Home> {
                             double tmp;
                             try {
                               tmp = double.parse(
-                                  myController.text.replaceAll(',', '.')) *
+                                  str.replaceAll(',', '.')) *
                                   100;
                             }
                             on Exception catch (_) {
@@ -86,8 +86,10 @@ class _HomeState extends State<Home> {
                             userList.forEach((User user) {
                               if (user._isSelected) nbSelected++;
                             });
-                            if (nbSelected == 0)
+                            if (nbSelected == 0) {
                               balance = -1;
+                              print("mdr");
+                            }
                             else
                               balance = balance ~/ nbSelected;
                             dbalance = balance / 100;
@@ -100,10 +102,15 @@ class _HomeState extends State<Home> {
                           icon: const Icon(Icons.trending_up),
                           onPressed: () {
                             setState(() {
-                              double tmp = double.parse(
-                                      myController.text.replaceAll(',', '.')) *
-                                  100;
-
+                              double tmp;
+                              try {
+                                tmp = double.parse(
+                                    myController.text.replaceAll(',', '.')) *
+                                    100;
+                              }
+                              on Exception catch (_) {
+                                tmp = -2;
+                              }
                               balance = tmp.toInt();
                               num nbSelected = 0;
                               userList.forEach((User user) {
@@ -124,7 +131,7 @@ class _HomeState extends State<Home> {
                     children: [
                       Text((balance > 0)
                           ? "Each people owe $dbalance euros"
-                          : (dbalance == -1) ? "please select user(s)" : "Enter an amount")
+                          : (balance == -1) ? "please select user(s)" : "Enter an amount")
                     ],
                   ),
                   SizedBox(
