@@ -23,12 +23,17 @@ class User {
     this._name = name;
     this._url = url;
     this._isSelected = false;
+    this._balance = 0;
   }
 
   addBalance(int n) {
     _balance += n;
   }
 
+  remBalance(int n)
+  {
+    _balance -= n;
+  }
   toggle() {
     _isSelected = !_isSelected;
   }
@@ -96,10 +101,16 @@ class _HomeState extends State<Home> {
                       ),
                       Expanded(
                         flex: 1,
-                        child: IconButton(
+                        child: IconButton(                                              //send btn
                           icon: const Icon(Icons.trending_up),
                           onPressed: () {
                             setState(() {
+
+                              userList.forEach((User usr) {
+                                if (usr._isSelected)
+                                  usr.remBalance(amountToPayPerUser);
+                              });
+
                             });
                           },
                         ),
@@ -180,7 +191,20 @@ class _HomeState extends State<Home> {
                     userList.clear();
                   });
                 },
-                child: Text("Do a Geranocide"))
+                child: Text("Do a Geranocide")),
+            SizedBox(
+              height: 200,
+              child : ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: userList.length,
+              itemBuilder: (BuildContext context, int index)
+              {
+                String name = userList[index]._name;
+                int balance = userList[index]._balance;
+                return Text("$name : $balance centimes", style: TextStyle(color : Colors.white));
+              },
+            ),
+            ),
           ],
         ),
       ),
