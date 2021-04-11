@@ -39,7 +39,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    //initialise user list
 
     return Scaffold(
       backgroundColor: Colors.grey[900],
@@ -50,8 +49,8 @@ class _HomeState extends State<Home> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5.0),
-        child: Column(
-          children: [
+        child: ListView(
+          children: <Widget> [
             Card(
               clipBehavior: Clip.antiAlias,
               semanticContainer: true,
