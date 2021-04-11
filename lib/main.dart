@@ -88,7 +88,6 @@ class _HomeState extends State<Home> {
                             });
                             if (nbSelected == 0) {
                               balance = -1;
-                              print("mdr");
                             }
                             else
                               balance = balance ~/ nbSelected;
