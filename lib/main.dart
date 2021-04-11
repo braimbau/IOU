@@ -28,12 +28,17 @@ class User {
   addBalance(int n) {
     _balance += n;
   }
+
+  toggle() {
+    _isSelected = !_isSelected;
+  }
 }
 
 class _HomeState extends State<Home> {
-  int balance = -1;
-  double dbalance;
   int amountToPay = 0;
+  int amountToPayPerUser = 0;
+  int nbSelectedUsers = 0;
+  double displayableAmountToPayPerUser = 0;
   final myController = TextEditingController();
   List<User> userList = List<User>.empty(growable: true);
 
@@ -73,24 +78,19 @@ class _HomeState extends State<Home> {
                           onChanged: (String str) {setState(() {
                             double tmp;
                             try {
-                              tmp = double.parse(
-                                  str.replaceAll(',', '.')) *
-                                  100;
+                              tmp = double.parse(str.replaceAll(',', '.')) * 100;
                             }
                             on Exception catch (_) {
-                              tmp = -2;
+                              amountToPay = -1;
+                              return;
                             }
-                            balance = tmp.toInt();
-                            num nbSelected = 0;
-                            userList.forEach((User user) {
-                              if (user._isSelected) nbSelected++;
-                            });
-                            if (nbSelected == 0) {
-                              balance = -1;
+                            amountToPay = tmp.toInt();
+                            if (nbSelectedUsers == 0)
+                              amountToPay = -2;
+                            else {
+                              amountToPayPerUser = amountToPay ~/ nbSelectedUsers;
+                              displayableAmountToPayPerUser = amountToPayPerUser / 100;
                             }
-                            else
-                              balance = balance ~/ nbSelected;
-                            dbalance = balance / 100;
                           });},
                         ),
                       ),
@@ -100,25 +100,6 @@ class _HomeState extends State<Home> {
                           icon: const Icon(Icons.trending_up),
                           onPressed: () {
                             setState(() {
-                              double tmp;
-                              try {
-                                tmp = double.parse(
-                                    myController.text.replaceAll(',', '.')) *
-                                    100;
-                              }
-                              on Exception catch (_) {
-                                tmp = -2;
-                              }
-                              balance = tmp.toInt();
-                              num nbSelected = 0;
-                              userList.forEach((User user) {
-                                if (user._isSelected) nbSelected++;
-                              });
-                              if (nbSelected == 0)
-                                balance = -1;
-                              else
-                                balance = balance ~/ nbSelected;
-                              dbalance = balance / 100;
                             });
                           },
                         ),
@@ -127,9 +108,9 @@ class _HomeState extends State<Home> {
                   ),
                   Row(
                     children: [
-                      Text((balance > 0)
-                          ? "Each people owe $dbalance euros"
-                          : (balance == -1) ? "please select user(s)" : "Enter an amount")
+                      Text((amountToPay > 0)
+                          ? "Each people owe $displayableAmountToPayPerUser euros"
+                          : (amountToPay == -2) ? "please select user(s)" : "Enter an amount")
                     ],
                   ),
                   SizedBox(
@@ -147,26 +128,26 @@ class _HomeState extends State<Home> {
                           return InkWell(
                             onTap: () {
                               setState(() {
+                                userList[index].toggle();
+                                if (userList[index]._isSelected)
+                                 nbSelectedUsers++;
+                                else
+                                  nbSelectedUsers--;
                                 double tmp;
-                                userList[index]._isSelected = !userList[index]._isSelected;
                                 try {
-                                  tmp = double.parse(
-                                      myController.text.replaceAll(',', '.')) *
-                                      100;
+                                  tmp = double.parse(myController.text..replaceAll(',', '.')) * 100;
                                 }
                                 on Exception catch (_) {
-                                  tmp = -2;
+                                  amountToPay = -1;
+                                  return;
                                 }
-                                balance = tmp.toInt();
-                                num nbSelected = 0;
-                                userList.forEach((User user) {
-                                  if (user._isSelected) nbSelected++;
-                                });
-                                if (nbSelected == 0)
-                                  balance = -1;
-                                else
-                                  balance = balance ~/ nbSelected;
-                                dbalance = balance / 100;
+                                amountToPay = tmp.toInt();
+                                if (nbSelectedUsers == 0)
+                                  amountToPay = -2;
+                                else {
+                                  amountToPayPerUser = amountToPay ~/ nbSelectedUsers;
+                                  displayableAmountToPayPerUser = amountToPayPerUser / 100;
+                                }
                               });
                             },
                             child: CircleAvatar(
@@ -178,11 +159,7 @@ class _HomeState extends State<Home> {
                                       NetworkImage(userList[index]._url),
                                 )),
                           );
-
                         },
-
-
-
                         ),
                   ),
                 ],
