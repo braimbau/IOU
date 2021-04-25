@@ -10,6 +10,8 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+int i = 0;
+
 class User {
   num _balance;
   String _name;
@@ -36,13 +38,49 @@ class User {
   }
 }
 
+
 class _HomeState extends State<Home> {
   int amountToPay = 0;
   int amountToPayPerUser = 0;
   int nbSelectedUsers = 0;
   double displayableAmountToPayPerUser = 0;
   final myController = TextEditingController();
-  List<User> userList = List<User>.empty(growable: true);
+  List<User> userList = [User("Gertrude", "https://loremflickr.com/500/500")];
+  List<String> userNameList = List<String>.empty(growable: true);
+
+
+  List<DropdownMenuItem<User>> _dropdownMenuItems;
+  User _selectedItem;
+
+  void initState() {
+    super.initState();
+    _dropdownMenuItems = buildDropDownMenuItems(userList);
+    _selectedItem = _dropdownMenuItems[0].value;
+
+  }
+
+  List<DropdownMenuItem<User>> buildDropDownMenuItems(List listItems) {
+    List<DropdownMenuItem<User>> items = List();
+    for (User listItem in listItems) {
+      items.add(
+        DropdownMenuItem(
+                child: Row(
+                  children:<Widget>[
+                    CircleAvatar(
+                       radius: 15,
+                       backgroundImage:
+                        NetworkImage(listItem._url),
+                ),
+                    Text(listItem._name,
+                      style : TextStyle(color: Colors.black,))
+          ]),
+          value: listItem,
+            ),
+      );
+    }
+    return items;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +116,28 @@ class _HomeState extends State<Home> {
                 elevation: 5,
                 child: Column(
                   children: [
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: DropdownButton<User>(
+                          value: _selectedItem,
+                          items: _dropdownMenuItems,
+                          selectedItemBuilder: (_) {
+                            return userList
+                                .map((e) => Container(
+                              alignment: Alignment.centerLeft,
+                              width: 100,
+                              child: Text(_selectedItem._name,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ))
+                                .toList();
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedItem = value;
+                            });
+                          }),
+                    ),
                     Row(
                       children: <Widget>[
                         Expanded(
@@ -120,10 +180,10 @@ class _HomeState extends State<Home> {
                               setState(() {
 
                                 userList.forEach((User usr) {
-                                  if (usr._isSelected)
+                                    if (usr._isSelected)
                                     usr.remBalance(amountToPayPerUser);
                                 });
-
+                                _selectedItem.addBalance(amountToPay);
                               });
                             },
                           ),
@@ -193,8 +253,10 @@ class _HomeState extends State<Home> {
                   onPressed: () {
                     setState(() {
                       int i = 500 + userList.length;
-                      userList.add(User("Gerard", "https://loremflickr.com/$i/$i"));
-
+                      String name = "Gerard " + i.toString();
+                      userList.add(User(name, "https://loremflickr.com/$i/$i"));
+                      userNameList.add(name);
+                      _dropdownMenuItems = buildDropDownMenuItems(userList);
                     });
                   },
                   child: Text("Add new Gerad to users")),
@@ -203,6 +265,8 @@ class _HomeState extends State<Home> {
                     setState(() {
                       userList.clear();
                       nbSelectedUsers = 0;
+                      userList.add(User("Gertrude", "https://loremflickr.com/500/500"));
+                      _dropdownMenuItems = buildDropDownMenuItems(userList);
                     });
                   },
                   child: Text("Do a Geranocide")),
