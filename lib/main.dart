@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -255,6 +256,7 @@ Widget mainPage(BuildContext context){
                     int i = 500 + userList.length;
                     String name = "Gerard " + i.toString();
                     userList.add(User(name, "https://loremflickr.com/$i/$i"));
+                    createUser(name);
                     userNameList.add(name);
                     _dropdownMenuItems = buildDropDownMenuItems(userList);
                   });
@@ -272,16 +274,7 @@ Widget mainPage(BuildContext context){
                 child: Text("Do a Geranocide")),
             SizedBox(
               height: 200,
-              child : ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: userList.length,
-                itemBuilder: (BuildContext context, int index)
-                {
-                  String name = userList[index]._name;
-                  int balance = userList[index]._balance;
-                  return Text("$name : $balance centimes", style: TextStyle(color : (balance == 0) ? Colors.white : (balance > 0) ? Colors.green : Colors.red));
-                },
-              ),
+              child : BalanceList(),
             ),
           ],
         ),
@@ -312,4 +305,46 @@ Widget mainPage(BuildContext context){
         },
       );
   }
+}
+
+class BalanceList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection("users").snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Something went wrong');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text("Loading");
+        }
+
+        if (snapshot.data.docs.length == 0)
+          return Text("No users to display");
+
+        return new ListView.builder(
+          itemCount: snapshot.data.docs.length,
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, index)
+          {
+            String name = snapshot.data.docs[index]['name'];
+            int balance = snapshot.data.docs[index]['balance'];
+            return Text("$name : $balance centimes", style: TextStyle(color : (balance == 0) ? Colors.white : (balance > 0) ? Colors.green : Colors.red));
+          },
+
+        );
+
+
+      },
+    );
+  }
+}
+
+Future<void> createUser(String name) async
+{
+  CollectionReference ref = FirebaseFirestore.instance.collection('users');
+  ref.doc(name).set({'name': name, 'balance': 0});
 }
