@@ -289,13 +289,10 @@ Widget mainPage(BuildContext context){
     ),
   );
 }
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
-    final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-
-    @override
-    Widget build(BuildContext context) {
       return FutureBuilder(
         // Initialize FlutterFire:
         future: _initialization,
@@ -314,6 +311,5 @@ Widget mainPage(BuildContext context){
           return Text("Ca charge bro attend");
         },
       );
-    }
   }
 }

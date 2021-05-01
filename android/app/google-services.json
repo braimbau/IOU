@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1098086824093:android:265ab3f20ba7b7d204bc74",
+        "mobilesdk_app_id": "1:1098086824093:android:e42b814007d2996004bc74",
         "android_client_info": {
-          "package_name": "com.exemple.deed"
+          "package_name": "com.example.deed"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1098086824093-eb7gf5n8t9pv489ln4d7b6vl4q4dmihe.apps.googleusercontent.com",
+          "client_id": "1098086824093-iml2mef7rpo2cf69hoamk63ti6n56pnn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.exemple.deed",
+            "package_name": "com.example.deed",
             "certificate_hash": "6da6d8d324756bd5c81def622ea2860861160491"
           }
         },
@@ -37,6 +37,13 @@
             {
               "client_id": "1098086824093-kajaked3doo3q8buo7491bg8e11a1dj9.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1098086824093-a6hmgf35deob0f3782esi3van2a333a8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.deed"
+              }
             }
           ]
         }
