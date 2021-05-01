@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1098086824093",
+    "project_id": "iou-71bca",
+    "storage_bucket": "iou-71bca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1098086824093:android:265ab3f20ba7b7d204bc74",
+        "android_client_info": {
+          "package_name": "com.exemple.deed"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1098086824093-eb7gf5n8t9pv489ln4d7b6vl4q4dmihe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.exemple.deed",
+            "certificate_hash": "6da6d8d324756bd5c81def622ea2860861160491"
+          }
+        },
+        {
+          "client_id": "1098086824093-kajaked3doo3q8buo7491bg8e11a1dj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKUsq7m_jUCS7S28k5LZoER3CogcBoHIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098086824093-kajaked3doo3q8buo7491bg8e11a1dj9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
