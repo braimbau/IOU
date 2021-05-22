@@ -50,6 +50,10 @@ class _HomeState extends State<Home> {
   List<User> userList = [User("Gertrude", "https://loremflickr.com/500/500")];
   List<String> userNameList = List<String>.empty(growable: true);
 
+  _HomeState() {
+    print("bonjour");
+    getUsers(userList);
+  }
 
   List<DropdownMenuItem<User>> _dropdownMenuItems;
   User _selectedItem;
@@ -238,11 +242,7 @@ Widget mainPage(BuildContext context){
                           child: CircleAvatar(
                               radius: 25,
                               backgroundColor: (userList[index]._isSelected) ? Colors.blue : Colors.white,
-                              child: CircleAvatar(
-                                radius: 22,
-                                backgroundImage:
-                                NetworkImage(userList[index]._url),
-                              )),
+                              child: BalanceUser())
                         );
                       },
                     ),
@@ -256,7 +256,7 @@ Widget mainPage(BuildContext context){
                     int i = 500 + userList.length;
                     String name = "Gerard " + i.toString();
                     userList.add(User(name, "https://loremflickr.com/$i/$i"));
-                    createUser(name);
+                    createUser(name, "https://loremflickr.com/$i/$i");
                     userNameList.add(name);
                     _dropdownMenuItems = buildDropDownMenuItems(userList);
                   });
@@ -283,7 +283,6 @@ Widget mainPage(BuildContext context){
   );
 }
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-
   @override
   Widget build(BuildContext context) {
       return FutureBuilder(
@@ -334,17 +333,61 @@ class BalanceList extends StatelessWidget {
             int balance = snapshot.data.docs[index]['balance'];
             return Text("$name : $balance centimes", style: TextStyle(color : (balance == 0) ? Colors.white : (balance > 0) ? Colors.green : Colors.red));
           },
-
         );
-
-
       },
     );
   }
 }
 
-Future<void> createUser(String name) async
+class BalanceUser extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection("users").snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Something went wrong');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text("Loading");
+        }
+
+        if (snapshot.data.docs.length == 0)
+          return Text("No users to display");
+
+        return new ListView.builder(
+          itemCount: snapshot.data.docs.length,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index)
+          {
+            String name = snapshot.data.docs[index]['name'];
+            int balance = snapshot.data.docs[index]['balance'];
+            String  url = snapshot.data.docs[index]['url'];
+            return CircleAvatar(radius: 22,  backgroundImage: NetworkImage(url));
+          },
+        );
+      },
+    );
+  }
+}
+
+
+Future<void> createUser(String name, String url) async
 {
   CollectionReference ref = FirebaseFirestore.instance.collection('users');
-  ref.doc(name).set({'name': name, 'balance': 0});
+  ref.doc(name).set({'name': name, 'balance': 0, 'url' : url});
+}
+
+Future<void> getUsers(List<User> userList) async
+{
+  Firebase.initializeApp();
+  CollectionReference reference = FirebaseFirestore.instance.collection('users');
+  print("yo\n");
+  reference.snapshots().listen((querySnapshot) {
+    querySnapshot.docChanges.forEach((change) {
+      print(change);
+    });
+  });
 }
