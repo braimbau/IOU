@@ -42,6 +42,7 @@ class User {
 }
 
 class _HomeState extends State<Home> {
+  User selectedCurrency;
   int amountToPay = 0;
   int amountToPayPerUser = 0;
   int nbSelectedUsers = 0;
@@ -51,7 +52,6 @@ class _HomeState extends State<Home> {
   List<String> userNameList = List<String>.empty(growable: true);
 
   _HomeState() {
-    print("bonjour");
     getUsers(userList);
   }
 
@@ -123,25 +123,7 @@ Widget mainPage(BuildContext context){
                 children: [
                   Align(
                     alignment: Alignment.topLeft,
-                    child: DropdownButton<User>(
-                        value: _selectedItem,
-                        items: _dropdownMenuItems,
-                        selectedItemBuilder: (_) {
-                          return userList
-                              .map((e) => Container(
-                            alignment: Alignment.centerLeft,
-                            width: 100,
-                            child: Text(_selectedItem._name,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ))
-                              .toList();
-                        },
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedItem = value;
-                          });
-                        }),
+                    child: PayerDropDown(),
                   ),
                   Row(
                     children: <Widget>[
@@ -202,51 +184,7 @@ Widget mainPage(BuildContext context){
                           : (amountToPay == -2) ? "please select user(s)" : "Enter an amount",style: TextStyle(color: Colors.white),)
                     ],
                   ),
-                  SizedBox(
-                    height: 75,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.all(8),
-                      itemCount: userList.length,
-                      separatorBuilder: (BuildContext context, int index) {
-                        return SizedBox(
-                          width: 4,
-                        );
-                      },
-                      itemBuilder: (BuildContext context, int index) {
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              userList[index].toggle();
-                              if (userList[index]._isSelected)
-                                nbSelectedUsers++;
-                              else
-                                nbSelectedUsers--;
-                              double tmp;
-                              try {
-                                tmp = double.parse(myController.text.replaceAll(',', '.')) * 100;
-                              }
-                              on Exception catch (_) {
-                                amountToPay = -1;
-                                return;
-                              }
-                              amountToPay = tmp.toInt();
-                              if (nbSelectedUsers == 0)
-                                amountToPay = -2;
-                              else {
-                                amountToPayPerUser = amountToPay ~/ nbSelectedUsers;
-                                displayableAmountToPayPerUser = amountToPayPerUser / 100;
-                              }
-                            });
-                          },
-                          child: CircleAvatar(
-                              radius: 25,
-                              backgroundColor: (userList[index]._isSelected) ? Colors.blue : Colors.white,
-                              child: BalanceUser())
-                        );
-                      },
-                    ),
-                  ),
+                  BalanceUser()
                 ],
               ),
             ),
@@ -274,7 +212,7 @@ Widget mainPage(BuildContext context){
                 child: Text("Do a Geranocide")),
             SizedBox(
               height: 200,
-              child : BalanceList(),
+              child : BalanceList()
             ),
           ],
         ),
@@ -357,17 +295,54 @@ class BalanceUser extends StatelessWidget {
         if (snapshot.data.docs.length == 0)
           return Text("No users to display");
 
-        return new ListView.builder(
-          itemCount: snapshot.data.docs.length,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index)
-          {
-            String name = snapshot.data.docs[index]['name'];
-            int balance = snapshot.data.docs[index]['balance'];
-            String  url = snapshot.data.docs[index]['url'];
-            return CircleAvatar(radius: 22,  backgroundImage: NetworkImage(url));
-          },
+        return new SizedBox(
+          height: 75,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.all(8),
+            itemCount: snapshot.data.docs.length,
+            separatorBuilder: (BuildContext context, int index) {
+              return SizedBox(
+                width: 4,
+              );
+            },
+            itemBuilder: (BuildContext context, int index) {
+              return SelectionWidget(url:snapshot.data.docs[index]["url"]);
+            },
+          ),
         );
+
+      },
+    );
+  }
+}
+
+
+class PayerDropDown extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance.collection("users").snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text('Something went wrong');
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Text("Loading");
+        }
+
+        if (snapshot.data.docs.length == 0)
+          return Text("No users to display");
+
+        List<User> userList = List<User>.empty(growable: true);
+        for (int i = 0; i < snapshot.data.docs.length; i++){
+          userList.add(User(snapshot.data.docs[i]["name"], snapshot.data.docs[i]["url"]));
+        }
+        List<DropdownMenuItem<User>> dropdownMenuItems = buildDropDownMenuItems(userList);
+
+        return new PayerWidget(snapshot: snapshot, userList: userList, dropdownMenuItems: dropdownMenuItems);
       },
     );
   }
@@ -390,4 +365,90 @@ Future<void> getUsers(List<User> userList) async
       print(change);
     });
   });
+}
+
+class SelectionWidget extends StatefulWidget {
+  final String url;
+  SelectionWidget({this.url});
+  @override
+  _SelectionWidgetState createState() => _SelectionWidgetState();
+}
+
+class _SelectionWidgetState extends State<SelectionWidget> {
+  bool isSelected = false;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: () {
+          setState(() {
+            this.isSelected = !this.isSelected;
+          });
+        },
+        child: CircleAvatar(
+            radius: 25,
+            backgroundColor: (this.isSelected) ? Colors.blue : Colors.white,
+            child: CircleAvatar(radius: 22,  backgroundImage: NetworkImage(this.widget.url))
+        )
+    );
+  }
+}
+
+
+class PayerWidget extends StatefulWidget {
+  final AsyncSnapshot<dynamic> snapshot;
+  final List<User> userList;
+  final List<DropdownMenuItem<User>> dropdownMenuItems;
+
+  PayerWidget({this.snapshot, this.userList, this.dropdownMenuItems});
+  @override
+  _PayerWidgetState createState() => _PayerWidgetState();
+}
+
+class _PayerWidgetState extends State<PayerWidget> {
+  User  selectedItem;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<User>(
+        value: selectedItem,
+        items: this.widget.dropdownMenuItems,
+        selectedItemBuilder: (_) {
+          return this.widget.userList
+              .map((e) => Container(
+            alignment: Alignment.centerLeft,
+            width: 100,
+            child: Text(selectedItem._name,
+              style: TextStyle(color: Colors.white),
+            ),
+          ))
+              .toList();
+        },
+        onChanged: (value) {
+          setState(() {
+            selectedItem = value;
+          });
+        });
+  }
+}
+
+List<DropdownMenuItem<User>> buildDropDownMenuItems(List listItems) {
+  List<DropdownMenuItem<User>> items = List();
+  for (User listItem in listItems) {
+    items.add(
+      DropdownMenuItem(
+        child: Row(
+            children:<Widget>[
+              CircleAvatar(
+                radius: 15,
+                backgroundImage:
+                NetworkImage(listItem._url),
+              ),
+              Text(listItem._name,
+                  style : TextStyle(color: Colors.black,))
+            ]),
+        value: listItem,
+      ),
+    );
+  }
+  return items;
 }
