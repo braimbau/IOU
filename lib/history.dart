@@ -23,9 +23,9 @@ class History extends StatelessWidget {
         }
         if (snapshot.data.docs.length == 0) return Text("No users to display");
 
-        List<User> userList = List<User>.empty(growable: true);
+        List<IOUser> userList = List<IOUser>.empty(growable: true);
         for (int i = 0; i < snapshot.data.docs.length; i++) {
-          userList.add(User(snapshot.data.docs[i]["id"],
+          userList.add(IOUser(snapshot.data.docs[i]["id"],
               snapshot.data.docs[i]["name"], snapshot.data.docs[i]["url"]));
         }
         return new HistoryUser(id: id);

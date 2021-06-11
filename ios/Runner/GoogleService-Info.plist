@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1098086824093-a6hmgf35deob0f3782esi3van2a333a8.apps.googleusercontent.com</string>
+	<string>1098086824093-1n823gtsmkknro342dkiq21773ntigtv.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1098086824093-a6hmgf35deob0f3782esi3van2a333a8</string>
+	<string>com.googleusercontent.apps.1098086824093-1n823gtsmkknro342dkiq21773ntigtv</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>1098086824093-eb7gf5n8t9pv489ln4d7b6vl4q4dmihe.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.deed</string>
+	<string>com.altua.IOU</string>
 	<key>PROJECT_ID</key>
 	<string>iou-71bca</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1098086824093:ios:94a91983aa85075404bc74</string>
+	<string>1:1098086824093:ios:bda47b64cc0b215104bc74</string>
 </dict>
 </plist>

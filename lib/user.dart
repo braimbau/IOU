@@ -1,10 +1,16 @@
-class User {
+
+class IOUser {
   String  _id;
   String  _name;
+  String  _fullName;
   String  _url;
 
-  User(String id, String name, String url) {
-    this._name = name;
+  IOUser(String id, String name, String url) {
+    this._fullName = name;
+      if (name.length > 20)
+        this._name = name.substring(0, 20) + "...";
+      else
+        this._name = name;
     this._url = url;
     this._id = id;
   }
