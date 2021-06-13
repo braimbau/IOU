@@ -27,12 +27,9 @@ class BalanceCard extends StatelessWidget {
             return Text("Loading");
           }
 
-
-          int scale = 100;
           double balance = snapshot.data["balance"] / 100;
-          String dbalance = (balance > 0) ? "+" : "";
+          String dbalance = ""; //(balance > 0) ? "+" : "";
           dbalance += balance.toStringAsFixed(balance.truncateToDouble() == balance ? 0 : 2);
-
 
           return new Card(
               shape: RoundedRectangleBorder(
@@ -43,7 +40,7 @@ class BalanceCard extends StatelessWidget {
                 ),
               ),
               clipBehavior: Clip.antiAlias,
-              color: (balance > 0) ? Colors.red : Colors.green,
+              color: (balance >= 0) ? Colors.green : Colors.red,
               semanticContainer: true,
               elevation: 5,
               child: Column(

@@ -127,18 +127,19 @@ class _HistoryElementState extends State<HistoryElement> {
           child: Column(children: [
           Row(children: [
             Text("$formattedDate : ", style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
-            Text(this.widget.transaction.getLabel(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             Text(" : ", style: TextStyle(color: Colors.grey)),
-            Text(evo,
-                style: TextStyle(
-                    color: (this.widget.transaction.getBalanceEvo() >= 0)
-                        ? Colors.green
-                        : Colors.red)),
+            Align (alignment: Alignment.centerRight, child: Text(evo,
+              style: TextStyle(
+                  color: (this.widget.transaction.getBalanceEvo() >= 0)
+                      ? Colors.green
+                      : Colors.red),),),
           ]),
+            Text(this.widget.transaction.getLabel(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+
           if (isExpanded) Align(alignment: Alignment.centerLeft,child: Text("Payer: ${this.widget.transaction.getPayer()}", style: TextStyle(color: Colors.white))),
           if (isExpanded) Align(alignment: Alignment.centerLeft,child: Text("Total amount: $displayedAmount€", style: TextStyle(color: Colors.white))),
 
-          if (isExpanded) Divider(color: Colors.white),
+          Divider(color: Colors.white),
         ])
     ));
   }

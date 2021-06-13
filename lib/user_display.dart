@@ -21,7 +21,7 @@ class UserDisplay extends StatelessWidget {
         child: CircleAvatar(
             radius: 25,
             backgroundColor: Colors.white,
-            child: CircleAvatar(radius: 22,  backgroundImage: NetworkImage(usr.getUrl()))
+            child: CircleAvatar(radius: 24,  backgroundImage: NetworkImage(usr.getUrl()))
         )),
         RichText(
           text: TextSpan(

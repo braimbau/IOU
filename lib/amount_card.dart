@@ -265,8 +265,6 @@ class SelectionWidget extends StatefulWidget {
 class _SelectionWidgetState extends State<SelectionWidget> {
   bool isSelected;
 
-  void initState() {
-  }
   @override
   Widget build(BuildContext context) {
     isSelected = this.widget.userSelected.contains(this.widget.user);
@@ -278,7 +276,6 @@ class _SelectionWidgetState extends State<SelectionWidget> {
               this.widget.addUserToSelected(this.widget.user);
             else {
               this.widget.rmUserToSelected(this.widget.user);
-              print("tamer");
             }
           });
         },
@@ -300,7 +297,7 @@ String amountError(int amount, int nbUsers)
     return ("Enter an amount");
   if (amount ~/ nbUsers == 0)
     return ("Bro...");
-  if (amount > 1000000)
+  if (amount > 100000000)
     return ("You're not Jeff Bezos");
   return null;
 }

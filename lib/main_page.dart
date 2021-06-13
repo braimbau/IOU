@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/user_display.dart';
 import 'amount_card.dart';
@@ -39,6 +40,14 @@ Widget mainPage(BuildContext context, IOUser usr) {
             BalanceCard(usr: usr),
             AmountCard(),
             History(id: usr.getId()),
+            TextButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => _buildPopupDialog(context),
+                  );
+                },
+                child: Text("bite")),
           ],
         ),
       ),
@@ -61,35 +70,17 @@ class AmountInfo {
   }
 }
 
-class BalanceList extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    print("stream2");
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("users").snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text('Something went wrong');
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
-        }
-
-        if (snapshot.data.docs.length == 0)
-          return Text("No users to display");
-
-        return new ListView.builder(
-          itemCount: snapshot.data.docs.length,
-          scrollDirection: Axis.vertical,
-          itemBuilder: (context, index)
-          {
-            String name = snapshot.data.docs[index]['name'];
-            int balance = snapshot.data.docs[index]['balance'];
-            return Text("$name : $balance centimes", style: TextStyle(color : (balance == 0) ? Colors.white : (balance > 0) ? Colors.green : Colors.red));
-          },
-        );
-      },
-    );
-  }
+Widget _buildPopupDialog(BuildContext context) {
+  return new BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Wrap (
+              children: <Widget>[AmountCard()])
+      )
+  );
 }
