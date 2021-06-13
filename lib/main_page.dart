@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/user_display.dart';
+import 'package:flutter/rendering.dart';
 import 'amount_card.dart';
 import 'balance_card.dart';
 import 'user.dart';
@@ -18,6 +19,16 @@ Widget mainPage(BuildContext context, IOUser usr) {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
     },
     child: Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => _buildPopupDialog(context),
+          );
+        },
+        child: const Icon(Icons.add, color: Colors.black,),
+        backgroundColor: Colors.white,
+      ),
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
         title: Row(
@@ -38,16 +49,7 @@ Widget mainPage(BuildContext context, IOUser usr) {
           children: <Widget> [
             UserDisplay(usr: usr),
             BalanceCard(usr: usr),
-            AmountCard(),
             History(id: usr.getId()),
-            TextButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => _buildPopupDialog(context),
-                  );
-                },
-                child: Text("bite")),
           ],
         ),
       ),
@@ -71,7 +73,7 @@ class AmountInfo {
 }
 
 Widget _buildPopupDialog(BuildContext context) {
-  return new BackdropFilter(
+  return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
         child: Dialog(
           shape: RoundedRectangleBorder(

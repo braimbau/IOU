@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'user.dart';
@@ -95,12 +96,19 @@ class AmountCard extends StatelessWidget {
                         int amountToCredit = 0;
                         if (err != null)
                         {
-                          final snackBar = SnackBar(
+                          Flushbar(
+                            message: err,
                             backgroundColor: Colors.red,
-                            duration: Duration(seconds: 1),
-                            content: Text(err),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            borderRadius: 50,
+                            icon: Icon(
+                              Icons.error_outline,
+                              size: 28,
+                              color: Colors.white,
+                            ),
+                            duration: Duration(seconds: 2),
+                            forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
+                          )..show(context);
+
                         }
                         else {
                           selectedUsers.forEach((element) {
@@ -112,6 +120,19 @@ class AmountCard extends StatelessWidget {
                           newTransaction(amountToPay, amountToCredit, payer, selectedUsers, "unamed transaction");
                           amountToPayPerUser.value = 0;
                           amountToPay = 0;
+                          Navigator.of(context).pop();
+                          Flushbar(
+                            message: "yeah",
+                            backgroundColor: Colors.green,
+                            borderRadius: 50,
+                            icon: Icon(
+                              Icons.info_outline,
+                              size: 28,
+                              color: Colors.white,
+                            ),
+                            duration: Duration(seconds: 2),
+                            forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
+                          )..show(context);
                         }
                       },
                     ),
@@ -269,6 +290,7 @@ class _SelectionWidgetState extends State<SelectionWidget> {
   Widget build(BuildContext context) {
     isSelected = this.widget.userSelected.contains(this.widget.user);
     return InkWell(
+        customBorder: CircleBorder(),
         onTap: () {
           setState(() {
             this.isSelected = !this.isSelected;
