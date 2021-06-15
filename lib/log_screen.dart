@@ -21,7 +21,7 @@ class _LogScreenState extends State<LogScreen> {
       builder: (context, snapshot) {
         // Check for errors
         if (snapshot.hasError) {
-          return errorScreen("An error occured while login whith Google", context);
+          return logErrorScreen("An error occured while login whith Google", context);
         }
         // Once complete, show your application
 
@@ -33,11 +33,4 @@ class _LogScreenState extends State<LogScreen> {
       },
     );
   }
-}
-
-class LoggedIn extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Text("yo le rap");
-}
 }

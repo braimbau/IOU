@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'error_screen.dart';
 import 'user.dart';
 import 'iou_transaction.dart';
 import 'package:intl/intl.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class History extends StatelessWidget {
   final String id;
@@ -16,12 +19,13 @@ class History extends StatelessWidget {
       stream: FirebaseFirestore.instance.collection("users").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return errorScreen("something went wrong");
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Loading();
         }
-        if (snapshot.data.docs.length == 0) return Text("No users to display");
+        if (snapshot.data.docs.length == 0)
+          return errorScreen("No users to display");
 
         List<IOUser> userList = List<IOUser>.empty(growable: true);
         for (int i = 0; i < snapshot.data.docs.length; i++) {
@@ -50,14 +54,16 @@ class HistoryUser extends StatelessWidget {
       builder: (context, snapshot) {
         print("id = $id");
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return errorScreen("something went wrong");
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Loading();
         }
 
-        if (snapshot.data.docs.length == 0) return Text("No transactions");
+        if (snapshot.data.docs.length == 0) {
+          return errorScreen("No transactions for this user");
+        }
 
         List<IouTransaction> transactionList =
             List<IouTransaction>.empty(growable: true);
@@ -72,24 +78,62 @@ class HistoryUser extends StatelessWidget {
               snapshot.data.docs[i]["label"]));
         }
 
-        return new Column(
-          children: [
-            Text("History",
-                style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold)),
-            Divider(color: Colors.white),
-            SizedBox(
-                height: 200,
-                child: ListView.builder(
+        return new Scaffold(
+          body: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(width: 72.0, height: 0.0),
+                  Text("History",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 50)),
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: IconButton(
+                      icon: Icon(Icons.close, size: 40),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  )
+                ],
+              ),
+              Divider(color: Colors.grey[800], thickness: 1),
+              Expanded(
+                //height: 500,
+
+                /*     child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return HistoryElement(
+                    transaction: transactionList[index],
+                  );
+                },
+              )*/
+
+                child: ListView.separated(
                   padding: const EdgeInsets.all(8),
                   itemCount: snapshot.data.docs.length,
+                  separatorBuilder: (BuildContext context, int index) {
+                    return Divider(
+                      color: Colors.grey,
+                      endIndent: 10,
+                      indent: 10,
+                    );
+                  },
                   itemBuilder: (BuildContext context, int index) {
                     return HistoryElement(
                       transaction: transactionList[index],
                     );
                   },
-                ))
-          ],
+                ),
+              )
+            ],
+          ),
         );
       },
     );
@@ -113,7 +157,8 @@ class _HistoryElementState extends State<HistoryElement> {
     var date = DateTime.fromMillisecondsSinceEpoch(
         this.widget.transaction.getTimestamp());
     var formattedDate = DateFormat.yMMMd().add_Hm().format(date); // Apr 8, 2020
-    String evo = (((this.widget.transaction.getBalanceEvo() > 0) ? "+" : "") + (this.widget.transaction.getBalanceEvo() / 100).toString());
+    String evo = (((this.widget.transaction.getBalanceEvo() > 0) ? "+" : "") +
+        (this.widget.transaction.getBalanceEvo() / 100).toString());
     double displayedAmount = this.widget.transaction.getDisplayedAmount() / 100;
 
     return InkWell(
@@ -123,24 +168,39 @@ class _HistoryElementState extends State<HistoryElement> {
           });
         },
         child: Padding(
-          padding: EdgeInsets.all(4.0),
-          child: Column(children: [
-          Row(children: [
-            Text("$formattedDate : ", style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic)),
-            Text(" : ", style: TextStyle(color: Colors.grey)),
-            Align (alignment: Alignment.centerRight, child: Text(evo,
-              style: TextStyle(
-                  color: (this.widget.transaction.getBalanceEvo() >= 0)
-                      ? Colors.green
-                      : Colors.red),),),
-          ]),
-            Text(this.widget.transaction.getLabel(), style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-
-          if (isExpanded) Align(alignment: Alignment.centerLeft,child: Text("Payer: ${this.widget.transaction.getPayer()}", style: TextStyle(color: Colors.white))),
-          if (isExpanded) Align(alignment: Alignment.centerLeft,child: Text("Total amount: $displayedAmount€", style: TextStyle(color: Colors.white))),
-
-          Divider(color: Colors.white),
-        ])
-    ));
+            padding: EdgeInsets.all(4.0),
+            child: Column(children: [
+              Text(this.widget.transaction.getLabel(),
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+              Row(children: [
+                Text(formattedDate,
+                    style: TextStyle(
+                        color: Colors.grey, fontStyle: FontStyle.italic)),
+                Expanded(child: Container()),
+                Text(
+                  evo,
+                  style: TextStyle(fontWeight: FontWeight.bold,
+                      color: (this.widget.transaction.getBalanceEvo() >= 0)
+                          ? Colors.green
+                          : Colors.red),
+                ),
+              ]),
+              if (isExpanded)
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Payer: ${this.widget.transaction.getPayer()}",
+                        style: TextStyle(color: Colors.black))),
+              if (isExpanded)
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Total amount: $displayedAmount€",
+                        style: TextStyle(color: Colors.black))),
+              if (isExpanded && this.widget.transaction.getOtherUsers() != "")
+                Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Other users: ${this.widget.transaction.getOtherUsers()}",
+                        style: TextStyle(color: Colors.black))),
+            ])));
   }
 }

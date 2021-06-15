@@ -1,23 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/quick_pref.dart';
+import 'package:deed/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'user.dart';
-
-class BalanceCard extends StatelessWidget {
+class QuickCard extends StatelessWidget {
   final IOUser usr;
 
-  BalanceCard({this.usr});
+  QuickCard({this.usr});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection("users")
-            .doc(usr.getId())
+            .collection("groups")
+            .doc("rfuvvQjatXbde1ZNL7O5")
+            .collection("quickadds")
             .snapshots(),
         builder: (context, snapshot) {
-
           if (snapshot.hasError) {
             return Text('Something went wrong');
           }
@@ -26,13 +26,11 @@ class BalanceCard extends StatelessWidget {
             return Text("Loading");
           }
 
-          double balance = snapshot.data["balance"] / 100;
-          String dbalance = ""; //(balance > 0) ? "+" : "";
-          dbalance += balance.toStringAsFixed(balance.truncateToDouble() == balance ? 0 : 2);
+          List<QuickPref> quickPrefList = List<QuickPref>.empty(growable: true);
+          for (int i = 0; i < snapshot.data.docs.length; i++){
+            quickPrefList.add(QuickPref(snapshot.data.doc["name"], snapshot.data.doc["users"], snapshot.data.doc["amount"], snapshot.data.doc["emoji"]));
+          }
 
-          return FittedBox(
-            child: Text("$dbalance€", style: TextStyle(color: (balance >= 0) ? Colors.green : Colors.red, fontWeight: FontWeight.bold, fontSize: 5000)),
-          );
 
         });
   }

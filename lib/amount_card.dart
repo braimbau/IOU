@@ -5,6 +5,10 @@ import 'package:flutter/material.dart';
 import 'user.dart';
 
 class AmountCard extends StatelessWidget {
+  final IOUser currentUser;
+
+  AmountCard({@required this.currentUser});
+
   @override
   Widget build(BuildContext context) {
     ValueNotifier<int> amountToPayPerUser = ValueNotifier(0);
@@ -78,7 +82,7 @@ class AmountCard extends StatelessWidget {
             children: [
               Align(
                 alignment: Alignment.topLeft,
-                child: PayerWidget(userList: userList, dropdownMenuItems: dropdownMenuItems, firstSelected: userList[0], setPayer: setPayer),
+                child: PayerWidget(userList: userList, dropdownMenuItems: dropdownMenuItems, firstSelected: currentUser, setPayer: setPayer),
               ),
               Row(
                 children: <Widget>[
@@ -342,14 +346,14 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
     if (element == payer)
       balanceEvo += actualAmount;
     ref.doc(timestamp.toString()).collection('users').add({'name': element.getName()});
-    String otherUsers = selectedUsers.where((el) => element != el).join(" ");
+    String otherUsers = selectedUsers.where((el) => element != el).join(", ");
     //add transaction in users transaction list
     FirebaseFirestore.instance.collection('users').doc(element.getId()).collection('transactions').doc(timestamp.toString()).set({'transactionID':timestamp,
       'balanceEvo': balanceEvo, 'otherUsers': otherUsers, 'label': label, 'payer': payer.getName(), 'displayedAmount': displayedAmount});
   });
   //add transaction in payer transaction list
   if (!selectedUsers.contains(payer)) {
-    String otherUsers = selectedUsers.where((el) => payer != el).join(" ");
+    String otherUsers = selectedUsers.where((el) => payer != el).join(", ");
     FirebaseFirestore.instance.collection('users').doc(payer.getId())
         .collection('transactions').doc(timestamp.toString())
         .set({
