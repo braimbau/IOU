@@ -1,30 +1,22 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/label_input.dart';
-import 'package:deed/payer_widget.dart';
-import 'package:deed/quick_pref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'amount_input.dart';
 import 'user.dart';
 import 'selection.dart';
 
-class AmountCard extends StatelessWidget {
-  final IOUser currentUser;
-  final QuickPref pref;
-  final bool isPreFilled;
-
-  AmountCard({@required this.currentUser, this.pref, this.isPreFilled});
+class PrefPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
     ValueNotifier<int> amountToPayPerUser = ValueNotifier(0);
-    IOUser payer;
     List<IOUser> selectedUsers = [];
 
     //if card is pre filled
-    int amountToPay = (isPreFilled) ? pref.getAmount() : 0;
-    String label = (isPreFilled) ? pref.getName() : "unamed transaction";
+    int amountToPay = 0;
+    String label = "unamed quick pref";
 
     void updateAmountToPayPerUser()
     {
@@ -54,10 +46,6 @@ class AmountCard extends StatelessWidget {
       selectedUsers.remove(usr);
       updateAmountToPayPerUser();
     }
-    void setPayer(IOUser usr)
-    {
-      payer = usr;
-    }
 
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection("users").snapshots(),
@@ -78,17 +66,6 @@ class AmountCard extends StatelessWidget {
           userList.add(IOUser(snapshot.data.docs[i]["id"], snapshot.data.docs[i]["name"], snapshot.data.docs[i]["url"]));
         }
 
-        List<DropdownMenuItem<IOUser>> dropdownMenuItems = buildDropDownMenuItems(userList);
-
-        if (isPreFilled) {
-          pref.getUsers().split(":").forEach((element) {
-            IOUser userToAdd = userList.firstWhere((el) => el.getId() == element, orElse: () => null);
-            if (userToAdd != null)
-              selectedUsers.add(userToAdd);
-          }
-          );
-        }
-
         selectedUsers.removeWhere((element) => !userList.contains(element));
         return new Card(
           shape: RoundedRectangleBorder(
@@ -104,15 +81,11 @@ class AmountCard extends StatelessWidget {
           elevation: 5,
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: PayerWidget(userList: userList, dropdownMenuItems: dropdownMenuItems, firstSelected: currentUser, setPayer: setPayer),
-              ),
               Row(
                 children: <Widget>[
                   Expanded(
                     flex: 3,
-                    child: AmountTextInput(changeATP: changeATP, isPreFilled: isPreFilled, amount: (isPreFilled) ? pref.getAmount() : 0,),
+                    child: AmountTextInput(changeATP: changeATP, isPreFilled: false, amount: 0,),
                   ),
                   SizedBox(
                     child: IconButton(
@@ -120,7 +93,6 @@ class AmountCard extends StatelessWidget {
                       onPressed: () {
                         WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
                         String err = amountError(amountToPay, selectedUsers.length);
-                        int amountToCredit = 0;
                         if (err != null)
                         {
                           Flushbar(
@@ -138,19 +110,11 @@ class AmountCard extends StatelessWidget {
 
                         }
                         else {
-                          selectedUsers.forEach((element) {
-                            changeBalance(element.getId(),
-                                -amountToPay ~/ selectedUsers.length);
-                            amountToCredit += amountToPay ~/ selectedUsers.length;
-                          });
-                          changeBalance(payer.getId(), amountToCredit);
-                          newTransaction(amountToPay, amountToCredit, payer, selectedUsers, label);
-                          amountToPayPerUser.value = 0;
-                          amountToPay = 0;
+                          addQuickPref("rfuvvQjatXbde1ZNL7O5", label,  "bite", amountToPay,  "bite");
                           //pop until main page to avoid poping only flushbar
                           Navigator.popUntil(context, ModalRoute.withName('/'));
                           Flushbar(
-                            message: "yeah",
+                            message: "Quick pref $label is registred",
                             backgroundColor: Colors.green,
                             borderRadius: BorderRadius.all(Radius.circular(50)),
                             icon: Icon(
@@ -194,7 +158,7 @@ class AmountCard extends StatelessWidget {
                   },
                 ),
               ),
-              LabelTextInput(isPreFilled: isPreFilled, label: (isPreFilled) ? pref.getName() : null, changeLabel: changeLabel,)
+              LabelTextInput(isPreFilled: false, label: null, changeLabel: changeLabel,)
             ],
           ),
         );
@@ -216,42 +180,10 @@ String amountError(int amount, int nbUsers)
   return null;
 }
 
-Future<void> changeBalance(String id, int amount) async
-{
-  CollectionReference ref = FirebaseFirestore.instance.collection('users');
-  ref.doc(id).update({"balance": FieldValue.increment(amount)});
-}
 
-Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer, List<IOUser> selectedUsers, String label) async
-{
-  var timestamp = DateTime.now().millisecondsSinceEpoch;
-  CollectionReference ref = FirebaseFirestore.instance.collection('transactions');
-  //add transaction in global transaction list
-  ref.doc(timestamp.toString()).set({'displayedAmount': displayedAmount, 'actualAmount': actualAmount, 'payer': payer.getName(), 'label': label,
-    'amountPerUser': actualAmount/selectedUsers.length});
-  selectedUsers.forEach((element) {
-    int balanceEvo = - actualAmount ~/ selectedUsers.length;
-    if (element == payer)
-      balanceEvo += actualAmount;
-    ref.doc(timestamp.toString()).collection('users').add({'name': element.getName()});
-    String otherUsers = selectedUsers.where((el) => element != el).join(", ");
-    //add transaction in users transaction list
-    FirebaseFirestore.instance.collection('users').doc(element.getId()).collection('transactions').doc(timestamp.toString()).set({'transactionID':timestamp,
-      'balanceEvo': balanceEvo, 'otherUsers': otherUsers, 'label': label, 'payer': payer.getName(), 'displayedAmount': displayedAmount});
-  });
-  //add transaction in payer transaction list
-  if (!selectedUsers.contains(payer)) {
-    String otherUsers = selectedUsers.where((el) => payer != el).join(", ");
-    FirebaseFirestore.instance.collection('users').doc(payer.getId())
-        .collection('transactions').doc(timestamp.toString())
-        .set({
-      'transactionID': timestamp,
-      'balanceEvo': actualAmount,
-      'otherUsers': otherUsers,
-      'label': label,
-      'payer': payer.getName(),
-      'displayedAmount': displayedAmount
-    });
-  }
+Future<void> addQuickPref(String groupId, String label, String users, int amount, String emoji) async {
+  var  docRef = FirebaseFirestore.instance.collection('groups')
+      .doc(groupId)
+      .collection("quickadds").doc();
+  docRef.set({'name': label, 'amount': amount, 'users' : users, 'emoji' : emoji});
 }
-

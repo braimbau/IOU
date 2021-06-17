@@ -3,12 +3,14 @@ class QuickPref {
   String _users;
   int _amount;
   String _emoji;
+  String _id;
 
-  QuickPref(String name, String users, int amount, String emoji) {
+  QuickPref(String name, String users, int amount, String emoji, String id) {
     this._name = name;
     this._users = users;
     this._amount = amount;
     this._emoji = emoji;
+    this._id = id;
   }
 
   String getName() {
@@ -25,5 +27,9 @@ class QuickPref {
 
   String getEmoji() {
     return (_emoji);
+  }
+
+  String getId() {
+    return (_id);
   }
 }

@@ -1,20 +1,16 @@
-import 'dart:math';
 import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/user_display.dart';
+import 'package:deed/app_bar.dart';
+import 'package:deed/quick_card.dart';
 import 'package:flutter/rendering.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'amount_card.dart';
 import 'balance_card.dart';
 import 'user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'history.dart';
-import 'user.dart';
 
 Widget mainPage(BuildContext context, IOUser usr) {
-  AmountInfo amountInfo = AmountInfo();
   return GestureDetector(
     onTap: () {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
@@ -42,17 +38,7 @@ Widget mainPage(BuildContext context, IOUser usr) {
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey[900],
-      appBar: AppBar(
-        title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Container(
-              height: 30.0,
-              width: 30.0,
-              child: new Image.asset('asset/image/logo.png')),
-          Text('IOU'),
-        ]),
-        centerTitle: true,
-        backgroundColor: Colors.grey[850],
-      ),
+      appBar: topAppBar(usr),
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -69,27 +55,13 @@ Widget mainPage(BuildContext context, IOUser usr) {
         padding: const EdgeInsets.symmetric(horizontal: 5.0),
         child: Column(
           children: <Widget>[
-            UserDisplay(usr: usr),
-            BalanceCard(usr: usr),
+            Flexible(child: BalanceCard(usr: usr)),
+            QuickCard(usr: usr),
           ],
         ),
       ),
     ),
   );
-}
-
-class AmountInfo {
-  double total;
-  var controller;
-
-  AmountInfo() {
-    this.total = 0;
-    this.controller = TextEditingController();
-  }
-
-  changeTotal(double price) {
-    this.total = price;
-  }
 }
 
 Widget _buildPopupDialog(BuildContext context, IOUser usr) {
@@ -101,5 +73,5 @@ Widget _buildPopupDialog(BuildContext context, IOUser usr) {
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child: Wrap(children: <Widget>[AmountCard(currentUser: usr,)])));
+          child: Wrap(children: <Widget>[AmountCard(currentUser: usr, isPreFilled: false,)])));
 }
