@@ -177,21 +177,3 @@ Widget _buildPrefPicker() {
           backgroundColor: Colors.transparent,
           child: Wrap(children: <Widget>[PrefPicker()])));
 }
-
-/*
-                      Padding(
-                          child: IconButton(
-                              icon: Icon(
-                                Icons.add_circle_outline,
-                                size: 30,
-                                color: Colors.blue,
-                              ),
-                              splashRadius: 25,
-                              onPressed: () {
-                                print("salut");
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) => _buildPrefPicker(),
-                                );                              }),
-                          padding: EdgeInsets.only(top: 15)),
- */

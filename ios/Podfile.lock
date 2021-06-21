@@ -227,6 +227,8 @@ PODS:
     - Firebase/Firestore (= 7.3.0)
     - firebase_core
     - Flutter
+  - emoji_picker (0.0.3):
+    - Flutter
   - Firebase/Auth (7.3.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 7.3.0)
@@ -345,6 +347,7 @@ PODS:
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
+  - emoji_picker (from `.symlinks/plugins/emoji_picker/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
@@ -378,6 +381,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
+  emoji_picker:
+    :path: ".symlinks/plugins/emoji_picker/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
@@ -398,6 +403,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   BoringSSL-GRPC: 8edf627ee524575e2f8d19d56f068b448eea3879
   cloud_firestore: 357b92d4778d7715d76a393db5f89e7dcc9b7401
+  emoji_picker: 0e868059aa18f9473d234f3d0701fbd4d5fd310c
   Firebase: 26223c695fe322633274198cb19dca8cb7e54416
   firebase_auth: 7220e26fc14a501a63093edc10443de6bca0d7e8
   firebase_core: 91b27774a52f41f8b58484a75edf71197ac01c59
@@ -420,7 +426,7 @@ SPEC CHECKSUMS:
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   nanopb: 1bf24dd71191072e120b83dd02d08f3da0d65e53
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
+  shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
 
 PODFILE CHECKSUM: eb77cd5a845e928c3a70e9656aa1e50b7131e89b
 

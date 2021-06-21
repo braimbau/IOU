@@ -22,9 +22,9 @@ class _LabelTextInputState extends State<LabelTextInput> {
         style: TextStyle(color : Colors.black),
         controller: this.widget.controller,
         decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             hintText: '(optional) Label',
-            fillColor: Colors.white70,
+            fillColor: Colors.white,
             filled: true),
         onChanged: (String str) {
           setState(() {

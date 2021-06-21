@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/loading.dart';
+import 'package:deed/quick_pref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'amount_card.dart';
 import 'error_screen.dart';
 import 'user.dart';
 import 'iou_transaction.dart';
@@ -9,9 +13,9 @@ import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class History extends StatelessWidget {
-  final String id;
+  final IOUser usr;
 
-  History({@required this.id});
+  History({@required this.usr});
 
   @override
   Widget build(BuildContext context) {
@@ -32,27 +36,26 @@ class History extends StatelessWidget {
           userList.add(IOUser(snapshot.data.docs[i]["id"],
               snapshot.data.docs[i]["name"], snapshot.data.docs[i]["url"]));
         }
-        return new HistoryUser(id: id);
+        return new HistoryUser(usr: usr);
       },
     );
   }
 }
 
 class HistoryUser extends StatelessWidget {
-  final String id;
+  final IOUser usr;
 
-  HistoryUser({this.id});
+  HistoryUser({this.usr});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection("users")
-          .doc(id)
+          .doc(usr.getId())
           .collection("transactions")
           .snapshots(),
       builder: (context, snapshot) {
-        print("id = $id");
         if (snapshot.hasError) {
           return errorScreen("something went wrong");
         }
@@ -127,8 +130,7 @@ class HistoryUser extends StatelessWidget {
                   },
                   itemBuilder: (BuildContext context, int index) {
                     return HistoryElement(
-                      transaction: transactionList[index],
-                    );
+                        transaction: transactionList[index], usr: usr);
                   },
                 ),
               )
@@ -142,8 +144,9 @@ class HistoryUser extends StatelessWidget {
 
 class HistoryElement extends StatefulWidget {
   final IouTransaction transaction;
+  final IOUser usr;
 
-  HistoryElement({this.transaction});
+  HistoryElement({this.transaction, this.usr});
 
   @override
   _HistoryElementState createState() => _HistoryElementState();
@@ -180,7 +183,8 @@ class _HistoryElementState extends State<HistoryElement> {
                 Expanded(child: Container()),
                 Text(
                   evo,
-                  style: TextStyle(fontWeight: FontWeight.bold,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
                       color: (this.widget.transaction.getBalanceEvo() >= 0)
                           ? Colors.green
                           : Colors.red),
@@ -196,11 +200,46 @@ class _HistoryElementState extends State<HistoryElement> {
                     alignment: Alignment.centerLeft,
                     child: Text("Total amount: $displayedAmount€",
                         style: TextStyle(color: Colors.black))),
-              if (isExpanded && this.widget.transaction.getOtherUsers() != "")
+              if (isExpanded && this.widget.transaction.getUsers() != "" && 2 == 3)
                 Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Other users: ${this.widget.transaction.getOtherUsers()}",
+                    child: Text(
+                        "Other users: ${this.widget.transaction.getUsers()}",
                         style: TextStyle(color: Colors.black))),
+              if (isExpanded)
+                IconButton(
+                icon: Icon(Icons.replay, color: Colors.blue),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  QuickPref pref = QuickPref(
+                      this.widget.transaction.getLabel(),
+                      this.widget.transaction.getUsers(),
+                      this.widget.transaction.getDisplayedAmount(),
+                      null,
+                      null);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) => _buildPopupDialog(context, this.widget.usr, pref),
+                  );
+                },
+              )
             ])));
   }
+}
+
+Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref) {
+  return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Wrap(children: <Widget>[
+          AmountCard(
+          currentUser: usr,
+          pref: pref,
+          isPreFilled: true)
+          ])));
 }

@@ -19,7 +19,7 @@ Widget mainPage(BuildContext context, IOUser usr) {
       if (details.delta.dy < -25) {
         showCupertinoModalBottomSheet(
           context: context,
-          builder: (context) => History(id: usr.getId()),
+          builder: (context) => History(usr: usr),
         );
       }
     },

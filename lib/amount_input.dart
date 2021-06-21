@@ -25,9 +25,9 @@ class _AmountTextInputState extends State<AmountTextInput> {
         ),
         controller: this.widget.controller,
         decoration: InputDecoration(
-            border: OutlineInputBorder(),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             hintText: 'Enter the amount to pay',
-            fillColor: Colors.white70,
+            fillColor: Colors.white,
             filled: true),
         onChanged: (String str) {
           setState(() {

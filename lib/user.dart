@@ -46,6 +46,6 @@ class IOUser {
 
   @override
   String toString() {
-    return '$_name';
+    return '$_id';
   }
 }

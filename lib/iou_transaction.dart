@@ -3,7 +3,7 @@ class IouTransaction {
   int     _timestamp;
   int     _balanceEvo;
   int     _displayedAmount;
-  String  _otherUsers;
+  String  _users;
   String  _payer;
   String  _label;
 
@@ -12,7 +12,7 @@ class IouTransaction {
     this._timestamp = timestamp;
     this._balanceEvo = balanceEvo;
     this._displayedAmount = displayedAmount;
-    this._otherUsers = otherUsers;
+    this._users = otherUsers;
     this._payer = payer;
     this._label = label;
   }
@@ -33,8 +33,8 @@ class IouTransaction {
     return (_displayedAmount);
   }
 
-  String getOtherUsers() {
-    return (_otherUsers);
+  String getUsers() {
+    return (_users);
   }
 
   String getPayer() {
