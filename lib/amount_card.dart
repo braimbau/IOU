@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/InputInfo.dart';
 import 'package:deed/label_input.dart';
 import 'package:deed/payer_widget.dart';
 import 'package:deed/quick_pref.dart';
@@ -19,24 +20,37 @@ class AmountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ValueNotifier<int> amountToPayPerUser = ValueNotifier(0);
-    ValueNotifier<bool> isLocked = ValueNotifier(false);
+    ValueNotifier<int> amountToPay = ValueNotifier(0);
+    ValueNotifier<String> secondaryDisplay = ValueNotifier("");
     IOUser payer;
     List<IOUser> selectedUsers = [];
 
     //if card is pre filled
-    int amountToPay = (isPreFilled) ? pref.getAmount() : 0;
     String label = (isPreFilled) ? pref.getName() : "unamed transaction";
+    InputInfo inputInfo = InputInfo(false, (isPreFilled) ? pref.getAmount() : 0);
 
-    void updateAmountToPayPerUser() {
-      if (selectedUsers.length == 0)
-        amountToPayPerUser.value = -1;
-      else
-        amountToPayPerUser.value = amountToPay ~/ selectedUsers.length;
+    void updateAmountToPay() {
+      if (inputInfo.getIsIndividual() == false) {
+        amountToPay.value = inputInfo.getAmount();
+        if (selectedUsers.length == 0) {
+          amountToPayPerUser.value = -1;
+          secondaryDisplay.value = "";
+        } else {
+          amountToPayPerUser.value = amountToPay.value ~/ selectedUsers.length;
+          double dAmount = amountToPayPerUser.value / 100;
+          secondaryDisplay.value =  (amountToPayPerUser.value > 0) ? " Each user owe $dAmount" : "";
+        }
+      } else {
+        amountToPayPerUser.value = inputInfo.getAmount();
+        amountToPay.value = amountToPayPerUser.value * selectedUsers.length;
+        double dAmount = amountToPay.value / 100;
+        secondaryDisplay.value =  (amountToPay.value > 0) ? " The total amount is $dAmount" : "";
+      }
     }
 
-    void changeATP(int value) {
-      amountToPay = value;
-      updateAmountToPayPerUser();
+    void changeInputInfo(InputInfo ii) {
+      inputInfo = ii;
+      updateAmountToPay();
     }
 
     void changeLabel(String value) {
@@ -45,13 +59,14 @@ class AmountCard extends StatelessWidget {
 
     void addUserToSelected(IOUser usr) {
       selectedUsers.add(usr);
-      updateAmountToPayPerUser();
+      updateAmountToPay();
     }
 
     void rmUserToSelected(IOUser usr) {
       selectedUsers.remove(usr);
-      updateAmountToPayPerUser();
+      updateAmountToPay();
     }
+
     void setPayer(IOUser usr) {
       payer = usr;
     }
@@ -67,28 +82,24 @@ class AmountCard extends StatelessWidget {
           return Text("Loading");
         }
 
-        if (snapshot.data.docs.length == 0)
-          return Text("No users to display");
+        if (snapshot.data.docs.length == 0) return Text("No users to display");
 
         List<IOUser> userList = List<IOUser>.empty(growable: true);
         for (int i = 0; i < snapshot.data.docs.length; i++) {
-          userList.add(IOUser(
-              snapshot.data.docs[i]["id"], snapshot.data.docs[i]["name"],
-              snapshot.data.docs[i]["url"]));
+          userList.add(IOUser(snapshot.data.docs[i]["id"],
+              snapshot.data.docs[i]["name"], snapshot.data.docs[i]["url"]));
         }
 
-        List<DropdownMenuItem<
-            IOUser>> dropdownMenuItems = buildDropDownMenuItems(userList);
+        List<DropdownMenuItem<IOUser>> dropdownMenuItems =
+            buildDropDownMenuItems(userList);
 
         if (isPreFilled) {
           pref.getUsers().split(":").forEach((element) {
-            IOUser userToAdd = userList.firstWhere((el) =>
-            el.getId() == element, orElse: () => null);
-            if (userToAdd != null)
-              selectedUsers.add(userToAdd);
-          }
-          );
-          updateAmountToPayPerUser();
+            IOUser userToAdd = userList
+                .firstWhere((el) => el.getId() == element, orElse: () => null);
+            if (userToAdd != null) selectedUsers.add(userToAdd);
+          });
+          updateAmountToPay();
         }
 
         selectedUsers.removeWhere((element) => !userList.contains(element));
@@ -110,7 +121,8 @@ class AmountCard extends StatelessWidget {
               children: [
                 Align(
                   alignment: Alignment.topLeft,
-                  child: PayerWidget(userList: userList,
+                  child: PayerWidget(
+                      userList: userList,
                       dropdownMenuItems: dropdownMenuItems,
                       firstSelected: currentUser,
                       setPayer: setPayer),
@@ -119,17 +131,18 @@ class AmountCard extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                       flex: 3,
-                      child: AmountTextInput(changeATP: changeATP,
+                      child: AmountTextInput(
+                        changeInputInfo: changeInputInfo,
                         isPreFilled: isPreFilled,
-                        amount: (isPreFilled) ? pref.getAmount() : 0,),
+                        amount: (isPreFilled) ? pref.getAmount() : 0,
+                      ),
                     ),
                     SizedBox(
                       child: IconButton(
                         icon: const Icon(Icons.east, color: Colors.white),
                         onPressed: () async {
-                          onValidation(
-                              amountToPay, selectedUsers, context, payer, label,
-                              amountToPayPerUser);
+                          onValidation(amountToPay, selectedUsers, context,
+                              payer, label, amountToPayPerUser);
                         },
                       ),
                     ),
@@ -138,15 +151,12 @@ class AmountCard extends StatelessWidget {
                 Row(
                   children: [
                     ValueListenableBuilder(
-                        valueListenable: amountToPayPerUser,
-                        builder: (BuildContext context, int amount,
-                            Widget child) {
-                          double dAmount = amount / 100;
-                          return Text((amount > 0)
-                              ? " Each user owe $dAmount"
-                              : "", style: TextStyle(color: Colors.white));
-                        }
-                    ),
+                        valueListenable: secondaryDisplay,
+                        builder:
+                            (BuildContext context, String text, Widget child) {
+                          return Text(text,
+                              style: TextStyle(color: Colors.white));
+                        }),
                   ],
                 ),
                 SizedBox(
@@ -161,16 +171,19 @@ class AmountCard extends StatelessWidget {
                       );
                     },
                     itemBuilder: (BuildContext context, int index) {
-                      return SelectionWidget(user: userList[index],
+                      return SelectionWidget(
+                          user: userList[index],
                           addUserToSelected: addUserToSelected,
                           rmUserToSelected: rmUserToSelected,
                           userSelected: selectedUsers);
                     },
                   ),
                 ),
-                LabelTextInput(isPreFilled: isPreFilled,
+                LabelTextInput(
+                  isPreFilled: isPreFilled,
                   label: (isPreFilled) ? pref.getName() : null,
-                  changeLabel: changeLabel,)
+                  changeLabel: changeLabel,
+                )
               ],
             ),
           ),
@@ -181,31 +194,23 @@ class AmountCard extends StatelessWidget {
 }
 
 String amountError(int amount, int nbUsers) {
-  if (nbUsers == 0)
-    return ("You have to select at least one user");
-  if (amount <= 0)
-    return ("Enter an amount");
-  if (amount ~/ nbUsers == 0)
-    return ("Bro...");
-  if (amount > 100000000)
-    return ("You're not Jeff Bezos");
+  if (nbUsers == 0) return ("You have to select at least one user");
+  if (amount <= 0) return ("Enter an amount");
+  if (amount ~/ nbUsers == 0) return ("Bro...");
+  if (amount > 100000000) return ("You're not Jeff Bezos");
   return null;
 }
 
-Future<void> changeBalance(String id, int amount) async
-{
+Future<void> changeBalance(String id, int amount) async {
   CollectionReference ref = FirebaseFirestore.instance.collection('users');
   ref.doc(id).update({"balance": FieldValue.increment(amount)});
 }
 
 Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
-    List<IOUser> selectedUsers, String label) async
-{
-  var timestamp = DateTime
-      .now()
-      .millisecondsSinceEpoch;
-  CollectionReference ref = FirebaseFirestore.instance.collection(
-      'transactions');
+    List<IOUser> selectedUsers, String label) async {
+  var timestamp = DateTime.now().millisecondsSinceEpoch;
+  CollectionReference ref =
+      FirebaseFirestore.instance.collection('transactions');
   //add transaction in global transaction list
   ref.doc(timestamp.toString()).set({
     'displayedAmount': displayedAmount,
@@ -217,13 +222,17 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
   String users = selectedUsers.join(":");
   selectedUsers.forEach((element) {
     int balanceEvo = -actualAmount ~/ selectedUsers.length;
-    if (element == payer)
-      balanceEvo += actualAmount;
-    ref.doc(timestamp.toString()).collection('users').add(
-        {'name': element.getName()});
+    if (element == payer) balanceEvo += actualAmount;
+    ref
+        .doc(timestamp.toString())
+        .collection('users')
+        .add({'name': element.getName()});
     //add transaction in users transaction list
-    FirebaseFirestore.instance.collection('users').doc(element.getId())
-        .collection('transactions').doc(timestamp.toString())
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(element.getId())
+        .collection('transactions')
+        .doc(timestamp.toString())
         .set({
       'transactionID': timestamp,
       'balanceEvo': balanceEvo,
@@ -236,8 +245,11 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
   //add transaction in payer transaction list
   if (!selectedUsers.contains(payer)) {
     String users = selectedUsers.join(":");
-    FirebaseFirestore.instance.collection('users').doc(payer.getId())
-        .collection('transactions').doc(timestamp.toString())
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(payer.getId())
+        .collection('transactions')
+        .doc(timestamp.toString())
         .set({
       'transactionID': timestamp,
       'balanceEvo': actualAmount,
@@ -249,10 +261,15 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
   }
 }
 
-onValidation(int amountToPay, List<IOUser> selectedUsers, BuildContext context,
-    IOUser payer, String label, ValueNotifier<int> amountToPayPerUser) {
+onValidation(
+    ValueNotifier<int> amountToPay,
+    List<IOUser> selectedUsers,
+    BuildContext context,
+    IOUser payer,
+    String label,
+    ValueNotifier<int> amountToPayPerUser) {
   WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-  String err = amountError(amountToPay, selectedUsers.length);
+  String err = amountError(amountToPay.value, selectedUsers.length);
   int amountToCredit = 0;
   if (err != null) {
     Flushbar(
@@ -266,19 +283,18 @@ onValidation(int amountToPay, List<IOUser> selectedUsers, BuildContext context,
       ),
       duration: Duration(seconds: 2),
       forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
-    )
-      ..show(context);
-  }
-  else {
+    )..show(context);
+  } else {
     selectedUsers.forEach((element) {
-      changeBalance(element.getId(),
-          -amountToPay ~/ selectedUsers.length);
-      amountToCredit += amountToPay ~/ selectedUsers.length;
+      changeBalance(
+          element.getId(), -amountToPay.value ~/ selectedUsers.length);
+      amountToCredit += amountToPay.value ~/ selectedUsers.length;
     });
     changeBalance(payer.getId(), amountToCredit);
-    newTransaction(amountToPay, amountToCredit, payer, selectedUsers, label);
+    newTransaction(
+        amountToPay.value, amountToCredit, payer, selectedUsers, label);
     amountToPayPerUser.value = 0;
-    amountToPay = 0;
+    amountToPay.value = 0;
     //pop until main page to avoid poping only flushbar
     Navigator.of(context).popUntil((route) => route.isFirst);
     Flushbar(
@@ -292,8 +308,6 @@ onValidation(int amountToPay, List<IOUser> selectedUsers, BuildContext context,
       ),
       duration: Duration(seconds: 2),
       forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
-    )
-      ..show(context);
+    )..show(context);
   }
 }
-

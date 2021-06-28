@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'user.dart';
@@ -13,33 +11,33 @@ Future<IOUser> signInWithGoogle() async {
   String id;
   String name;
   String photoUrl;
+  
   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  
   id = prefs.getString("userId");
-  name = prefs.getString("name");
-  photoUrl = prefs.getString("photoUrl");
+
   print("=============USER ID = $id");
 
   if (id == null) {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-
+   // final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    
+    id = googleUser.id;
     name = googleUser.displayName;
     photoUrl = googleUser.photoUrl;
-    id = googleUser.id;
 
     prefs.setString("userId", id);
-    prefs.setString("name", name);
-    prefs.setString("photoUrl", photoUrl);
   }
+  
+  print("=============USER ID = $id");
 
   if (!await isUser(id)) {
     print("creating new user...");
     createUser(name, photoUrl, id);
   }
-  return IOUser(id, name, photoUrl);
+  return await getUserById(id);
 
 }
 
@@ -55,4 +53,9 @@ Future<bool> isUser(String id) async {
   return doc.exists;
 }
 
+Future<IOUser> getUserById (String id) async {
+  final DocumentReference document = FirebaseFirestore.instance.collection("users").doc(id);
+  var doc = await document.get();
+  return IOUser(id, doc["name"], doc["url"]);
+}
 

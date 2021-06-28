@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 Widget topAppBar(IOUser usr){
     return AppBar(
+      automaticallyImplyLeading: false,
       title: Row(children: [
         UserDisplay(usr: usr),
         Expanded(child: Image.asset('asset/image/logo.png', height: 45,)),

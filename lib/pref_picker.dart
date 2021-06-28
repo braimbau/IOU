@@ -4,6 +4,7 @@ import 'package:deed/label_input.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'InputInfo.dart';
 import 'amount_input.dart';
 import 'user.dart';
 import 'selection.dart';
@@ -14,21 +15,34 @@ class PrefPicker extends StatelessWidget {
     ValueNotifier<int> amountToPayPerUser = ValueNotifier(0);
     List<IOUser> selectedUsers = [];
     ValueNotifier<String> emoji = ValueNotifier("❌");
+    ValueNotifier<int> amountToPay = ValueNotifier(0);
+    ValueNotifier<String> secondaryDisplay = ValueNotifier("");
+    InputInfo inputInfo = InputInfo(false, 0);
 
-    //if card is pre filled
-    int amountToPay = 0;
     String label = "unamed quick pref";
 
-    void updateAmountToPayPerUser() {
-      if (selectedUsers.length == 0)
-        amountToPayPerUser.value = -1;
-      else
-        amountToPayPerUser.value = amountToPay ~/ selectedUsers.length;
+    void updateAmountToPay() {
+      if (inputInfo.getIsIndividual() == false) {
+        amountToPay.value = inputInfo.getAmount();
+        if (selectedUsers.length == 0) {
+          amountToPayPerUser.value = -1;
+          secondaryDisplay.value = "";
+        } else {
+          amountToPayPerUser.value = amountToPay.value ~/ selectedUsers.length;
+          double dAmount = amountToPayPerUser.value / 100;
+          secondaryDisplay.value =  (amountToPayPerUser.value > 0) ? " Each user owe $dAmount" : "";
+        }
+      } else {
+        amountToPayPerUser.value = inputInfo.getAmount();
+        amountToPay.value = amountToPayPerUser.value * selectedUsers.length;
+        double dAmount = amountToPay.value / 100;
+        secondaryDisplay.value =  (amountToPay.value > 0) ? " The total amount is $dAmount" : "";
+      }
     }
 
-    void changeATP(int value) {
-      amountToPay = value;
-      updateAmountToPayPerUser();
+    void changeInputInfo(InputInfo ii) {
+      inputInfo = ii;
+      updateAmountToPay();
     }
 
     void changeLabel(String value) {
@@ -37,12 +51,12 @@ class PrefPicker extends StatelessWidget {
 
     void addUserToSelected(IOUser usr) {
       selectedUsers.add(usr);
-      updateAmountToPayPerUser();
+      updateAmountToPay();
     }
 
     void rmUserToSelected(IOUser usr) {
       selectedUsers.remove(usr);
-      updateAmountToPayPerUser();
+      updateAmountToPay();
     }
 
     return StreamBuilder(
@@ -86,27 +100,34 @@ class PrefPicker extends StatelessWidget {
                     Expanded(
                       flex: 3,
                       child: AmountTextInput(
-                        changeATP: changeATP,
+                        changeInputInfo: changeInputInfo,
                         isPreFilled: false,
                         amount: 0,
                       ),
                     ),
                     SizedBox(
                       child: IconButton(
-                        icon: const Icon(Icons.east, color: Colors.white),
-                        onPressed: () async {onValidation(amountToPay, selectedUsers, emoji.value, context, label, "rfuvvQjatXbde1ZNL7O5");}),
+                          icon: const Icon(Icons.east, color: Colors.white),
+                          onPressed: () async {
+                            onValidation(
+                                amountToPay,
+                                selectedUsers,
+                                emoji.value,
+                                context,
+                                label,
+                                "rfuvvQjatXbde1ZNL7O5");
+                          }),
                     ),
                   ],
                 ),
                 Row(
                   children: [
                     ValueListenableBuilder(
-                        valueListenable: amountToPayPerUser,
+                        valueListenable: secondaryDisplay,
                         builder:
-                            (BuildContext context, int amount, Widget child) {
-                          double dAmount = amount / 100;
+                            (BuildContext context, String text, Widget child) {
                           return Text(
-                              (amount > 0) ? " Each user owe $dAmount" : "",
+                              text,
                               style: TextStyle(color: Colors.white));
                         })
                   ],
@@ -153,7 +174,10 @@ class PrefPicker extends StatelessWidget {
                     ),
                   ],
                 ),
-                Divider(color: Colors.transparent, height: 4,),
+                Divider(
+                  color: Colors.transparent,
+                  height: 4,
+                ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: FittedBox(
@@ -178,7 +202,7 @@ class PrefPicker extends StatelessWidget {
 }
 
 String amountError(int amount, int nbUsers, String emoji) {
-  if (emoji == null || emoji == "") return ("Please select an emoji");
+  if (emoji == null || emoji == "❌") return ("Please select an emoji");
   if (nbUsers == 0) return ("You have to select at least one user");
   if (amount <= 0) return ("Enter an amount");
   if (amount ~/ nbUsers == 0) return ("Bro...");
@@ -196,11 +220,15 @@ Future<void> addQuickPref(String groupId, String label, String users,
   docRef.set({'name': label, 'amount': amount, 'users': users, 'emoji': emoji});
 }
 
-Future<void> onValidation(int amountToPay, List<IOUser> selectedUsers, String emoji, BuildContext context, String label, String groupId) {
-  WidgetsBinding.instance.focusManager.primaryFocus
-      ?.unfocus();
-  String err = amountError(
-      amountToPay, selectedUsers.length, emoji);
+Future<void> onValidation(
+    ValueNotifier<int> amountToPay,
+    List<IOUser> selectedUsers,
+    String emoji,
+    BuildContext context,
+    String label,
+    String groupId,) {
+  WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+  String err = amountError(amountToPay.value, selectedUsers.length, emoji);
   if (err != null) {
     Flushbar(
       message: err,
@@ -212,12 +240,11 @@ Future<void> onValidation(int amountToPay, List<IOUser> selectedUsers, String em
         color: Colors.white,
       ),
       duration: Duration(seconds: 2),
-      forwardAnimationCurve:
-      Curves.fastLinearToSlowEaseIn,
+      forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
     )..show(context);
   } else {
-    addQuickPref(groupId, label,
-        selectedUsers.join(":"), amountToPay, emoji);
+    addQuickPref(
+        groupId, label, selectedUsers.join(":"), amountToPay.value, emoji);
     //pop until main page to avoid poping only flushbar
     Navigator.popUntil(context, ModalRoute.withName('/'));
     Flushbar(
@@ -230,8 +257,7 @@ Future<void> onValidation(int amountToPay, List<IOUser> selectedUsers, String em
         color: Colors.white,
       ),
       duration: Duration(seconds: 2),
-      forwardAnimationCurve:
-      Curves.fastLinearToSlowEaseIn,
+      forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
     )..show(context);
   }
 }

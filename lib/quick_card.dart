@@ -40,31 +40,32 @@ class QuickCard extends StatelessWidget {
                 snapshot.data.docs[i].id));
           }
           return new Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10), // if you need this
-                side: BorderSide(
-                  color: Colors.white,
-                  width: 1.5,
-                ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10), // if you need this
+              side: BorderSide(
+                color: Colors.white,
+                width: 1.5,
               ),
-              clipBehavior: Clip.antiAlias,
-              color: Colors.black,
-              semanticContainer: true,
-              elevation: 5,
-              child: Column(
-                children: [
-                 Padding(
-                      child: Text("Quick Adds :",
-                          style: TextStyle(color: Colors.white, fontSize: 18)),
-                      padding: EdgeInsets.all(8)),
-                  SizedBox(
-                        height: 90,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.all(8),
-                          itemCount: quickPrefList.length + 1,
-                          itemBuilder: (BuildContext context, int index) {
-                            return (index != quickPrefList.length) ? TextButton(
+            ),
+            clipBehavior: Clip.antiAlias,
+            color: Colors.black,
+            semanticContainer: true,
+            elevation: 5,
+            child: Column(
+              children: [
+                Padding(
+                    child: Text("Quick Adds :",
+                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                    padding: EdgeInsets.all(8)),
+                SizedBox(
+                  height: 90,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.all(8),
+                    itemCount: quickPrefList.length + 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      return (index != quickPrefList.length)
+                          ? TextButton(
                               child: Text(
                                 quickPrefList[index].getEmoji(),
                                 style: TextStyle(fontSize: 50),
@@ -81,27 +82,29 @@ class QuickCard extends StatelessWidget {
                                 _confirmQuickDelete(
                                     context, quickPrefList[index]);
                               },
-                            ) :                       Padding(
-                                child: IconButton(
-                                    icon: Icon(
-                                      Icons.add_circle_outline,
-                                      size: 30,
-                                      color: Colors.blue,
-                                    ),
-                                    splashRadius: 25,
-                                    onPressed: () {
-                                      print("salut");
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) => _buildPrefPicker(),
-                                      );                              }),
-                                padding: EdgeInsets.only(top: 15));
-                          },
-                        ),
-                      ),
-                    ],
+                            )
+                          : Padding(
+                              child: IconButton(
+                                  icon: Icon(
+                                    Icons.add_circle_outline,
+                                    size: 30,
+                                    color: Colors.blue,
+                                  ),
+                                  splashRadius: 25,
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) =>
+                                          _buildPrefPicker(),
+                                    );
+                                  }),
+                              padding: EdgeInsets.only(top: 15));
+                    },
                   ),
-                );
+                ),
+              ],
+            ),
+          );
         });
   }
 }
@@ -109,7 +112,7 @@ class QuickCard extends StatelessWidget {
 Future<void> _confirmQuickDelete(BuildContext context, QuickPref pref) async {
   return showDialog<void>(
     context: context,
-    barrierDismissible: true, // user must tap button!
+    barrierDismissible: true,
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text('Delete ${pref.getName()}'),
