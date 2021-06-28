@@ -22,8 +22,6 @@ Future<IOUser> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
-   // final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    
     id = googleUser.id;
     name = googleUser.displayName;
     photoUrl = googleUser.photoUrl;
