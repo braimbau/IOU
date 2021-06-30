@@ -23,7 +23,7 @@ class History extends StatelessWidget {
       stream: FirebaseFirestore.instance.collection("users").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return errorScreen("something went wrong...");
+          return errorScreen("something went wrong");
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Loading();

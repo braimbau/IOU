@@ -14,7 +14,7 @@ class PrefPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     ValueNotifier<int> amountToPayPerUser = ValueNotifier(0);
     List<IOUser> selectedUsers = [];
-    ValueNotifier<String> emoji = ValueNotifier("❌");
+    ValueNotifier<String> emoji = ValueNotifier("");
     ValueNotifier<int> amountToPay = ValueNotifier(0);
     ValueNotifier<String> secondaryDisplay = ValueNotifier("");
     InputInfo inputInfo = InputInfo(false, 0);
@@ -160,9 +160,17 @@ class PrefPicker extends StatelessWidget {
                             (BuildContext context, String emoji, Widget child) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              emoji,
-                              style: TextStyle(fontSize: 40),
+                            child: ColorFiltered(
+                              colorFilter: ColorFilter.matrix(<double>[
+                                0.2126,0.7152,0.0722,0,0,
+                                0.2126,0.7152,0.0722,0,0,
+                                0.2126,0.7152,0.0722,0,0,
+                                0,0,0,1,0,
+                              ]),
+                              child: Text(
+                                (emoji == "") ? "🙂" : emoji,
+                                style: TextStyle(fontSize: 40),
+                              ),
                             ),
                           );
                         }),
@@ -202,7 +210,7 @@ class PrefPicker extends StatelessWidget {
 }
 
 String amountError(int amount, int nbUsers, String emoji) {
-  if (emoji == null || emoji == "❌") return ("Please select an emoji");
+  if (emoji == null || emoji == "") return ("Please select an emoji");
   if (nbUsers == 0) return ("You have to select at least one user");
   if (amount <= 0) return ("Enter an amount");
   if (amount ~/ nbUsers == 0) return ("Bro...");

@@ -39,7 +39,7 @@ Widget mainPage(BuildContext context, IOUser usr) {
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey[900],
-      appBar: topAppBar(usr),
+      appBar: topAppBar(usr, group),
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
