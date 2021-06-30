@@ -6,8 +6,9 @@ import 'user.dart';
 
 class BalanceCard extends StatelessWidget {
   final IOUser usr;
+  final String group;
 
-  BalanceCard({this.usr});
+  BalanceCard({this.usr, this.group});
 
   @override
   Widget build(BuildContext context) {

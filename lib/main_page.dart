@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'history.dart';
 
 Widget mainPage(BuildContext context, IOUser usr) {
+  String group = "rfuvvQjatXbde1ZNL7O5";
   return GestureDetector(
     onTap: () {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
@@ -19,7 +20,7 @@ Widget mainPage(BuildContext context, IOUser usr) {
       if (details.delta.dy < -25) {
         showCupertinoModalBottomSheet(
           context: context,
-          builder: (context) => History(usr: usr),
+          builder: (context) => History(usr: usr, group: group),
         );
       }
     },
@@ -55,8 +56,8 @@ Widget mainPage(BuildContext context, IOUser usr) {
         padding: const EdgeInsets.symmetric(horizontal: 5.0),
         child: Column(
           children: <Widget>[
-            Flexible(child: BalanceCard(usr: usr)),
-            QuickCard(usr: usr),
+            Flexible(child: BalanceCard(usr: usr, group: group)),
+            QuickCard(usr: usr, group: group),
           ],
         ),
       ),
@@ -73,5 +74,5 @@ Widget _buildPopupDialog(BuildContext context, IOUser usr) {
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child: Wrap(children: <Widget>[AmountCard(currentUser: usr, isPreFilled: false,)])));
+          child: Wrap(children: <Widget>[AmountCard(currentUserId: usr.getId(), isPreFilled: false,)])));
 }

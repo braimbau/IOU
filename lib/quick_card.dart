@@ -10,15 +10,16 @@ import 'package:flutter/material.dart';
 
 class QuickCard extends StatelessWidget {
   final IOUser usr;
+  final String group;
 
-  QuickCard({this.usr});
+  QuickCard({this.usr, this.group});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("groups")
-            .doc("rfuvvQjatXbde1ZNL7O5")
+            .doc(group)
             .collection("quickadds")
             .snapshots(),
         builder: (context, snapshot) {
@@ -80,7 +81,7 @@ class QuickCard extends StatelessWidget {
                               },
                               onLongPress: () {
                                 _confirmQuickDelete(
-                                    context, quickPrefList[index]);
+                                    context, quickPrefList[index], group);
                               },
                             )
                           : Padding(
@@ -109,7 +110,7 @@ class QuickCard extends StatelessWidget {
   }
 }
 
-Future<void> _confirmQuickDelete(BuildContext context, QuickPref pref) async {
+Future<void> _confirmQuickDelete(BuildContext context, QuickPref pref, String group) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -133,7 +134,7 @@ Future<void> _confirmQuickDelete(BuildContext context, QuickPref pref) async {
           TextButton(
             child: Text('Delete'),
             onPressed: () {
-              removeQuickPref("rfuvvQjatXbde1ZNL7O5", pref.getId());
+              removeQuickPref(group, pref.getId());
               Navigator.of(context).pop();
             },
           ),
@@ -162,7 +163,7 @@ Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref) {
           backgroundColor: Colors.transparent,
           child: Wrap(children: <Widget>[
             AmountCard(
-              currentUser: usr,
+              currentUserId: usr.getId(),
               isPreFilled: true,
               pref: pref,
             )

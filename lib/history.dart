@@ -14,8 +14,9 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class History extends StatelessWidget {
   final IOUser usr;
+  final String group;
 
-  History({@required this.usr});
+  History({@required this.usr, this.group});
 
   @override
   Widget build(BuildContext context) {
@@ -238,7 +239,7 @@ Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref) {
           backgroundColor: Colors.transparent,
           child: Wrap(children: <Widget>[
           AmountCard(
-          currentUser: usr,
+          currentUserId: usr.getId(),
           pref: pref,
           isPreFilled: true)
           ])));

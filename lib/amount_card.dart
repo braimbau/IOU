@@ -11,11 +11,11 @@ import 'user.dart';
 import 'selection.dart';
 
 class AmountCard extends StatelessWidget {
-  final IOUser currentUser;
+  final String currentUserId;
   final QuickPref pref;
   final bool isPreFilled;
 
-  AmountCard({@required this.currentUser, this.pref, this.isPreFilled});
+  AmountCard({@required this.currentUserId, this.pref, this.isPreFilled});
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +124,7 @@ class AmountCard extends StatelessWidget {
                   child: PayerWidget(
                       userList: userList,
                       dropdownMenuItems: dropdownMenuItems,
-                      firstSelected: currentUser,
+                      firstSelected: userList.firstWhere((element) => element.getId() == currentUserId),
                       setPayer: setPayer),
                 ),
                 Row(
