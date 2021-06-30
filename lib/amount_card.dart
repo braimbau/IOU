@@ -1,6 +1,6 @@
-import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/InputInfo.dart';
+import 'package:deed/error.dart';
 import 'package:deed/label_input.dart';
 import 'package:deed/payer_widget.dart';
 import 'package:deed/quick_pref.dart';
@@ -14,8 +14,10 @@ class AmountCard extends StatelessWidget {
   final String currentUserId;
   final QuickPref pref;
   final bool isPreFilled;
+  final String group;
 
-  AmountCard({@required this.currentUserId, this.pref, this.isPreFilled});
+  AmountCard(
+      {@required this.currentUserId, this.pref, this.isPreFilled, this.group});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,8 @@ class AmountCard extends StatelessWidget {
 
     //if card is pre filled
     String label = (isPreFilled) ? pref.getName() : "unamed transaction";
-    InputInfo inputInfo = InputInfo(false, (isPreFilled) ? pref.getAmount() : 0);
+    InputInfo inputInfo =
+        InputInfo(false, (isPreFilled) ? pref.getAmount() : 0);
 
     void updateAmountToPay() {
       if (inputInfo.getIsIndividual() == false) {
@@ -38,13 +41,15 @@ class AmountCard extends StatelessWidget {
         } else {
           amountToPayPerUser.value = amountToPay.value ~/ selectedUsers.length;
           double dAmount = amountToPayPerUser.value / 100;
-          secondaryDisplay.value =  (amountToPayPerUser.value > 0) ? " Each user owe $dAmount" : "";
+          secondaryDisplay.value =
+              (amountToPayPerUser.value > 0) ? " Each user owe $dAmount" : "";
         }
       } else {
         amountToPayPerUser.value = inputInfo.getAmount();
         amountToPay.value = amountToPayPerUser.value * selectedUsers.length;
         double dAmount = amountToPay.value / 100;
-        secondaryDisplay.value =  (amountToPay.value > 0) ? " The total amount is $dAmount" : "";
+        secondaryDisplay.value =
+            (amountToPay.value > 0) ? " The total amount is $dAmount" : "";
       }
     }
 
@@ -124,7 +129,8 @@ class AmountCard extends StatelessWidget {
                   child: PayerWidget(
                       userList: userList,
                       dropdownMenuItems: dropdownMenuItems,
-                      firstSelected: userList.firstWhere((element) => element.getId() == currentUserId),
+                      firstSelected: userList.firstWhere(
+                          (element) => element.getId() == currentUserId),
                       setPayer: setPayer),
                 ),
                 Row(
@@ -142,7 +148,7 @@ class AmountCard extends StatelessWidget {
                         icon: const Icon(Icons.east, color: Colors.white),
                         onPressed: () async {
                           onValidation(amountToPay, selectedUsers, context,
-                              payer, label, amountToPayPerUser);
+                              payer, label, amountToPayPerUser, group);
                         },
                       ),
                     ),
@@ -201,13 +207,16 @@ String amountError(int amount, int nbUsers) {
   return null;
 }
 
-Future<void> changeBalance(String id, int amount) async {
-  CollectionReference ref = FirebaseFirestore.instance.collection('users');
-  ref.doc(id).update({"balance": FieldValue.increment(amount)});
+Future<void> changeBalance(String id, int amount, String group) async {
+  CollectionReference ref = FirebaseFirestore.instance
+      .collection('users')
+      .doc(id)
+      .collection("groups");
+  ref.doc(group).update({"balance": FieldValue.increment(amount)});
 }
 
 Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
-    List<IOUser> selectedUsers, String label) async {
+    List<IOUser> selectedUsers, String label, String group) async {
   var timestamp = DateTime.now().millisecondsSinceEpoch;
   CollectionReference ref =
       FirebaseFirestore.instance.collection('transactions');
@@ -231,6 +240,8 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
     FirebaseFirestore.instance
         .collection('users')
         .doc(element.getId())
+        .collection("groups")
+        .doc(group)
         .collection('transactions')
         .doc(timestamp.toString())
         .set({
@@ -248,6 +259,8 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
     FirebaseFirestore.instance
         .collection('users')
         .doc(payer.getId())
+        .collection("groups")
+        .doc(group)
         .collection('transactions')
         .doc(timestamp.toString())
         .set({
@@ -267,47 +280,26 @@ onValidation(
     BuildContext context,
     IOUser payer,
     String label,
-    ValueNotifier<int> amountToPayPerUser) {
+    ValueNotifier<int> amountToPayPerUser,
+    String group) {
   WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
   String err = amountError(amountToPay.value, selectedUsers.length);
   int amountToCredit = 0;
   if (err != null) {
-    Flushbar(
-      message: err,
-      backgroundColor: Colors.red,
-      borderRadius: BorderRadius.all(Radius.circular(50)),
-      icon: Icon(
-        Icons.error_outline,
-        size: 28,
-        color: Colors.white,
-      ),
-      duration: Duration(seconds: 2),
-      forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
-    )..show(context);
+    displayError(err, context);
   } else {
     selectedUsers.forEach((element) {
       changeBalance(
-          element.getId(), -amountToPay.value ~/ selectedUsers.length);
+          element.getId(), -amountToPay.value ~/ selectedUsers.length, group);
       amountToCredit += amountToPay.value ~/ selectedUsers.length;
     });
-    changeBalance(payer.getId(), amountToCredit);
+    changeBalance(payer.getId(), amountToCredit, group);
     newTransaction(
-        amountToPay.value, amountToCredit, payer, selectedUsers, label);
+        amountToPay.value, amountToCredit, payer, selectedUsers, label, group);
     amountToPayPerUser.value = 0;
     amountToPay.value = 0;
     //pop until main page to avoid poping only flushbar
     Navigator.of(context).popUntil((route) => route.isFirst);
-    Flushbar(
-      message: "yeah",
-      backgroundColor: Colors.green,
-      borderRadius: BorderRadius.all(Radius.circular(50)),
-      icon: Icon(
-        Icons.info_outline,
-        size: 28,
-        color: Colors.white,
-      ),
-      duration: Duration(seconds: 2),
-      forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
-    )..show(context);
+    displayMessage("yeah", context);
   }
 }

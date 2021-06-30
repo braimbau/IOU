@@ -10,7 +10,6 @@ import 'error_screen.dart';
 import 'user.dart';
 import 'iou_transaction.dart';
 import 'package:intl/intl.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class History extends StatelessWidget {
   final IOUser usr;
@@ -37,7 +36,7 @@ class History extends StatelessWidget {
           userList.add(IOUser(snapshot.data.docs[i]["id"],
               snapshot.data.docs[i]["name"], snapshot.data.docs[i]["url"]));
         }
-        return new HistoryUser(usr: usr);
+        return new HistoryUser(usr: usr, group: group);
       },
     );
   }
@@ -45,8 +44,9 @@ class History extends StatelessWidget {
 
 class HistoryUser extends StatelessWidget {
   final IOUser usr;
+  final String group;
 
-  HistoryUser({this.usr});
+  HistoryUser({this.usr, this.group});
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +54,8 @@ class HistoryUser extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection("users")
           .doc(usr.getId())
+          .collection("groups")
+          .doc(group)
           .collection("transactions")
           .snapshots(),
       builder: (context, snapshot) {
@@ -201,7 +203,9 @@ class _HistoryElementState extends State<HistoryElement> {
                     alignment: Alignment.centerLeft,
                     child: Text("Total amount: $displayedAmount€",
                         style: TextStyle(color: Colors.black))),
-              if (isExpanded && this.widget.transaction.getUsers() != "" && 2 == 3)
+              if (isExpanded &&
+                  this.widget.transaction.getUsers() != "" &&
+                  2 == 3)
                 Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -209,21 +213,22 @@ class _HistoryElementState extends State<HistoryElement> {
                         style: TextStyle(color: Colors.black))),
               if (isExpanded)
                 IconButton(
-                icon: Icon(Icons.replay, color: Colors.blue),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  QuickPref pref = QuickPref(
-                      this.widget.transaction.getLabel(),
-                      this.widget.transaction.getUsers(),
-                      this.widget.transaction.getDisplayedAmount(),
-                      null,
-                      null);
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) => _buildPopupDialog(context, this.widget.usr, pref),
-                  );
-                },
-              )
+                  icon: Icon(Icons.replay, color: Colors.blue),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    QuickPref pref = QuickPref(
+                        this.widget.transaction.getLabel(),
+                        this.widget.transaction.getUsers(),
+                        this.widget.transaction.getDisplayedAmount(),
+                        null,
+                        null);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildPopupDialog(context, this.widget.usr, pref),
+                    );
+                  },
+                )
             ])));
   }
 }
@@ -238,9 +243,7 @@ Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref) {
           elevation: 0,
           backgroundColor: Colors.transparent,
           child: Wrap(children: <Widget>[
-          AmountCard(
-          currentUserId: usr.getId(),
-          pref: pref,
-          isPreFilled: true)
+            AmountCard(
+                currentUserId: usr.getId(), pref: pref, isPreFilled: true)
           ])));
 }

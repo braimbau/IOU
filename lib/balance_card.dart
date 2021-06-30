@@ -16,9 +16,10 @@ class BalanceCard extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection("users")
             .doc(usr.getId())
+            .collection("groups")
+            .doc(group)
             .snapshots(),
         builder: (context, snapshot) {
-
           if (snapshot.hasError) {
             return Text('Something went wrong');
           }
@@ -29,12 +30,16 @@ class BalanceCard extends StatelessWidget {
 
           double balance = snapshot.data["balance"] / 100;
           String dbalance = ""; //(balance > 0) ? "+" : "";
-          dbalance += balance.toStringAsFixed(balance.truncateToDouble() == balance ? 0 : 2);
+          dbalance += balance
+              .toStringAsFixed(balance.truncateToDouble() == balance ? 0 : 2);
 
           return FittedBox(
-            child: Text("$dbalance€", style: TextStyle(color: (balance >= 0) ? Colors.green : Colors.red, fontWeight: FontWeight.bold, fontSize: 5000)),
+            child: Text("$dbalance€",
+                style: TextStyle(
+                    color: (balance >= 0) ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 5000)),
           );
-
         });
   }
 }

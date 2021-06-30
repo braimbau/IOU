@@ -35,6 +35,10 @@ Future<IOUser> signInWithGoogle() async {
     print("creating new user...");
     createUser(name, photoUrl, id);
   }
+
+  if (!await isBalance(id, "rfuvvQjatXbde1ZNL7O5"))
+    createBalance(id, "rfuvvQjatXbde1ZNL7O5");
+
   return await getUserById(id);
 
 }
@@ -42,7 +46,7 @@ Future<IOUser> signInWithGoogle() async {
 Future<void> createUser(String name, String url, String id) async
 {
   var  docRef = FirebaseFirestore.instance.collection('users').doc(id);
-  docRef.set({'name': name, 'balance': 0, 'url' : url, 'id': id});
+  docRef.set({'name': name, 'url' : url, 'id': id});
 }
 
 Future<bool> isUser(String id) async {
@@ -57,3 +61,15 @@ Future<IOUser> getUserById (String id) async {
   return IOUser(id, doc["name"], doc["url"]);
 }
 
+Future<bool> isBalance(String id, String group) async {
+  final DocumentReference document = FirebaseFirestore.instance.collection("users").doc(id).collection("groups").doc(group);
+  var doc = await document.get();
+  return doc.exists;
+}
+
+Future<void> createBalance(String id, String group) async
+{
+  var  docRef = FirebaseFirestore.instance.collection('users').doc(id).collection("groups").doc(group);
+  docRef.set({'balance': 0});
+  print("creating balance for this user");
+}

@@ -29,7 +29,7 @@ Widget mainPage(BuildContext context, IOUser usr) {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (BuildContext context) => _buildPopupDialog(context, usr),
+            builder: (BuildContext context) => _buildPopupDialog(context, usr, group),
           );
         },
         child: const Icon(
@@ -65,7 +65,7 @@ Widget mainPage(BuildContext context, IOUser usr) {
   );
 }
 
-Widget _buildPopupDialog(BuildContext context, IOUser usr) {
+Widget _buildPopupDialog(BuildContext context, IOUser usr, String group) {
   return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
@@ -74,5 +74,5 @@ Widget _buildPopupDialog(BuildContext context, IOUser usr) {
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child: Wrap(children: <Widget>[AmountCard(currentUserId: usr.getId(), isPreFilled: false,)])));
+          child: Wrap(children: <Widget>[AmountCard(currentUserId: usr.getId(), isPreFilled: false, group: group,)])));
 }

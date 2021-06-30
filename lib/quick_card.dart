@@ -75,8 +75,8 @@ class QuickCard extends StatelessWidget {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) =>
-                                      _buildPopupDialog(
-                                          context, usr, quickPrefList[index]),
+                                      _buildPopupDialog(context, usr,
+                                          quickPrefList[index], group),
                                 );
                               },
                               onLongPress: () {
@@ -110,7 +110,8 @@ class QuickCard extends StatelessWidget {
   }
 }
 
-Future<void> _confirmQuickDelete(BuildContext context, QuickPref pref, String group) async {
+Future<void> _confirmQuickDelete(
+    BuildContext context, QuickPref pref, String group) async {
   return showDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -152,7 +153,8 @@ Future<void> removeQuickPref(String groupId, String id) async {
   ref.doc(id).delete();
 }
 
-Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref) {
+Widget _buildPopupDialog(
+    BuildContext context, IOUser usr, QuickPref pref, String group) {
   return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
@@ -163,10 +165,10 @@ Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref) {
           backgroundColor: Colors.transparent,
           child: Wrap(children: <Widget>[
             AmountCard(
-              currentUserId: usr.getId(),
-              isPreFilled: true,
-              pref: pref,
-            )
+                currentUserId: usr.getId(),
+                isPreFilled: true,
+                pref: pref,
+                group: group)
           ])));
 }
 
