@@ -77,7 +77,7 @@ class AmountCard extends StatelessWidget {
     }
 
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("users").snapshots(),
+      stream: FirebaseFirestore.instance.collection("groups").doc(group).collection("users").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -107,6 +107,8 @@ class AmountCard extends StatelessWidget {
           updateAmountToPay();
         }
 
+        print(userList);
+        print("selected : $currentUserId");
         selectedUsers.removeWhere((element) => !userList.contains(element));
         return new Card(
           shape: RoundedRectangleBorder(

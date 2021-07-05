@@ -10,8 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'history.dart';
 
-Widget mainPage(BuildContext context, IOUser usr) {
-  String group = "rfuvvQjatXbde1ZNL7O5";
+Widget mainPage(BuildContext context, IOUser usr, String group) {
   return GestureDetector(
     onTap: () {
       WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
@@ -39,7 +38,7 @@ Widget mainPage(BuildContext context, IOUser usr) {
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey[900],
-      appBar: topAppBar(usr, group),
+      appBar: topAppBar(usr, group, context),
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
         child: Column(mainAxisSize: MainAxisSize.min, children: [

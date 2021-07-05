@@ -4,6 +4,7 @@ class IOUser {
   String  _name;
   String  _fullName;
   String  _url;
+  String  _groups;
 
   IOUser(String id, String name, String url) {
     this._fullName = name;
@@ -25,6 +26,15 @@ class IOUser {
 
   String getUrl() {
     return (_url);
+  }
+
+  List<String> getGroup() {
+    return _groups.split(':');
+  }
+
+  void setGroups(String groups) {
+    print(groups);
+    _groups = groups;
   }
 
   void setId(String id) {

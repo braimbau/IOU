@@ -156,6 +156,7 @@ Future<void> changeName(String id, String name) async {
 }
 
 void logOut(BuildContext context) {
+  Navigator.of(context).popUntil((route) => route.isFirst);
   Navigator.pushReplacement(
     context,
     PageRouteBuilder(

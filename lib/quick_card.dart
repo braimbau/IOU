@@ -96,7 +96,7 @@ class QuickCard extends StatelessWidget {
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) =>
-                                          _buildPrefPicker(),
+                                          _buildPrefPicker(group),
                                     );
                                   }),
                               padding: EdgeInsets.only(top: 15));
@@ -172,7 +172,7 @@ Widget _buildPopupDialog(
           ])));
 }
 
-Widget _buildPrefPicker() {
+Widget _buildPrefPicker(String group) {
   return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
@@ -181,5 +181,5 @@ Widget _buildPrefPicker() {
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child: Wrap(children: <Widget>[PrefPicker()])));
+          child: Wrap(children: <Widget>[PrefPicker(group: group,)])));
 }

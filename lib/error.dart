@@ -21,7 +21,7 @@ void displayError(String err, BuildContext context)
 void displayMessage(String msg, BuildContext context)
 {
   Flushbar(
-    message: "yeah",
+    message: msg,
     backgroundColor: Colors.green,
     borderRadius: BorderRadius.all(Radius.circular(50)),
     icon: Icon(

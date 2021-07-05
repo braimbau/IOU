@@ -5,6 +5,7 @@ import 'error_screen.dart';
 import 'oauth.dart';
 import 'main_page.dart';
 import 'user.dart';
+import 'group_screen.dart';
 
 class LogScreen extends StatefulWidget {
   @override
@@ -26,7 +27,7 @@ class _LogScreenState extends State<LogScreen> {
         // Once complete, show your application
 
         if (snapshot.connectionState == ConnectionState.done) {
-          return (mainPage(context, snapshot.data));
+          return GroupScreen(usr: snapshot.data);
         }
         // Otherwise, show something whilst waiting for initialization to complete
         return Loading();

@@ -10,6 +10,10 @@ import 'user.dart';
 import 'selection.dart';
 
 class PrefPicker extends StatelessWidget {
+  final String group;
+
+  PrefPicker({this.group});
+
   @override
   Widget build(BuildContext context) {
     ValueNotifier<int> amountToPayPerUser = ValueNotifier(0);
@@ -60,7 +64,7 @@ class PrefPicker extends StatelessWidget {
     }
 
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("users").snapshots(),
+      stream: FirebaseFirestore.instance.collection("groups").doc(group).collection("users").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -115,7 +119,7 @@ class PrefPicker extends StatelessWidget {
                                 emoji.value,
                                 context,
                                 label,
-                                "rfuvvQjatXbde1ZNL7O5");
+                                group);
                           }),
                     ),
                   ],
@@ -160,17 +164,10 @@ class PrefPicker extends StatelessWidget {
                             (BuildContext context, String emoji, Widget child) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: ColorFiltered(
-                              colorFilter: ColorFilter.matrix(<double>[
-                                0.2126,0.7152,0.0722,0,0,
-                                0.2126,0.7152,0.0722,0,0,
-                                0.2126,0.7152,0.0722,0,0,
-                                0,0,0,1,0,
-                              ]),
-                              child: Text(
-                                (emoji == "") ? "🙂" : emoji,
-                                style: TextStyle(fontSize: 40),
-                              ),
+                            child: (emoji == "") ? Image.asset('asset/image/emojis.png', height: 45,)
+                            : Text(
+                              (emoji == "") ? "🙂" : emoji,
+                              style: TextStyle(fontSize: 40),
                             ),
                           );
                         }),
