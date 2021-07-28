@@ -1,4 +1,4 @@
-import 'package:deed/loading.dart';
+import 'loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'error_screen.dart';

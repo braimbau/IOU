@@ -1,6 +1,6 @@
 import 'dart:ui';
-import 'package:deed/app_bar.dart';
-import 'package:deed/quick_card.dart';
+import 'app_bar.dart';
+import 'quick_card.dart';
 import 'package:flutter/rendering.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'amount_card.dart';

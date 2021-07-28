@@ -1,6 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/label_input.dart';
+import 'label_input.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -251,7 +251,7 @@ Future<void> onValidation(
     addQuickPref(
         groupId, label, selectedUsers.join(":"), amountToPay.value, emoji);
     //pop until main page to avoid poping only flushbar
-    Navigator.popUntil(context, ModalRoute.withName('/'));
+    Navigator.of(context).popUntil((route) => route.isFirst);
     Flushbar(
       message: "Quick pref $label is registred",
       backgroundColor: Colors.green,

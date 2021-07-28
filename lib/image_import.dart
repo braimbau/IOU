@@ -16,13 +16,11 @@ Future<File> pickImage() async {
 
 Future uploadImageToFirebase(File img, String id) async {
 
-
   if (img != null) {
     File _image = File(img.path);
 
     firebase_storage.FirebaseStorage storage =
         firebase_storage.FirebaseStorage.instance;
-
 
     await storage
         .ref('profilePictures/$id.png')
@@ -36,7 +34,7 @@ Future uploadImageToFirebase(File img, String id) async {
     return null;
 }
 
-Future<void> changeUrl(String id, String url) async {
-  CollectionReference ref = FirebaseFirestore.instance.collection('users');
+Future<void> changeUrl(String id, String url, String group) async {
+  CollectionReference ref = FirebaseFirestore.instance.collection('groups').doc(group).collection('users');
   ref.doc(id).update({"url": url});
 }

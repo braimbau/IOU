@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/error.dart';
-import 'package:deed/user.dart';
-import 'package:deed/user_display.dart';
+import 'error.dart';
+import 'group_picker.dart';
+import 'user.dart';
+import 'user_display.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,11 +11,11 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
     automaticallyImplyLeading: false,
     title: Row(
       children: [
-        UserDisplay(usr: usr),
+        UserDisplay(usr: usr, group: group),
         InkWell(
           borderRadius: BorderRadius.all(Radius.circular(20)),
           onTap: () {
-            displayMessage("yo", context);
+            showGroupPicker(context, usr, group);
           },
           child: Container(
               decoration: BoxDecoration(
@@ -56,3 +57,26 @@ Future<String> getGroupNameById(String id) async {
   var doc = await document.get();
   return doc["name"];
 }
+
+void showGroupPicker(BuildContext context, IOUser usr, String group) {
+  showDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                GroupPickerCard(
+                  usr: usr,
+                  excludeGroup: group,
+                )
+              ]),
+        ],
+      );
+    },
+  );
+}
+

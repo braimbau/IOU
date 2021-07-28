@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/user.dart';
+import 'user.dart';
 import 'package:flutter/material.dart';
 
 class PayerWidget extends StatefulWidget {

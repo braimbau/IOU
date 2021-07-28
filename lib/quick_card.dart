@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/amount_card.dart';
-import 'package:deed/pref_picker.dart';
-import 'package:deed/quick_pref.dart';
-import 'package:deed/user.dart';
+import 'amount_card.dart';
+import 'pref_picker.dart';
+import 'quick_pref.dart';
+import 'user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

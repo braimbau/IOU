@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/InputInfo.dart';
-import 'package:deed/error.dart';
-import 'package:deed/label_input.dart';
-import 'package:deed/payer_widget.dart';
-import 'package:deed/quick_pref.dart';
+
+import 'InputInfo.dart';
+import 'error.dart';
+import 'label_input.dart';
+import 'payer_widget.dart';
+import 'quick_pref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'amount_input.dart';

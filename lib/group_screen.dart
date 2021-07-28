@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/join_group.dart';
-import 'package:deed/user.dart';
+import 'join_group.dart';
+import 'user.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'error_screen.dart';

@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/loading.dart';
-import 'package:deed/quick_pref.dart';
+import 'loading.dart';
+import 'quick_pref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'amount_card.dart';
@@ -133,7 +133,7 @@ class HistoryUser extends StatelessWidget {
                   },
                   itemBuilder: (BuildContext context, int index) {
                     return HistoryElement(
-                        transaction: transactionList[index], usr: usr);
+                        transaction: transactionList[index], usr: usr, group: group);
                   },
                 ),
               )
@@ -148,8 +148,9 @@ class HistoryUser extends StatelessWidget {
 class HistoryElement extends StatefulWidget {
   final IouTransaction transaction;
   final IOUser usr;
+  final String group;
 
-  HistoryElement({this.transaction, this.usr});
+  HistoryElement({this.transaction, this.usr, this.group});
 
   @override
   _HistoryElementState createState() => _HistoryElementState();
@@ -225,7 +226,7 @@ class _HistoryElementState extends State<HistoryElement> {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) =>
-                          _buildPopupDialog(context, this.widget.usr, pref),
+                          _buildPopupDialog(context, this.widget.usr, pref, this.widget.group),
                     );
                   },
                 )
@@ -233,7 +234,7 @@ class _HistoryElementState extends State<HistoryElement> {
   }
 }
 
-Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref) {
+Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref, String group) {
   return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
       child: Dialog(
@@ -244,6 +245,6 @@ Widget _buildPopupDialog(BuildContext context, IOUser usr, QuickPref pref) {
           backgroundColor: Colors.transparent,
           child: Wrap(children: <Widget>[
             AmountCard(
-                currentUserId: usr.getId(), pref: pref, isPreFilled: true)
+                currentUserId: usr.getId(), pref: pref, isPreFilled: true, group: group,)
           ])));
 }

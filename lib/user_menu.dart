@@ -1,8 +1,9 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/image_import.dart';
-import 'package:deed/oauth.dart';
-import 'package:deed/user.dart';
+import 'group_picker.dart';
+import 'image_import.dart';
+import 'oauth.dart';
+import 'user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'image_import.dart';
@@ -14,8 +15,9 @@ import 'log_screen.dart';
 class UserMenu extends StatefulWidget {
   final IOUser usr;
   final BuildContext context;
+  final String group;
 
-  UserMenu({this.usr, this.context});
+  UserMenu({this.usr, this.context, this.group});
 
   @override
   _UserMenuState createState() => _UserMenuState();
@@ -104,14 +106,15 @@ class _UserMenuState extends State<UserMenu> {
                       onPressed: () async {
                         if (editableMode) {
                           if (newName != "") {
-                            changeName(usr.getId(), newName);
+                            changeName(usr.getId(), newName, this.widget.group);
                             if (img != null) {
                               String url =
-                                  await uploadImageToFirebase(img, usr.getId());
-                              changeUrl(usr.getId(), url);
+                                  await uploadImageToFirebase(img, usr.getId() + this.widget.group);
+                              print(url);
+                              changeUrl(usr.getId(), url, this.widget.group);
                             }
-                            logOut(context);
-                          } else
+                            goMainPageWithGroup(context, usr, this.widget.group);
+                            } else
                             Flushbar(
                               message: "You can't have an empty name",
                               backgroundColor: Colors.red,
@@ -138,11 +141,6 @@ class _UserMenuState extends State<UserMenu> {
                     ),
                   ],
                 ),
-                if (editableMode)
-                  Text(
-                    "You'll be log out to apply the profil changes",
-                    style: TextStyle(color: Colors.white, fontSize: 10),
-                  )
               ],
             ),
           ),
@@ -150,9 +148,9 @@ class _UserMenuState extends State<UserMenu> {
   }
 }
 
-Future<void> changeName(String id, String name) async {
-  CollectionReference ref = FirebaseFirestore.instance.collection('users');
-  ref.doc(id).update({"name": name});
+Future<void> changeName(String id, String name, String group) async {
+  CollectionReference ref = FirebaseFirestore.instance.collection('groups');
+  ref.doc(group).collection("users").doc(id).update({"name": name});
 }
 
 void logOut(BuildContext context) {
