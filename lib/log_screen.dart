@@ -8,6 +8,10 @@ import 'user.dart';
 import 'group_screen.dart';
 
 class LogScreen extends StatefulWidget {
+  final String group;
+
+  LogScreen({this.group});
+
   @override
   _LogScreenState createState() => _LogScreenState();
 }
@@ -27,7 +31,7 @@ class _LogScreenState extends State<LogScreen> {
         // Once complete, show your application
 
         if (snapshot.connectionState == ConnectionState.done) {
-          return GroupScreen(usr: snapshot.data);
+          return GroupScreen(usr: snapshot.data, groupInvite: this.widget.group);
         }
         // Otherwise, show something whilst waiting for initialization to complete
         return Loading();

@@ -62,7 +62,7 @@ void showGroupPicker(BuildContext context, IOUser usr, String group) {
   showDialog<void>(
     context: context,
     barrierDismissible: true,
-    builder: (BuildContext context) {
+    builder: (BuildContext contextOfDialog) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

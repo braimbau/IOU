@@ -1,4 +1,6 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/invitation.dart';
 import 'user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +10,10 @@ import 'group_picker.dart';
 
 class JoinGroup extends StatelessWidget {
   final IOUser usr;
+  final String groupInvite;
 
-  JoinGroup({this.usr});
+
+  JoinGroup({this.usr, this.groupInvite});
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +25,8 @@ class JoinGroup extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(child: Container(), flex: 1,),
+          if (groupInvite != null)
+            InvitationPanel(group: groupInvite, usrId: usr.getId(),),
           Text(
             "Join a group",
             style: TextStyle(
@@ -99,6 +105,7 @@ class JoinGroup extends StatelessWidget {
           Expanded(
             flex: 2,
             child: GroupPicker(
+              pop: false,
               usr: usr,
             ),
           ),
@@ -161,3 +168,20 @@ Future<bool> setDefaultGroup(String group, String userId) async {
 Future<void> sendGroupCode(String code) async {
   if (await groupExist(code)) return;
 }
+
+void showFlushBar(String text, Color color, IconData icon, BuildContext context) {
+  Flushbar(
+    message: text,
+    backgroundColor: color,
+    borderRadius: BorderRadius.all(Radius.circular(50)),
+    icon: Icon(
+      Icons.error_outline,
+      size: 28,
+      color: Colors.white,
+    ),
+    duration: Duration(seconds: 2),
+    forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
+  )
+    ..show(context);
+}
+

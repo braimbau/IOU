@@ -9,8 +9,9 @@ import 'main_page.dart';
 
 class GroupScreen extends StatelessWidget {
   final IOUser usr;
+  final String groupInvite;
 
-  GroupScreen({this.usr});
+  GroupScreen({this.usr, this.groupInvite});
 
 
   @override
@@ -24,7 +25,7 @@ class GroupScreen extends StatelessWidget {
           }
 
           if (snapshot.data == "" || snapshot.data == null || snapshot.hasError)
-            return JoinGroup(usr: usr);
+            return JoinGroup(usr: usr, groupInvite: groupInvite);
 
           if (snapshot.data != null && snapshot.data != ""){
             checkGroup(usr, snapshot.data);
@@ -35,47 +36,6 @@ class GroupScreen extends StatelessWidget {
         });
   }
 
-/*
-  
-  
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("users")
-            .doc(usr.getId())
-            .snapshots(),
-        builder: (context, snapshot) {
-          print("jme build");
-          if (snapshot.hasError) {
-            return errorScreen('Something went wrong');
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Loading();
-          }
-
-          String groups = snapshot.data["groups"];
-          String defaultGroup = snapshot.data["defaultGroup"];
-
-          if (defaultGroup == "" || defaultGroup == null)
-            return JoinGroup(usr: usr);
-
-          List<String> groupList = groups.split(':');
-          String group;
-
-          print("group list length : ${groupList.length}");
-          if (defaultGroup != null && defaultGroup != ""){
-            group = defaultGroup;
-            checkGroup(usr, group);
-            return (mainPage(context, usr, group));
-          }
-
-          return Container();
-        }
-    );
-  }
-}
-*/
 }
 
 Future<String> getDefaultGroups(String userId) async {
