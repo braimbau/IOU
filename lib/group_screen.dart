@@ -27,11 +27,6 @@ class GroupScreen extends StatelessWidget {
           if (snapshot.data == "" || snapshot.data == null || snapshot.hasError)
             return JoinGroup(usr: usr, groupInvite: groupInvite);
 
-          if (snapshot.data != null && snapshot.data != ""){
-            checkGroup(usr, snapshot.data);
-            return (mainPage(context, usr, snapshot.data));
-          }
-
           return Container();
         });
   }

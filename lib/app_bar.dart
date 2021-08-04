@@ -15,6 +15,7 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
         InkWell(
           borderRadius: BorderRadius.all(Radius.circular(20)),
           onTap: () {
+            print("bite");
             showGroupPicker(context, usr, group);
           },
           child: Container(
@@ -22,17 +23,18 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
                   border: Border.all(
                     color: Colors.white,
                   ),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
+                  borderRadius: BorderRadius.all(Radius.circular(25))),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Row(children: [
-                  Icon(Icons.expand_more),
+                  Icon(Icons.expand_more
+                  ),
                   FutureBuilder<String>(
                       future: getGroupNameById(group),
                       builder: (BuildContext context,
                           AsyncSnapshot<String> groupName) {
                         if (groupName.hasData)
-                          return Text(groupName.data);
+                          return Text(groupName.data, style: TextStyle(fontSize: 25),);
                         else
                           return Text("...");
                       })

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'error.dart';
 import 'group_picker.dart';
 
+
 class JoinGroup extends StatelessWidget {
   final IOUser usr;
   final String groupInvite;

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
@@ -70,9 +72,9 @@ class GroupPicker extends StatelessWidget {
                         }),
                     InkWell(
                         onTap: () async {
-                          if (pop)
-                            Navigator.of(context).pop();
-                          await goMainPageWithGroup(context, usr, group);
+                          //if (pop)
+                            //Navigator.of(context).pop();
+                          goMainPageWithGroup(context, usr, group, pop);
                         },
                         radius: 5,
                         customBorder: CircleBorder(),
@@ -130,7 +132,8 @@ class _GroupPickerCardState extends State<GroupPickerCard> {
                             "...", style: TextStyle(color: Colors
                               .white),);
                       }),
-                  IconButton(icon: Icon(Icons.ios_share), onPressed: () async {
+                  IconButton(icon: Icon(Icons.ios_share),
+                      onPressed: () async {
                     String url = await getGroupDynamicLink(group);
                     await Share.share(url);
                   })
@@ -144,9 +147,9 @@ class _GroupPickerCardState extends State<GroupPickerCard> {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    //go to join Page
                     Navigator.of(context).pop();
-                    goJoinGroup(context, usr);
-                    //goJoinGroup(context, usr);
+                    Navigator.of(context).pop();
                   },
                   child: Text(
                     'Join/Create',
@@ -169,27 +172,18 @@ Future<String> getGroupNameById(String id) async {
 }
 
 Future<void> goMainPageWithGroup(
-    BuildContext context, IOUser usr, String group) async {
+    BuildContext context, IOUser usr, String group, bool pop) async {
   await checkGroup(usr, group);
   await updateUserInfosFromGroup(usr, group);
-  Navigator.pushReplacement(
-    context,
-    PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) =>
-            mainPage(context, usr, group),
-        transitionDuration: Duration(seconds: 0)),
-  );
-}
 
-Future<void> goJoinGroup(BuildContext context, IOUser usr) async {
-  Navigator.pushReplacement(
-    context,
-    PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => JoinGroup(
-              usr: usr,
-            ),
-        transitionDuration: Duration(seconds: 0)),
-  );
+  if (pop) {
+    //Navigator.pop(context);
+    Navigator.pushReplacementNamed(
+        context, '/mainPage', arguments: MainPageArgs(usr: usr, group: group));
+  }
+  else
+    Navigator.pushNamed(context, '/mainPage' , arguments: MainPageArgs(usr: usr, group: group));
+
 }
 
 Future<bool> isInGroup(String id, String group) async {

@@ -1,7 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/app_bar.dart';
+import 'package:deed/error.dart';
 import 'package:deed/error_screen.dart';
+import 'package:deed/invitation.dart';
+import 'package:deed/join_group.dart';
+import 'package:deed/main_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'history.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +18,17 @@ import 'user.dart';
 import 'log_screen.dart';
 import 'loading.dart';
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 void main() {
-  runApp(MaterialApp(home: Home()));
+  runApp(MaterialApp(
+    title: 'IOU',
+    initialRoute: '/',
+    routes: {
+      '/': (context) => Home(),
+      '/mainPage' : (context) => MainPage(args: ModalRoute.of(context).settings.arguments,),
+    },
+  ));
 }
 
 class Home extends StatefulWidget {
@@ -33,20 +48,7 @@ class _HomeState extends State<Home> {
   void initDynamicLinks() async {
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
-          final Uri deepLink = dynamicLink?.link;
-
-          if (deepLink != null) {
-            Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                  pageBuilder: (context, animation1, animation2) =>
-                      LogScreen(group: deepLink.queryParameters['group'],),
-                  transitionDuration: Duration(seconds: 0)),
-            );
-          }
-          else
-            print("null 1");
-
+          await handleDynamicLink(dynamicLink, context);
         },
         onError: (OnLinkErrorException e) async {
           print('onLinkError');
@@ -68,7 +70,7 @@ class _HomeState extends State<Home> {
       );
     }
     else
-      print("null 2");
+      print("link null 2");
   }
 
   @override
@@ -95,6 +97,31 @@ class _HomeState extends State<Home> {
   }
 
 
+}
+
+Future<void> handleDynamicLink(PendingDynamicLinkData dynamicLink, BuildContext context, ) async {
+  final Uri deepLink = dynamicLink?.link;
+
+  if (deepLink != null) {
+    String group = deepLink.queryParameters['group'];
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String usrId = prefs.getString("userId");
+    if (usrId == null){
+      displayError("Log in to join a group", context);
+      return;
+    }
+    print("is in group ${await userIsInGroup(group, usrId)}, group $group usrid $usrId");
+    if (await userIsInGroup(group, usrId) == false)
+      showInvitation(context, usrId, group);
+    else {
+      String groupName = await getGroupNameById(group);
+      displayError(
+          "You've been invited to join the group $groupName, but you're already in that group",
+          context);
+    }
+  }
+  else
+    print("link null 1");
 }
 
 

@@ -2,6 +2,8 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'group_picker.dart';
 import 'image_import.dart';
+import 'main.dart';
+import 'main_page.dart';
 import 'oauth.dart';
 import 'user.dart';
 import 'package:flutter/cupertino.dart';
@@ -113,7 +115,7 @@ class _UserMenuState extends State<UserMenu> {
                               print(url);
                               changeUrl(usr.getId(), url, this.widget.group);
                             }
-                            goMainPageWithGroup(context, usr, this.widget.group);
+                            Navigator.pushReplacementNamed(context, '/mainPage' , arguments: MainPageArgs(usr: usr, group: this.widget.group));
                             } else
                             Flushbar(
                               message: "You can't have an empty name",
@@ -158,7 +160,7 @@ void logOut(BuildContext context) {
   Navigator.pushReplacement(
     context,
     PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => LogScreen(),
+        pageBuilder: (context, animation1, animation2) => Home(),
         transitionDuration: Duration(seconds: 0)),
   );
 }

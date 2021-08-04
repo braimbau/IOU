@@ -302,7 +302,7 @@ onValidation(
     amountToPayPerUser.value = 0;
     amountToPay.value = 0;
     //pop until main page to avoid poping only flushbar
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
     displayMessage("yeah", context);
   }
 }

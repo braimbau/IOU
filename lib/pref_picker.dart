@@ -251,7 +251,7 @@ Future<void> onValidation(
     addQuickPref(
         groupId, label, selectedUsers.join(":"), amountToPay.value, emoji);
     //pop until main page to avoid poping only flushbar
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
     Flushbar(
       message: "Quick pref $label is registred",
       backgroundColor: Colors.green,

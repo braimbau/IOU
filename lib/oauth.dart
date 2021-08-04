@@ -16,7 +16,7 @@ Future<IOUser> signInWithGoogle() async {
   
   id = prefs.getString("userId");
 
-  print("=============USER ID = $id");
+  print("=============USER ID A = $id");
 
   if (id == null) {
     // Trigger the authentication flow
@@ -29,11 +29,11 @@ Future<IOUser> signInWithGoogle() async {
     prefs.setString("userId", id);
   }
   
-  print("=============USER ID = $id");
+  print("=============USER ID B= $id");
 
   if (!await isUser(id)) {
-    print("creating new user...");
-    createUser(name, photoUrl, id);
+    print("creating new user... with $name $photoUrl and $id");
+    await createUser(name, photoUrl, id);
   }
   return await getUserById(id);
 }
