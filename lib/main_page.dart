@@ -9,6 +9,7 @@ import 'user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'history.dart';
+import 'Utils.dart';
 
 //BuildContext context, IOUser usr, String group
 
@@ -19,15 +20,29 @@ class MainPageArgs {
   MainPageArgs({this.usr, this.group});
 }
 
-class MainPage extends StatelessWidget{
+class MainPage extends StatefulWidget {
   final MainPageArgs args;
 
   MainPage({this.args});
 
   @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  IOUser usr;
+  String group;
+
+  @override
+  void initState() {
+    usr = this.widget.args.usr;
+    group = this.widget.args.group;
+    updateUserInfosFromGroup(usr, group);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    IOUser usr = args.usr;
-    String group = args.group;
     return GestureDetector(
       onTap: () {
         WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();

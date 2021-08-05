@@ -6,6 +6,7 @@ import 'Utils.dart';
 import 'app_bar.dart';
 import 'error_screen.dart';
 import 'group_picker.dart';
+import 'group_selection.dart';
 import 'loading.dart';
 import 'main_page.dart';
 import 'user.dart';
@@ -22,10 +23,8 @@ class JoinGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SchedulerBinding.instance.addPostFrameCallback((_) => {
-          if (defaultGroup != null)
-            goMainPageWithGroup(context, usr, defaultGroup)
-        });
+    SchedulerBinding.instance.addPostFrameCallback(
+        (_) async => handleRedirection(context, usr, defaultGroup));
 
     String group;
     String groupName;
@@ -122,6 +121,9 @@ class JoinGroup extends StatelessWidget {
               ],
             ),
           ),
+          Divider(
+            color: Colors.white,
+          ),
           Expanded(
             flex: 2,
             child: GroupSelection(
@@ -160,23 +162,6 @@ Future<bool> addGroup(String group, String userId) async {
   }
 }
 
-Future<bool> setDefaultGroup(String group, String userId) async {
-  final DocumentReference document =
-      FirebaseFirestore.instance.collection("users").doc(userId);
-  var doc = await document.get();
-  String groups = doc["groups"];
-  List<String> groupList =
-      (groups == null || groups == "") ? [] : groups.split(":");
-  if (!groupList.contains(group)) {
-    groupList.add(group);
-    document.update({
-      'groups': (groupList.length == 1) ? groupList[0] : groupList.join(":")
-    });
-  }
-  document.update({'defaultGroup': group});
-  return true;
-}
-
 Future<void> sendGroupCode(String code) async {
   if (await groupExist(code)) return;
 }
@@ -197,136 +182,18 @@ void showFlushBar(
   )..show(context);
 }
 
-class GroupSelection extends StatelessWidget {
-  final IOUser usr;
-  final String excludeGroup;
-
-  GroupSelection({this.usr, this.excludeGroup});
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection("users")
-            .doc(usr.getId())
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return errorScreen('Something went wrong with groups');
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Loading();
-          }
-
-          String groups = snapshot.data["groups"];
-          String defaultGroup = snapshot.data["defaultGroup"];
-
-          List<String> groupList =
-              (groups == "" || groups == null) ? [] : groups.split(':');
-
-          if (excludeGroup != null) groupList.remove(excludeGroup);
-
-          return FutureBuilder<Map<String, String>>(
-              future: getGroupsMap(groupList),
-              builder: (BuildContext context,
-                  AsyncSnapshot<Map<String, String>> groupMapSnap) {
-                var groupMap = groupMapSnap.data;
-                return Visibility(
-                  visible: groupMapSnap.hasData,
-                  child: GridView.builder(
-                      itemCount: groupList.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 2,
-                          crossAxisSpacing: 0,
-                          mainAxisSpacing: 0),
-                      itemBuilder: (BuildContext context, int index) {
-                        String groupId = groupList[index];
-                        return InkWell(
-                          onTapCancel: () {
-                            toggleDefaultGroup(usr.getId(), groupId);
-                          },
-                          onTap: () {
-                            if (groupMap.containsKey(groupId))
-                              goMainPageWithGroup(context, usr, groupId);
-                          },
-                          onLongPress: () {
-                            _confirmLeaveGroup(context, usr.getId(), groupId);
-                          },
-                          child: Stack(children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                alignment: Alignment.center,
-                                child: FittedBox(
-                                    child: Text(groupMap.containsKey(groupId)
-                                        ? groupMap[groupId]
-                                        : "...")),
-                                decoration: BoxDecoration(
-                                    color: Colors.amber,
-                                    borderRadius: BorderRadius.circular(15)),
-                              ),
-                            ),
-                            Visibility(
-                                visible: defaultGroup == groupId,
-                                child: Positioned(
-                                  right: 4,
-                                  top: 4,
-                                  child: Icon(
-                                    Icons.favorite,
-                                    size: 25,
-                                    color: Colors.blue,
-                                  ),
-                                )),
-                          ]),
-                        );
-                      }),
-                );
-              });
-        });
-  }
-}
-
 Future<void> goMainPageWithGroup(
     BuildContext context, IOUser usr, String group) async {
-  await checkGroup(usr, group);
-  await updateUserInfosFromGroup(usr, group);
-  Navigator.pushNamed(context, '/mainPage',
+    Navigator.pushNamed(context, '/mainPage',
       arguments: MainPageArgs(usr: usr, group: group));
 }
 
-_confirmLeaveGroup(BuildContext context, String usrId, String group) {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: true,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Leave group'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Text('Are you sure you want to leave this group ?'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: Text('Leave'),
-            onPressed: () async {
-              String err = await leaveGroup(usrId, group);
-              Navigator.of(context).pop();
-              if (err != null) displayError(err, context);
-            },
-          ),
-        ],
-      );
-    },
-  );
+Future<void> handleRedirection(
+    BuildContext context, IOUser usr, String defaultGroup) async {
+  if (defaultGroup == null || defaultGroup == "") return;
+  if (await groupExist(defaultGroup) &&
+      await userIsInGroup(defaultGroup, usr.getId()))
+    await goMainPageWithGroup(context, usr, defaultGroup);
+  else
+    await setDefaultGroup(usr.getId(), null);
 }

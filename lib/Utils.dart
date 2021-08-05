@@ -96,7 +96,7 @@ Future<List<String>> getGroups(String userId) async {
   return groups.split(":");
 }
 
-Future<void> setDefaultGroups(String usrId, String group) async {
+Future<void> setDefaultGroup(String usrId, String group) async {
   final DocumentReference document = FirebaseFirestore.instance.collection(
       "users").doc(usrId);
   await document.update({'defaultGroup': group});
@@ -105,10 +105,10 @@ Future<void> setDefaultGroups(String usrId, String group) async {
 Future<bool> toggleDefaultGroup(String usrId, String group) async {
   String def = await getDefaultGroups(usrId);
   if (def != group) {
-    setDefaultGroups(usrId, group);
+    setDefaultGroup(usrId, group);
     return true;
   }
-  setDefaultGroups(usrId, "");
+  setDefaultGroup(usrId, null);
   return false;
 }
 
@@ -154,8 +154,12 @@ Future<void> changePhotoUrl(String id, String url, String group) async {
 }
 
 Future<String> leaveGroup(String usrId, String group) async {
+  if (!await groupExist(group))
+    return("You can't leave a group that doesn't exist anymore");
+  if (await getDefaultGroups(usrId) == group)
+    setDefaultGroup(usrId, null);
   if (!await isInGroup(usrId, group)) {
-    return ("This user already left the group, try restart the app");
+    return ("This user already left the group");
   }
   if (await getBalance(usrId, group) != 0)
     return ("You need to have a null balance to leave a group");
@@ -201,15 +205,15 @@ Future<void> deleteGroup(String group) async {
   var ref = await FirebaseFirestore.instance.collection("groups").doc(group).delete();
 }
 
-Future<void> deleteGroupIfEmpty(String group) async {
-  if (await groupIsEmpty(group))
-    await deleteGroup(group);
+Future<void> deleteGroupIfEmpty(String groupId) async {
+  if (await groupIsEmpty(groupId))
+    await deleteGroup(groupId);
 }
 
 Future<Map<String, String>> getGroupsMap(List<String> list) async {
   Map<String, String> map = Map<String, String>();
   for (String groupId in list) {
-    map[groupId] = await getGroupNameById(groupId);
+      map[groupId] = await getGroupNameById(groupId);
   }
   return map;
 }
