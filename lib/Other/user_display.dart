@@ -48,6 +48,7 @@ void showUserMenu(BuildContext context, IOUser usr, String group) {
     barrierDismissible: true,
     builder: (BuildContext context) {
       return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Column(mainAxisAlignment: MainAxisAlignment.start, children: [
             UserMenu(

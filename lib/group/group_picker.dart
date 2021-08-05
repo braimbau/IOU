@@ -40,51 +40,55 @@ class GroupPicker extends StatelessWidget {
 
           if (excludeGroup != null) groupList.remove(excludeGroup);
 
-          return ListView.separated(
-              itemCount: groupList.length,
-              separatorBuilder: (BuildContext contex, int index) {
-                return Container(
-                  height: 5,
-                );
-              },
-              itemBuilder: (BuildContext context, int index) {
-                String group = groupList[index];
-                return Row(
-                  children: [
-                    if (groupMap.containsKey(group))
-                      Text(
-                      groupMap[group],
-                      style: TextStyle(color: Colors.white),
-                      )
-                else
-                    FutureBuilder<String>(
-                        future: getGroupNameById(group),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<String> groupName) {
-                          if (groupName.hasData)
-                            return Text(
-                              groupName.data,
-                              style: TextStyle(color: Colors.white),
-                            );
-                          else
-                            return Text(
-                              "...",
-                              style: TextStyle(color: Colors.white),
-                            );
-                        }),
-                    InkWell(
-                        onTap: () async {
-                          goMainPageWithGroup(context, usr, group);
-                        },
-                        radius: 5,
-                        customBorder: CircleBorder(),
-                        child: Icon(
-                          Icons.east_rounded,
-                          color: Colors.white,
-                        ))
-                  ],
-                );
-              });
+          return LimitedBox(
+            maxHeight: 150,
+            child: ListView.separated(
+              shrinkWrap: true,
+                itemCount: groupList.length,
+                separatorBuilder: (BuildContext contex, int index) {
+                  return Container(
+                    height: 5,
+                  );
+                },
+                itemBuilder: (BuildContext context, int index) {
+                  String group = groupList[index];
+                  return Row(
+                    children: [
+                      if (groupMap.containsKey(group))
+                        Text(
+                        groupMap[group],
+                        style: TextStyle(color: Colors.white),
+                        )
+                  else
+                      FutureBuilder<String>(
+                          future: getGroupNameById(group),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<String> groupName) {
+                            if (groupName.hasData)
+                              return Text(
+                                groupName.data,
+                                style: TextStyle(color: Colors.white),
+                              );
+                            else
+                              return Text(
+                                "...",
+                                style: TextStyle(color: Colors.white),
+                              );
+                          }),
+                      InkWell(
+                          onTap: () async {
+                            goMainPageWithGroup(context, usr, group);
+                          },
+                          radius: 5,
+                          customBorder: CircleBorder(),
+                          child: Icon(
+                            Icons.east_rounded,
+                            color: Colors.white,
+                          ))
+                    ],
+                  );
+                }),
+          );
         });
   }
 }

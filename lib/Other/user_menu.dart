@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/utils/error.dart';
@@ -213,11 +215,6 @@ Future<void> changeName(String id, String name, String group) async {
 }
 
 void logOut(BuildContext context) {
-  Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
-  Navigator.pushReplacement(
-    context,
-    PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => Home(),
-        transitionDuration: Duration(seconds: 0)),
-  );
+  Navigator.of(context).popUntil(ModalRoute.withName('/'));
+  Navigator.of(context).pushNamed('/');
 }

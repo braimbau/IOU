@@ -40,7 +40,6 @@ class _GroupMenuState extends State<GroupMenu> {
         color: Colors.grey[850],
         child: SizedBox(
           width: 175,
-          height: 210,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
               child: Column(
@@ -62,12 +61,10 @@ class _GroupMenuState extends State<GroupMenu> {
                           await Share.share(url);
                         }),
                   ]),
-                  Expanded(
-                    child: GroupPicker(
-                      usr: usr,
-                      excludeGroup: this.widget.excludeGroup,
-                      groupMap: groupMap,
-                    ),
+                  GroupPicker(
+                    usr: usr,
+                    excludeGroup: this.widget.excludeGroup,
+                    groupMap: groupMap,
                   ),
                   ElevatedButton(
                     onPressed: () {
