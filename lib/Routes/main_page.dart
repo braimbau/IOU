@@ -1,15 +1,15 @@
 import 'dart:ui';
-import 'app_bar.dart';
-import 'quick_card.dart';
+import '../Other/app_bar.dart';
+import '../cards/quick_card.dart';
 import 'package:flutter/rendering.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'amount_card.dart';
-import 'balance_card.dart';
-import 'user.dart';
+import '../cards/amount_card.dart';
+import '../Other/balance_display.dart';
+import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'history.dart';
-import 'Utils.dart';
+import '../Other/history.dart';
+import '../Utils.dart';
 
 //BuildContext context, IOUser usr, String group
 
@@ -35,8 +35,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    usr = this.widget.args.usr;
     group = this.widget.args.group;
+    usr = IOUser(this.widget.args.usr.getId(), "", "");
     updateUserInfosFromGroup(usr, group);
     super.initState();
   }

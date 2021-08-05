@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'log_screen.dart';
+import '../Routes/log_screen.dart';
 
 Widget errorScreen(String err) {
   return (Scaffold(

@@ -1,13 +1,14 @@
 import 'dart:io';
 
-import 'package:deed/error.dart';
-import 'package:deed/join_group.dart';
+import 'package:deed/utils/error.dart';
+import 'package:deed/Routes/join_group.dart';
+import 'package:flutter/services.dart';
 
-import 'Utils.dart';
-import 'group_menu.dart';
-import 'group_picker.dart';
-import 'log_screen.dart';
-import 'user.dart';
+import '../Utils.dart';
+import '../group/group_menu.dart';
+import '../group/group_picker.dart';
+import '../Routes/log_screen.dart';
+import '../classes/user.dart';
 import 'user_display.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,16 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
     automaticallyImplyLeading: false,
     title: Row(
       children: [
-        UserDisplay(usr: usr, group: group),
+        IconButton(
+          icon: Icon(
+            Icons.west,
+            color: Colors.white,
+          ),
+          iconSize: 30,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         FutureBuilder<Map<String, String>>(
             future: getUserGroupsMap(usr.getId()),
             builder: (BuildContext context,
@@ -27,6 +37,10 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
                 onTap: () {
                   if (groupMap.hasData)
                   showGroupPicker(context, usr, group, groupMap.data);
+                },
+                onLongPress: () {
+                  Clipboard.setData(ClipboardData(text: group));
+                  displayMessage("Group Id succesffully pasted in clipboard !", context);
                 },
                 child: Container(
                     decoration: BoxDecoration(
@@ -43,58 +57,11 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
                     )),
               );
             }),
-        IconButton(
-          icon: Icon(
-            Icons.logout,
-            color: Colors.red,
-          ),
-          iconSize: 30,
-          onPressed: () {
-            confirmLeaveGroup(context, usr.getId(), group);
-          },
-        ),
+        UserDisplay(usr: usr, group: group),
       ],
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
     ),
     backgroundColor: Colors.grey[850],
-  );
-}
-
-confirmLeaveGroup(BuildContext context, String usrId, String group) {
-  return showDialog<void>(
-    context: context,
-    barrierDismissible: true,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Leave group'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Text('Are you sure you want to leave this group ?'),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: Text('Cancel'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: Text('Leave'),
-            onPressed: () async {
-              String err = await leaveGroup(usrId, group);
-              Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
-              if (err != null)
-                displayError(err, context);
-              else
-                Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
   );
 }
 

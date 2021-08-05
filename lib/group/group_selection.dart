@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/user.dart';
+import 'package:deed/classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
-import 'Utils.dart';
-import 'error.dart';
-import 'error_screen.dart';
-import 'loading.dart';
-import 'main_page.dart';
+import '../Utils.dart';
+import '../utils/error.dart';
+import '../utils/error_screen.dart';
+import '../classes/group.dart';
+import '../utils/loading.dart';
+import '../Routes/main_page.dart';
 
 class GroupSelection extends StatelessWidget {
   final IOUser usr;
@@ -35,40 +36,55 @@ class GroupSelection extends StatelessWidget {
           String groups = snapshot.data["groups"];
           String defaultGroup = snapshot.data["defaultGroup"];
 
-          List<String> groupList =
+          List<String> stringGroupList =
               (groups == "" || groups == null) ? [] : groups.split(':');
 
-          if (excludeGroup != null) groupList.remove(excludeGroup);
+          if (excludeGroup != null) stringGroupList.remove(excludeGroup);
 
-          return FutureBuilder<Map<String, String>>(
-              future: getGroupsMap(groupList),
+          return FutureBuilder<List<Group>>(
+              future: getGroupsById(stringGroupList),
               builder: (BuildContext context,
-                  AsyncSnapshot<Map<String, String>> groupMapSnap) {
-                var groupMap = groupMapSnap.data;
+                  AsyncSnapshot<List<Group>> groupListSnap) {
+                List<Group> groupList = groupListSnap.data;
                 return Visibility(
-                  visible: groupMapSnap.hasData,
+                  visible: groupListSnap.hasData,
                   child: GridView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: groupList.length,
+                      itemCount: stringGroupList.length,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           childAspectRatio: 2,
                           crossAxisSpacing: 0,
                           mainAxisSpacing: 0),
                       itemBuilder: (BuildContext context, int index) {
-                        String groupId = groupList[index];
+                        if (index >= groupList.length)
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: FittedBox(
+                                  child: Text("...",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  )),
+                              decoration: BoxDecoration(
+                                  color: Colors.grey,
+                                  borderRadius: BorderRadius.circular(15)),
+                            ),
+                          );
+                        Group group = groupList[index];
                         return GestureDetector(
                           onPanUpdate: (details) {
                             if (details.delta.dx.abs() > 15)
-                              _confirmLeaveGroup(context, usr.getId(), groupId);
+                              _confirmLeaveGroup(context, usr.getId(), group.getId());
                           },
                           child: InkWell(
                             onTap: () {
-                              if (groupMap.containsKey(groupId))
-                                goMainPageWithGroup(context, usr, groupId);
+                                goMainPageWithGroup(context, usr, group.getId());
                             },
                             onLongPress: () {
-                              toggleDefaultGroup(usr.getId(), groupId);
+                              toggleDefaultGroup(usr.getId(), group.getId());
                             },
                             child: Stack(children: [
                               Padding(
@@ -76,10 +92,7 @@ class GroupSelection extends StatelessWidget {
                                 child: Container(
                                   alignment: Alignment.center,
                                   child: FittedBox(
-                                      child: Text(
-                                    groupMap.containsKey(groupId)
-                                        ? groupMap[groupId]
-                                        : "...",
+                                      child: Text(group.getName(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.black),
@@ -90,7 +103,7 @@ class GroupSelection extends StatelessWidget {
                                 ),
                               ),
                               Visibility(
-                                  visible: defaultGroup == groupId,
+                                  visible: defaultGroup == group.getId(),
                                   child: Positioned(
                                     right: 4,
                                     top: 4,
@@ -152,7 +165,6 @@ _confirmLeaveGroup(BuildContext context, String usrId, String group) {
 
 Future<void> goMainPageWithGroup(
     BuildContext context, IOUser usr, String group) async {
-  await updateUserInfosFromGroup(usr, group);
   Navigator.pushNamed(context, '/mainPage',
       arguments: MainPageArgs(usr: usr, group: group));
 }

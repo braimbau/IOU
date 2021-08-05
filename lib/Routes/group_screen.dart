@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'Utils.dart';
+import '../Utils.dart';
 import 'join_group.dart';
-import 'user.dart';
+import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'loading.dart';
+import '../utils/loading.dart';
 
 class GroupScreen extends StatelessWidget {
   final IOUser usr;

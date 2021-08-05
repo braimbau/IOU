@@ -1,14 +1,14 @@
 
-import 'package:deed/error.dart';
-import 'package:deed/invitation.dart';
-import 'package:deed/main_page.dart';
+import 'package:deed/utils/error.dart';
+import 'package:deed/Other/invitation.dart';
+import 'package:deed/Routes/main_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'log_screen.dart';
+import 'Routes/log_screen.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 

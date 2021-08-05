@@ -4,9 +4,9 @@ import 'label_input.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'InputInfo.dart';
+import '../classes/InputInfo.dart';
 import 'amount_input.dart';
-import 'user.dart';
+import '../classes/user.dart';
 import 'selection.dart';
 
 class PrefPicker extends StatelessWidget {

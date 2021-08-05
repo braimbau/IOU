@@ -1,10 +1,10 @@
-import 'loading.dart';
+import '../utils/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'error_screen.dart';
-import 'oauth.dart';
+import '../utils/error_screen.dart';
+import '../utils/oauth.dart';
 import 'main_page.dart';
-import 'user.dart';
+import '../classes/user.dart';
 import 'group_screen.dart';
 
 class LogScreen extends StatefulWidget {

@@ -1,4 +1,4 @@
-import 'InputInfo.dart';
+import '../classes/InputInfo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

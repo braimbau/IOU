@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/rendering.dart';
 import 'package:share_plus/share_plus.dart';
-import 'Utils.dart';
-import 'main_page.dart';
-import 'user.dart';
+import '../Utils.dart';
+import '../Routes/main_page.dart';
+import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'error_screen.dart';
-import 'loading.dart';
+import '../utils/error_screen.dart';
+import '../utils/loading.dart';
 
 class GroupPicker extends StatelessWidget {
   final IOUser usr;

@@ -1,13 +1,13 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'loading.dart';
-import 'quick_pref.dart';
+import '../utils/loading.dart';
+import '../classes/quick_pref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'amount_card.dart';
-import 'error_screen.dart';
-import 'user.dart';
-import 'iou_transaction.dart';
+import '../cards/amount_card.dart';
+import '../utils/error_screen.dart';
+import '../classes/user.dart';
+import '../classes/iou_transaction.dart';
 import 'package:intl/intl.dart';
 
 class History extends StatelessWidget {

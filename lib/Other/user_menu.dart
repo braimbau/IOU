@@ -1,20 +1,20 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/error.dart';
-import 'Utils.dart';
-import 'group_picker.dart';
-import 'image_import.dart';
-import 'main.dart';
-import 'main_page.dart';
-import 'oauth.dart';
-import 'user.dart';
+import 'package:deed/utils/error.dart';
+import '../Utils.dart';
+import '../group/group_picker.dart';
+import '../utils/image_import.dart';
+import '../main.dart';
+import '../Routes/main_page.dart';
+import '../utils/oauth.dart';
+import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'image_import.dart';
+import '../utils/image_import.dart';
 import 'dart:io';
 
-import 'image_import.dart';
-import 'log_screen.dart';
+import '../utils/image_import.dart';
+import '../Routes/log_screen.dart';
 
 class UserMenu extends StatefulWidget {
   final IOUser usr;

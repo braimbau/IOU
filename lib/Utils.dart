@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/image_import.dart';
+import 'package:deed/utils/image_import.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/material.dart';
 
-import 'user.dart';
+import 'classes/group.dart';
+import 'classes/user.dart';
 
 Future<String> getGroupNameById(String id) async {
   final DocumentReference document =
@@ -21,7 +23,7 @@ Future<bool> isInGroup(String id, String group) async {
   return doc.exists;
 }
 
-Future<void> updateUserInfosFromGroup(IOUser usr, String group) async {
+Future<bool> updateUserInfosFromGroup(IOUser usr, String group) async {
   final DocumentReference document = FirebaseFirestore.instance
       .collection("groups")
       .doc(group)
@@ -30,8 +32,7 @@ Future<void> updateUserInfosFromGroup(IOUser usr, String group) async {
   var doc = await document.get();
   usr.setUrl(doc['url']);
   usr.setName(doc['name']);
-  print(doc['url']);
-  return;
+  return true;
 }
 
 Future<int> getBalance(String usrId, String group) async {
@@ -210,12 +211,17 @@ Future<void> deleteGroupIfEmpty(String groupId) async {
     await deleteGroup(groupId);
 }
 
-Future<Map<String, String>> getGroupsMap(List<String> list) async {
-  Map<String, String> map = Map<String, String>();
-  for (String groupId in list) {
-      map[groupId] = await getGroupNameById(groupId);
-  }
-  return map;
+Future<List<Group>> getGroupsById(List<String> stringList) async {
+  List<Group> groupList = [];
+
+  var snapshot = await FirebaseFirestore.instance.collection('groups').get();
+
+  stringList.forEach((groupId) {
+    var doc = snapshot.docs.firstWhere((element) => (element.id == groupId));
+    groupList.add(Group(doc.id, doc.data()['name']));
+
+  });
+  return groupList;
 }
 
 Future<Map<String, String>> getUserGroupsMap(String usrId) async {

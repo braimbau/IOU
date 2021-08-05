@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/oauth.dart';
-import 'package:deed/user.dart';
+import 'package:deed/utils/oauth.dart';
+import 'package:deed/classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'Utils.dart';
-import 'group_picker.dart';
-import 'join_group.dart';
+import '../Utils.dart';
+import '../group/group_picker.dart';
+import '../Routes/join_group.dart';
 
 class InvitationPanel extends StatefulWidget {
   final String group;
@@ -140,8 +140,12 @@ class _InvitationPopUpState extends State<InvitationPopUp> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.mail, color: Colors.white),
+                            ),
                             Text(
-                              "You've been invited to join a group",
+                              "You've been invited !",
                               style: TextStyle(color: Colors.white, fontSize: 18),
                             ),
                           ]),
@@ -176,7 +180,7 @@ class _InvitationPopUpState extends State<InvitationPopUp> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextButton(
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.black)),
-                    child: Text("Ui", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                    child: Text("Yes", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                     onPressed: () async {
                       bool success = false;
                       if (await groupExist(this.widget.group)) if (await addGroup(this.widget.group, this.widget.usrId))
@@ -197,7 +201,7 @@ class _InvitationPopUpState extends State<InvitationPopUp> {
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: TextButton(
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.black)),
-                    child: Text("Nan", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                    child: Text("No", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                     onPressed: () {
                       Navigator.pop(context);
                     },

@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/Utils.dart';
 
-import 'InputInfo.dart';
-import 'error.dart';
+import '../classes/InputInfo.dart';
+import '../utils/error.dart';
 import 'label_input.dart';
 import 'payer_widget.dart';
-import 'quick_pref.dart';
+import '../classes/quick_pref.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'amount_input.dart';
-import 'user.dart';
+import '../classes/user.dart';
 import 'selection.dart';
 
 class AmountCard extends StatelessWidget {
@@ -111,7 +111,7 @@ class AmountCard extends StatelessWidget {
 
         print("selected : $currentUserId");
         selectedUsers.removeWhere((element) => !userList.contains(element));
-        return new Card(
+        return Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
