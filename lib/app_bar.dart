@@ -1,6 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'error.dart';
+import 'dart:io';
+
+import 'package:deed/error.dart';
+import 'package:deed/join_group.dart';
+
+import 'Utils.dart';
+import 'group_menu.dart';
 import 'group_picker.dart';
+import 'log_screen.dart';
 import 'user.dart';
 import 'user_display.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,39 +18,40 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
     title: Row(
       children: [
         UserDisplay(usr: usr, group: group),
-        InkWell(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
-          onTap: () {
-            print("bite");
-            showGroupPicker(context, usr, group);
+        FutureBuilder<Map<String, String>>(
+            future: getUserGroupsMap(usr.getId()),
+            builder: (BuildContext context,
+                AsyncSnapshot<Map<String, String>> groupMap) {
+              return InkWell(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                onTap: () {
+                  if (groupMap.hasData)
+                  showGroupPicker(context, usr, group, groupMap.data);
+                },
+                child: Container(
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.white,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(25))),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(children: [
+                        Icon(Icons.expand_more),
+                        Text((groupMap.hasData) ? groupMap.data[group] : "...", style: TextStyle(fontSize: 25),)
+                      ]),
+                    )),
+              );
+            }),
+        IconButton(
+          icon: Icon(
+            Icons.logout,
+            color: Colors.red,
+          ),
+          iconSize: 30,
+          onPressed: () {
+            confirmLeaveGroup(context, usr.getId(), group);
           },
-          child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(25))),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Row(children: [
-                  Icon(Icons.expand_more
-                  ),
-                  FutureBuilder<String>(
-                      future: getGroupNameById(group),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<String> groupName) {
-                        if (groupName.hasData)
-                          return Text(groupName.data, style: TextStyle(fontSize: 25),);
-                        else
-                          return Text("...");
-                      })
-                ]),
-              )),
-        ),
-        //Expanded(child: Image.asset('asset/image/logo.png', height: 45,)),
-        Icon(
-          Icons.settings,
-          size: 40,
         ),
       ],
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,14 +60,45 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
   );
 }
 
-Future<String> getGroupNameById(String id) async {
-  final DocumentReference document =
-      FirebaseFirestore.instance.collection("groups").doc(id);
-  var doc = await document.get();
-  return doc["name"];
+confirmLeaveGroup(BuildContext context, String usrId, String group) {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Leave group'),
+        content: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Text('Are you sure you want to leave this group ?'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text('Leave'),
+            onPressed: () async {
+              String err = await leaveGroup(usrId, group);
+              Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
+              if (err != null)
+                displayError(err, context);
+              else
+                Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
 
-void showGroupPicker(BuildContext context, IOUser usr, String group) {
+void showGroupPicker(BuildContext context, IOUser usr, String group, Map<String, String> groupMap) {
   showDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -68,17 +106,15 @@ void showGroupPicker(BuildContext context, IOUser usr, String group) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                GroupPickerCard(
-                  usr: usr,
-                  excludeGroup: group,
-                )
-              ]),
+          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+            GroupMenu(
+              usr: usr,
+              excludeGroup: group,
+              groupMap: groupMap,
+            )
+          ]),
         ],
       );
     },
   );
 }
-

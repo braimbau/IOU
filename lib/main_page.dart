@@ -28,7 +28,6 @@ class MainPage extends StatelessWidget{
   Widget build(BuildContext context) {
     IOUser usr = args.usr;
     String group = args.group;
-
     return GestureDetector(
       onTap: () {
         WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
@@ -74,7 +73,7 @@ class MainPage extends StatelessWidget{
           padding: const EdgeInsets.symmetric(horizontal: 5.0),
           child: Column(
             children: <Widget>[
-              Flexible(child: BalanceCard(usr: usr, group: group)),
+              Visibility(child: Flexible(child: BalanceCard(usr: usr, group: group))),
               QuickCard(usr: usr, group: group),
             ],
           ),

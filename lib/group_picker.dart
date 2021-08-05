@@ -1,25 +1,21 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/rendering.dart';
 import 'package:share_plus/share_plus.dart';
+import 'Utils.dart';
 import 'main_page.dart';
 import 'user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'user.dart';
 
 import 'error_screen.dart';
-import 'join_group.dart';
 import 'loading.dart';
 
 class GroupPicker extends StatelessWidget {
   final IOUser usr;
   final String excludeGroup;
-  final bool pop;
+  final Map<String, String> groupMap;
 
-  GroupPicker({this.usr, this.excludeGroup, this.pop});
+  GroupPicker({this.usr, this.excludeGroup, this.groupMap});
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +51,12 @@ class GroupPicker extends StatelessWidget {
                 String group = groupList[index];
                 return Row(
                   children: [
+                    if (groupMap.containsKey(group))
+                      Text(
+                      groupMap[group],
+                      style: TextStyle(color: Colors.white),
+                      )
+                else
                     FutureBuilder<String>(
                         future: getGroupNameById(group),
                         builder: (BuildContext context,
@@ -72,9 +74,7 @@ class GroupPicker extends StatelessWidget {
                         }),
                     InkWell(
                         onTap: () async {
-                          //if (pop)
-                            //Navigator.of(context).pop();
-                          goMainPageWithGroup(context, usr, group, pop);
+                          goMainPageWithGroup(context, usr, group);
                         },
                         radius: 5,
                         customBorder: CircleBorder(),
@@ -89,159 +89,12 @@ class GroupPicker extends StatelessWidget {
   }
 }
 
-class GroupPickerCard extends StatefulWidget {
-  final IOUser usr;
-  final String excludeGroup;
-
-  GroupPickerCard({this.usr, this.excludeGroup});
-
-  @override
-  _GroupPickerCardState createState() => _GroupPickerCardState();
-}
-
-class _GroupPickerCardState extends State<GroupPickerCard> {
-  IOUser usr;
-  String group;
-
-  @override
-  Widget build(BuildContext context) {
-    usr = this.widget.usr;
-    group = this.widget.excludeGroup;
-    return Card(
-        color: Colors.grey,
-        child: SizedBox(
-          width: 175,
-          height: 210,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(children: [
-                  Text("group : "),
-                  FutureBuilder<String>(
-                      future: getGroupNameById(group),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<String> groupName) {
-                        if (groupName.hasData)
-                          return Expanded(
-                            child: Text(
-                              groupName.data, style: TextStyle(fontWeight: FontWeight.bold),),
-                          );
-                        else
-                          return Text(
-                            "...", style: TextStyle(color: Colors
-                              .white),);
-                      }),
-                  IconButton(icon: Icon(Icons.ios_share),
-                      onPressed: () async {
-                    String url = await getGroupDynamicLink(group);
-                    await Share.share(url);
-                  })
-                ]),
-                Expanded(
-                  child: GroupPicker(
-                    usr: usr,
-                    excludeGroup: this.widget.excludeGroup,
-                    pop: true,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    //go to join Page
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    'Join/Create',
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      shape: StadiumBorder(), primary: Colors.black),
-                ),
-              ],
-            ),
-          ),
-        ));
-  }
-}
-
-Future<String> getGroupNameById(String id) async {
-  final DocumentReference document =
-      FirebaseFirestore.instance.collection("groups").doc(id);
-  var doc = await document.get();
-  return doc["name"];
-}
-
 Future<void> goMainPageWithGroup(
-    BuildContext context, IOUser usr, String group, bool pop) async {
+    BuildContext context, IOUser usr, String group) async {
   await checkGroup(usr, group);
   await updateUserInfosFromGroup(usr, group);
-
-  if (pop) {
-    //Navigator.pop(context);
-    Navigator.pushReplacementNamed(
-        context, '/mainPage', arguments: MainPageArgs(usr: usr, group: group));
-  }
-  else
-    Navigator.pushNamed(context, '/mainPage' , arguments: MainPageArgs(usr: usr, group: group));
-
+  Navigator.of(context).pop();
+  Navigator.pushReplacementNamed(context, '/mainPage',
+      arguments: MainPageArgs(usr: usr, group: group));
 }
 
-Future<bool> isInGroup(String id, String group) async {
-  final DocumentReference document = FirebaseFirestore.instance
-      .collection("users")
-      .doc(id)
-      .collection("groups")
-      .doc(group);
-  var doc = await document.get();
-  return doc.exists;
-}
-
-Future<void> updateUserInfosFromGroup(IOUser usr, String group) async {
-  final DocumentReference document = FirebaseFirestore.instance
-      .collection("groups")
-      .doc(group)
-      .collection("users")
-      .doc(usr.getId());
-  var doc = await document.get();
-  usr.setUrl(doc['url']);
-  usr.setName(doc['name']);
-  print(doc['url']);
-  return;
-}
-
-Future<void> checkGroup(IOUser usr, String group) async {
-  if (!await isInGroup(usr.getId(), group)) {
-    var docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(usr.getId())
-        .collection("groups")
-        .doc(group);
-    docRef.set({'balance': 0});
-    print("creating balance for this user");
-    docRef = FirebaseFirestore.instance
-        .collection('groups')
-        .doc(group)
-        .collection("users")
-        .doc(usr.getId());
-    docRef.set({'name': usr.getName(), 'url': usr.getUrl(), 'id': usr.getId()});
-  }
-}
-
-Future<String> getGroupDynamicLink(String group) async {
-  final DynamicLinkParameters parameters = DynamicLinkParameters(
-    uriPrefix: 'https://altua.page.link',
-    link: Uri.parse('https://example.com/data?group=$group'),
-    androidParameters: AndroidParameters(
-      packageName: 'com.example.deed',
-    ),
-    iosParameters: IosParameters(
-      bundleId: 'com.altua.iouapp',
-      minimumVersion: '1.0.0',
-      appStoreId: '1575234438',
-    ),
-  );
-
-  final ShortDynamicLink short = await parameters.buildShortLink();
-  final Uri dynamicUrl = short.shortUrl;
-  return dynamicUrl.toString();
-}

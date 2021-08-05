@@ -1,22 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/app_bar.dart';
+
 import 'package:deed/error.dart';
-import 'package:deed/error_screen.dart';
 import 'package:deed/invitation.dart';
-import 'package:deed/join_group.dart';
 import 'package:deed/main_page.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'history.dart';
+import 'Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'dart:math';
-import 'history.dart';
-import 'user.dart';
 import 'log_screen.dart';
-import 'loading.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -104,6 +96,12 @@ Future<void> handleDynamicLink(PendingDynamicLinkData dynamicLink, BuildContext 
 
   if (deepLink != null) {
     String group = deepLink.queryParameters['group'];
+    if (!await groupExist(group)) {
+      displayError(
+          "This group doesn't exist anymore",
+          context);
+      return;
+    }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String usrId = prefs.getString("userId");
     if (usrId == null){

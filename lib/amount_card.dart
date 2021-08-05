@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/Utils.dart';
 
 import 'InputInfo.dart';
 import 'error.dart';
@@ -108,7 +109,6 @@ class AmountCard extends StatelessWidget {
           updateAmountToPay();
         }
 
-        print(userList);
         print("selected : $currentUserId");
         selectedUsers.removeWhere((element) => !userList.contains(element));
         return new Card(
@@ -284,9 +284,11 @@ onValidation(
     IOUser payer,
     String label,
     ValueNotifier<int> amountToPayPerUser,
-    String group) {
+    String group) async {
   WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
   String err = amountError(amountToPay.value, selectedUsers.length);
+  if (err == null)
+    err = await checkUsersInGroup(selectedUsers, group) ? null : "An user isn't in the group anymore";
   int amountToCredit = 0;
   if (err != null) {
     displayError(err, context);

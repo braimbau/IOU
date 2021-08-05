@@ -34,7 +34,17 @@ Future uploadImageToFirebase(File img, String id) async {
     return null;
 }
 
-Future<void> changeUrl(String id, String url, String group) async {
-  CollectionReference ref = FirebaseFirestore.instance.collection('groups').doc(group).collection('users');
-  ref.doc(id).update({"url": url});
+Future removeImageOfFirebase(String id) async {
+  firebase_storage.FirebaseStorage storage =
+        firebase_storage.FirebaseStorage.instance;
+
+  var ref = storage.ref('profilePictures/$id.png');
+  try {
+    await ref.getDownloadURL();
+    await storage.ref('profilePictures/$id.png').delete();
+    print("photo deleted");
+  } catch(err) {
+    print("No user photo in database, not deleted");
+  }
+
 }

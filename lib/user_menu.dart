@@ -1,5 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/error.dart';
+import 'Utils.dart';
 import 'group_picker.dart';
 import 'image_import.dart';
 import 'main.dart';
@@ -26,9 +28,16 @@ class UserMenu extends StatefulWidget {
 }
 
 class _UserMenuState extends State<UserMenu> {
-  bool editableMode = false;
+  int btnMode = 0; // 0: classic 1: edit 2: loading
   String newName;
   File img;
+
+  void toggleBtnMode() {
+    if (btnMode == 1)
+      btnMode = 0;
+    else
+      btnMode = 1;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +59,7 @@ class _UserMenuState extends State<UserMenu> {
                       child: InkWell(
                         customBorder: CircleBorder(),
                         onTap: () async {
-                          if (editableMode) img = await pickImage();
+                          if (btnMode == 1) img = await pickImage();
                           setState(() {});
                         },
                         child: Stack(children: [
@@ -62,7 +71,7 @@ class _UserMenuState extends State<UserMenu> {
                                   backgroundImage: (img != null)
                                       ? FileImage(img)
                                       : NetworkImage(usr.getUrl()))),
-                          if (editableMode)
+                          if (btnMode == 1)
                             Positioned(
                               child: Icon(Icons.edit, size: 20),
                               right: 4,
@@ -71,7 +80,7 @@ class _UserMenuState extends State<UserMenu> {
                         ]),
                       )),
                   Flexible(
-                    child: (editableMode)
+                    child: (btnMode != 0)
                         ? TextFormField(
                             initialValue: usr.getName(),
                             onChanged: (String txt) {
@@ -87,61 +96,109 @@ class _UserMenuState extends State<UserMenu> {
                           ])),
                   ),
                 ]),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        if (!editableMode)
-                          logOut(context);
-                        else
-                          img = null;
-                        setState(() {
-                          editableMode = !editableMode;
-                        });
-                      },
-                      child: Text((editableMode) ? 'Cancel' : 'Log out'),
-                      style: ElevatedButton.styleFrom(
-                          shape: StadiumBorder(), primary: Colors.red),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (editableMode) {
-                          if (newName != "") {
-                            changeName(usr.getId(), newName, this.widget.group);
-                            if (img != null) {
-                              String url =
-                                  await uploadImageToFirebase(img, usr.getId() + this.widget.group);
-                              print(url);
-                              changeUrl(usr.getId(), url, this.widget.group);
-                            }
-                            Navigator.pushReplacementNamed(context, '/mainPage' , arguments: MainPageArgs(usr: usr, group: this.widget.group));
+                Visibility(
+                  visible: btnMode == 0,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            logOut(context);
+                          },
+                          child: SizedBox(width: 60, child: Center(child: Text('Log out'))),
+                          style: ElevatedButton.styleFrom(
+                              shape: StadiumBorder(), primary: Colors.red),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              newName = usr.getName();
+                              toggleBtnMode();
+                            });
+                          },
+                          child: SizedBox(
+                              width: 60, child: Center(child: Text('Edit'))),
+                          style:
+                              ElevatedButton.styleFrom(shape: StadiumBorder()),
+                        ),
+                      ]),
+                ),
+                Visibility(
+                  visible: btnMode == 1,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            img = null;
+                            setState(() {
+                              toggleBtnMode();
+                            });
+                          },
+                          child: SizedBox(width: 60, child: Center(child: Text('Cancel'))),
+                          style: ElevatedButton.styleFrom(
+                              shape: StadiumBorder(), primary: Colors.red),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (newName != "") {
+                              setState(() {
+                                btnMode = 2;
+                              });
+                              await changeName(
+                                  usr.getId(), newName, this.widget.group);
+                              usr.setName(newName);
+                              if (img != null) {
+                                String url = await uploadImageToFirebase(
+                                    img, usr.getId() + this.widget.group);
+                                print(url);
+                                usr.setUrl(url);
+                                await changePhotoUrl(
+                                    usr.getId(), url, this.widget.group);
+                              }
+                              Navigator.of(context)
+                                  .popUntil(ModalRoute.withName('/mainPage'));
+                              Navigator.pushReplacementNamed(
+                                  context, '/mainPage',
+                                  arguments: MainPageArgs(
+                                      usr: usr, group: this.widget.group));
                             } else
-                            Flushbar(
-                              message: "You can't have an empty name",
-                              backgroundColor: Colors.red,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50)),
-                              icon: Icon(
-                                Icons.error_outline,
-                                size: 28,
-                                color: Colors.white,
-                              ),
-                              duration: Duration(seconds: 2),
-                              forwardAnimationCurve:
-                                  Curves.fastLinearToSlowEaseIn,
-                            )..show(context);
-                        } else {
-                          newName = usr.getName();
-                        }
-                        setState(() {
-                          editableMode = !editableMode;
-                        });
-                      },
-                      child: Text((editableMode) ? 'Confirm' : 'Edit'),
-                      style: ElevatedButton.styleFrom(shape: StadiumBorder()),
-                    ),
-                  ],
+                              displayError(
+                                  "You can't have an empty name", context);
+                          },
+                          child: SizedBox(width: 60, child: Center(child: Text('Confirm'))),
+                          style:
+                              ElevatedButton.styleFrom(shape: StadiumBorder()),
+                        ),
+                      ]),
+                ),
+                Visibility(
+                  visible: btnMode == 2,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          child: SizedBox(width: 60, child: Center(child: Text('...'))),
+                          style: ElevatedButton.styleFrom(
+                              shape: StadiumBorder(), primary: Colors.red),
+                        ),
+                        ElevatedButton(
+                          child: SizedBox(
+                              width: 60,
+                              child: Center(
+                                child: SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                            value: null,
+                            semanticsLabel: 'Linear progress indicator',
+                          ),
+                                ),
+                              )),
+                          style:
+                          ElevatedButton.styleFrom(shape: StadiumBorder(), primary: Colors.blue),
+                        ),
+                      ]),
                 ),
               ],
             ),
@@ -156,7 +213,7 @@ Future<void> changeName(String id, String name, String group) async {
 }
 
 void logOut(BuildContext context) {
-  Navigator.of(context).popUntil((route) => route.isFirst);
+  Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
   Navigator.pushReplacement(
     context,
     PageRouteBuilder(
