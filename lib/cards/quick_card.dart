@@ -60,47 +60,53 @@ class QuickCard extends StatelessWidget {
                     padding: EdgeInsets.all(8)),
                 SizedBox(
                   height: 90,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.all(8),
-                    itemCount: quickPrefList.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      return (index != quickPrefList.length)
-                          ? TextButton(
-                              child: Text(
-                                quickPrefList[index].getEmoji(),
-                                style: TextStyle(fontSize: 50),
+                  child: Row(
+                    children: [
+                      Flexible(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.all(8),
+                          itemCount: quickPrefList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return TextButton(
+                                    child: Text(
+                                      quickPrefList[index].getEmoji(),
+                                      style: TextStyle(fontSize: 50),
+                                    ),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            _buildPopupDialog(context, usr,
+                                                quickPrefList[index], group),
+                                      );
+                                    },
+                                    onLongPress: () {
+                                      _confirmQuickDelete(
+                                          context, quickPrefList[index], group);
+                                    },
+                                  );
+                          },
+                        ),
+                      ),
+                      Padding(
+                          child: IconButton(
+                              icon: Icon(
+                                Icons.add_circle_outline,
+                                size: 30,
+                                color: Colors.blue,
                               ),
+                              splashRadius: 25,
                               onPressed: () {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) =>
-                                      _buildPopupDialog(context, usr,
-                                          quickPrefList[index], group),
+                                      _buildPrefPicker(group),
                                 );
-                              },
-                              onLongPress: () {
-                                _confirmQuickDelete(
-                                    context, quickPrefList[index], group);
-                              },
-                            )
-                          : Padding(
-                              child: IconButton(
-                                  icon: Icon(
-                                    Icons.add_circle_outline,
-                                    size: 30,
-                                    color: Colors.blue,
-                                  ),
-                                  splashRadius: 25,
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) =>
-                                          _buildPrefPicker(group),
-                                    );
-                                  }),
-                              padding: EdgeInsets.only(top: 15));
-                    },
+                              }),
+                          padding: EdgeInsets.only(top: 15))
+                    ],
                   ),
                 ),
               ],

@@ -41,7 +41,7 @@ class _GroupCreationState extends State<GroupCreation> {
             ),
           ),
           clipBehavior: Clip.antiAlias,
-          color: Colors.grey[900],
+          color: Colors.black,
           semanticContainer: true,
           elevation: 5,
           child: SizedBox(
@@ -83,16 +83,19 @@ class _GroupCreationState extends State<GroupCreation> {
                           color: Colors.white,
                         ),
                         onPressed: () async {
-                          if (groupName == null || groupName.length == 0){
+                          if (groupName == null || groupName.length == 0) {
                             WidgetsBinding.instance.focusManager.primaryFocus
                                 ?.unfocus();
-                            displayError("Chose a name to create a group", context);
+                            displayError(
+                                "Chose a name to create a group", context);
                             return;
                           }
-                          if (groupName.length > 10){
+                          if (groupName.length > 10) {
                             WidgetsBinding.instance.focusManager.primaryFocus
                                 ?.unfocus();
-                            displayError("The max length of the group name is 10 characters", context);
+                            displayError(
+                                "The max length of the group name is 10 characters",
+                                context);
                             return;
                           }
                           groupId = await createGroup(groupName);
@@ -127,61 +130,76 @@ class _GroupCreationState extends State<GroupCreation> {
           child: SizedBox(
             width: 300,
             height: 150,
-            child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: FittedBox(
-                          child: Text(
-                            "Group $groupName created !",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: FittedBox(
+                            child: Text(
+                              "Group $groupName created !",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                        icon: Icon(
-                          Icons.close,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            isCreated = false;
-                          });
-                        })
-                  ],
-                ),
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16),
-                    child: IconButton(
-                        icon: Icon(Icons.ios_share, color: Colors.white,),
-                        onPressed: () async {
-                          String url = await getGroupDynamicLink(groupId);
-                          await Share.share(url);
-                        }),
-                  ),
-                  VerticalDivider(
-                    color: Colors.red,
-                    thickness: 4,
-                  ),
-                  Column(
-                    children: [
-                      Text("group Id:", style: TextStyle(color: Colors.white60),),
-                      SelectableText(groupId, style: TextStyle(color: Colors.white60),),
+                      IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isCreated = false;
+                            });
+                          })
                     ],
+                  ),
+                  ElevatedButton(
+                      onPressed: () async {
+                        String url = await getGroupDynamicLink(groupId);
+                        await Share.share(url);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          shape: StadiumBorder(), primary: Colors.white),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                              Icons.ios_share,
+                              color: Colors.blue,
+                          ),
+                          Text(
+                            "Share Invitation",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
+                          )
+                        ],
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "group Id:",
+                          style: TextStyle(color: Colors.white60),
+                        ),
+                        SelectableText(
+                          groupId,
+                          style: TextStyle(color: Colors.white60),
+                        ),
+                      ],
+                    ),
                   )
-                ],
-              )
-            ]),
+                ]),
           ));
   }
 }

@@ -30,7 +30,7 @@ class _PayerWidgetState extends State<PayerWidget> {
           selectedItemBuilder: (_) {
             return this.widget.userList
                 .map((e) => Container(
-              width: 170,
+              width: 190,
               alignment: Alignment.centerLeft,
               child: Text(selectedItem.getName(),
                 style: TextStyle(color: Colors.white),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/classes/group.dart';
 import 'package:flutter/rendering.dart';
 import 'package:share_plus/share_plus.dart';
 import '../Utils.dart';
@@ -13,9 +14,9 @@ import '../utils/loading.dart';
 class GroupPicker extends StatelessWidget {
   final IOUser usr;
   final String excludeGroup;
-  final Map<String, String> groupMap;
+  final List<Group> groupList;
 
-  GroupPicker({this.usr, this.excludeGroup, this.groupMap});
+  GroupPicker({this.usr, this.excludeGroup, this.groupList});
 
   @override
   Widget build(BuildContext context) {
@@ -35,29 +36,29 @@ class GroupPicker extends StatelessWidget {
 
           String groups = snapshot.data["groups"];
 
-          List<String> groupList =
+          List<String> stringGroupList =
               (groups == "" || groups == null) ? [] : groups.split(':');
 
-          if (excludeGroup != null) groupList.remove(excludeGroup);
+          if (excludeGroup != null) stringGroupList.remove(excludeGroup);
 
           return LimitedBox(
             maxHeight: 150,
             child: ListView.separated(
               shrinkWrap: true,
-                itemCount: groupList.length,
+                itemCount: stringGroupList.length,
                 separatorBuilder: (BuildContext contex, int index) {
                   return Container(
                     height: 5,
                   );
                 },
                 itemBuilder: (BuildContext context, int index) {
-                  String group = groupList[index];
+                  String group = stringGroupList[index];
                   return Row(
                     children: [
-                      if (groupMap.containsKey(group))
+                      if (groupList.contains(Group(group, null)))
                         Text(
-                        groupMap[group],
-                        style: TextStyle(color: Colors.white),
+                          groupList.firstWhere((element) => element.getId() == group).getName(),
+                          style: TextStyle(color: Colors.white),
                         )
                   else
                       FutureBuilder<String>(

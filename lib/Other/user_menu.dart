@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/utils/error.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Utils.dart';
 import '../group/group_picker.dart';
 import '../utils/image_import.dart';
@@ -48,14 +49,51 @@ class _UserMenuState extends State<UserMenu> {
     newName = usr.getName();
 
     return Card(
-        color: Colors.grey,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+          side: BorderSide(
+            color: Colors.white,
+            width: 1,
+          ),
+        ),
+        color: Colors.grey[850],
         child: SizedBox(
-          width: 250,
+          width: 220,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
                 Row(children: [
+                  Expanded(
+                    child: Center(
+                      child: (btnMode != 0)
+                          ? TextFormField(
+                              initialValue: usr.getName(),
+                              onChanged: (String txt) {
+                                newName = txt;
+                              },
+                              cursorColor: Colors.white,
+                              style: TextStyle(color: Colors.white),
+                              decoration: InputDecoration(
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white54),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                                border: UnderlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.white),
+                                ),
+                              ))
+                          : RichText(
+                              text: TextSpan(children: [
+                              TextSpan(text: 'Logged in as\n'),
+                              TextSpan(
+                                  text: usr.getName(),
+                                  style: TextStyle(fontWeight: FontWeight.bold))
+                            ])),
+                    ),
+                  ),
                   Padding(
                       padding: EdgeInsets.only(right: 6),
                       child: InkWell(
@@ -81,22 +119,6 @@ class _UserMenuState extends State<UserMenu> {
                             ),
                         ]),
                       )),
-                  Flexible(
-                    child: (btnMode != 0)
-                        ? TextFormField(
-                            initialValue: usr.getName(),
-                            onChanged: (String txt) {
-                              newName = txt;
-                            },
-                          )
-                        : RichText(
-                            text: TextSpan(children: [
-                            TextSpan(text: 'Logged in as\n'),
-                            TextSpan(
-                                text: usr.getName(),
-                                style: TextStyle(fontWeight: FontWeight.bold))
-                          ])),
-                  ),
                 ]),
                 Visibility(
                   visible: btnMode == 0,
@@ -107,7 +129,8 @@ class _UserMenuState extends State<UserMenu> {
                           onPressed: () {
                             logOut(context);
                           },
-                          child: SizedBox(width: 60, child: Center(child: Text('Log out'))),
+                          child: SizedBox(
+                              width: 60, child: Center(child: Text('Log out'))),
                           style: ElevatedButton.styleFrom(
                               shape: StadiumBorder(), primary: Colors.red),
                         ),
@@ -137,7 +160,8 @@ class _UserMenuState extends State<UserMenu> {
                               toggleBtnMode();
                             });
                           },
-                          child: SizedBox(width: 60, child: Center(child: Text('Cancel'))),
+                          child: SizedBox(
+                              width: 60, child: Center(child: Text('Cancel'))),
                           style: ElevatedButton.styleFrom(
                               shape: StadiumBorder(), primary: Colors.red),
                         ),
@@ -168,7 +192,8 @@ class _UserMenuState extends State<UserMenu> {
                               displayError(
                                   "You can't have an empty name", context);
                           },
-                          child: SizedBox(width: 60, child: Center(child: Text('Confirm'))),
+                          child: SizedBox(
+                              width: 60, child: Center(child: Text('Confirm'))),
                           style:
                               ElevatedButton.styleFrom(shape: StadiumBorder()),
                         ),
@@ -180,9 +205,10 @@ class _UserMenuState extends State<UserMenu> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         ElevatedButton(
-                          child: SizedBox(width: 60, child: Center(child: Text('...'))),
+                          child: SizedBox(
+                              width: 60, child: Center(child: Text('...'))),
                           style: ElevatedButton.styleFrom(
-                              shape: StadiumBorder(), primary: Colors.red),
+                              shape: StadiumBorder(), onSurface: Colors.white),
                         ),
                         ElevatedButton(
                           child: SizedBox(
@@ -192,13 +218,13 @@ class _UserMenuState extends State<UserMenu> {
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
-                            value: null,
-                            semanticsLabel: 'Linear progress indicator',
-                          ),
+                                    value: null,
+                                    semanticsLabel: 'Linear progress indicator',
+                                  ),
                                 ),
                               )),
-                          style:
-                          ElevatedButton.styleFrom(shape: StadiumBorder(), primary: Colors.blue),
+                          style: ElevatedButton.styleFrom(
+                              shape: StadiumBorder(), onSurface: Colors.white),
                         ),
                       ]),
                 ),
@@ -214,7 +240,9 @@ Future<void> changeName(String id, String name, String group) async {
   ref.doc(group).collection("users").doc(id).update({"name": name});
 }
 
-void logOut(BuildContext context) {
+Future<void> logOut(BuildContext context) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString("userId", null);
   Navigator.of(context).popUntil(ModalRoute.withName('/'));
   Navigator.of(context).pushNamed('/');
 }

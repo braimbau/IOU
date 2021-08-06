@@ -1,5 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/Other/user_display.dart';
+import 'package:deed/Other/user_menu.dart';
 import 'package:deed/group/group_creation.dart';
 import 'package:deed/Other/invitation.dart';
 import 'package:deed/group/manual_join.dart';
@@ -26,14 +28,36 @@ class JoinGroup extends StatelessWidget {
     String group;
     String groupName;
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.grey[900],
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.grey[850],
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.logout,
+                color: Colors.red,
+              ),
+              iconSize: 30,
+              onPressed: () async {
+                await logOut(context);
+              }
+            ),
+            Center(child: Image.asset('asset/image/logo.png', height: 45)),
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.white,
+              child: CircleAvatar(
+                  radius: 18, backgroundImage: NetworkImage(usr.getUrl())),
+            )
+          ],
+        ),
+      ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Expanded(
-            child: Container(),
-            flex: 1,
-          ),
+          Container(),
           if (groupInvite != null)
             InvitationPanel(
               group: groupInvite,
@@ -42,15 +66,19 @@ class JoinGroup extends StatelessWidget {
           SizedBox(
             height: 50,
           ),
-          GroupCreation(usr: usr,),
-          TextButton(onPressed: () {
-            showManualJoin(context, usr);
-          }, child: Text("join group manually"),),
+          GroupCreation(
+            usr: usr,
+          ),
+          TextButton(
+            onPressed: () {
+              showManualJoin(context, usr);
+            },
+            child: Text("join group manually"),
+          ),
           Divider(
             color: Colors.white,
           ),
-          Expanded(
-            flex: 3,
+          Flexible(
             child: GroupSelection(
               usr: usr,
             ),

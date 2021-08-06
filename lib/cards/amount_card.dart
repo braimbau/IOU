@@ -127,14 +127,17 @@ class AmountCard extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: PayerWidget(
-                      userList: userList,
-                      dropdownMenuItems: dropdownMenuItems,
-                      firstSelected: userList.firstWhere(
-                          (element) => element.getId() == currentUserId),
-                      setPayer: setPayer),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Payer:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                    PayerWidget(
+                        userList: userList,
+                        dropdownMenuItems: dropdownMenuItems,
+                        firstSelected: userList.firstWhere(
+                            (element) => element.getId() == currentUserId),
+                        setPayer: setPayer),
+                  ],
                 ),
                 Row(
                   children: <Widget>[

@@ -224,6 +224,20 @@ Future<List<Group>> getGroupsById(List<String> stringList) async {
   return groupList;
 }
 
+Future<List<Group>> getGroupsByUserId(String usrId) async {
+  List<String> stringList = await getGroups(usrId);
+  List<Group> groupList = [];
+
+  var snapshot = await FirebaseFirestore.instance.collection('groups').get();
+
+  stringList.forEach((groupId) {
+    var doc = snapshot.docs.firstWhere((element) => (element.id == groupId));
+    groupList.add(Group(doc.id, doc.data()['name']));
+
+  });
+  return groupList;
+}
+
 Future<Map<String, String>> getUserGroupsMap(String usrId) async {
   List<String> groupList = await getGroups(usrId);
   Map<String, String> map = Map<String, String>();

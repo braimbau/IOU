@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:deed/utils/Apple_oauth.dart';
+
 import '../Other/app_bar.dart';
 import '../cards/quick_card.dart';
 import 'package:flutter/rendering.dart';
@@ -90,6 +92,8 @@ class _MainPageState extends State<MainPage> {
             children: <Widget>[
               Visibility(child: Flexible(child: BalanceCard(usr: usr, group: group))),
               QuickCard(usr: usr, group: group),
+              IconButton(icon: Icon(Icons.face_rounded), onPressed: () {
+              })
             ],
           ),
         ),

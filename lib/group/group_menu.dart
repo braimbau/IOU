@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/classes/group.dart';
 import 'package:deed/classes/user.dart';
 import 'package:deed/utils/error.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,9 +12,9 @@ import 'group_picker.dart';
 class GroupMenu extends StatefulWidget {
   final IOUser usr;
   final String excludeGroup;
-  final Map<String, String> groupMap;
+  final List<Group> groupList;
 
-  GroupMenu({this.usr, this.excludeGroup, this.groupMap});
+  GroupMenu({this.usr, this.excludeGroup, this.groupList});
 
   @override
   _GroupMenuState createState() => _GroupMenuState();
@@ -22,13 +23,13 @@ class GroupMenu extends StatefulWidget {
 class _GroupMenuState extends State<GroupMenu> {
   IOUser usr;
   String group;
-  Map<String, String> groupMap;
+  List<Group> groupList;
 
   @override
   Widget build(BuildContext context) {
     usr = this.widget.usr;
     group = this.widget.excludeGroup;
-    groupMap = this.widget.groupMap;
+    groupList = this.widget.groupList;
     return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -49,7 +50,7 @@ class _GroupMenuState extends State<GroupMenu> {
                     Flexible(
                       child: FittedBox(
                         child: Text(
-                          groupMap[group],
+                          groupList.firstWhere((element) => element.getId() == group).getName(),
                           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 30),
                         ),
                       ),
@@ -64,11 +65,10 @@ class _GroupMenuState extends State<GroupMenu> {
                   GroupPicker(
                     usr: usr,
                     excludeGroup: this.widget.excludeGroup,
-                    groupMap: groupMap,
+                    groupList: groupList,
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
                       confirmLeaveGroup(context, usr.getId(), group);
                     },
                     child: Text(

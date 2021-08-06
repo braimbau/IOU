@@ -18,7 +18,7 @@ class UserDisplay extends StatelessWidget {
         future: updateUserInfosFromGroup(usr, group),
         builder: (BuildContext context, AsyncSnapshot<bool> update) {
           return Padding(
-            padding: const EdgeInsets.only(top: 5, bottom: 5),
+            padding: const EdgeInsets.all(5),
             child: InkWell(
               child: CircleAvatar(
                   radius: 20,
