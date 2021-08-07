@@ -30,7 +30,7 @@ class AmountCard extends StatelessWidget {
     List<IOUser> selectedUsers = [];
 
     //if card is pre filled
-    String label = (isPreFilled) ? pref.getName() : "unamed transaction";
+    String label = (isPreFilled) ? pref.getName() : "unnamed transaction";
     InputInfo inputInfo =
         InputInfo(false, (isPreFilled) ? pref.getAmount() : 0);
 

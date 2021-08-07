@@ -1,5 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/utils/error_screen.dart';
+import 'package:deed/utils/loading.dart';
 import 'label_input.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,7 +25,7 @@ class PrefPicker extends StatelessWidget {
     ValueNotifier<String> secondaryDisplay = ValueNotifier("");
     InputInfo inputInfo = InputInfo(false, 0);
 
-    String label = "unamed quick pref";
+    String label = "unnamed quick pref";
 
     void updateAmountToPay() {
       if (inputInfo.getIsIndividual() == false) {
@@ -67,11 +69,11 @@ class PrefPicker extends StatelessWidget {
       stream: FirebaseFirestore.instance.collection("groups").doc(group).collection("users").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return errorScreen("Something went wrong");
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Loading();
         }
 
         if (snapshot.data.docs.length == 0) return Text("No users to display");

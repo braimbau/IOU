@@ -167,7 +167,17 @@ class _UserMenuState extends State<UserMenu> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            if (newName != "") {
+                            if (newName == "") {
+                              displayError(
+                                  "You can't have an empty name", context);
+                              return;
+                            }
+                            if (newName.length > 20) {
+                              displayError(
+                                  "Max name length is 20 characters", context);
+                              return;
+                            }
+
                               setState(() {
                                 btnMode = 2;
                               });
@@ -188,9 +198,7 @@ class _UserMenuState extends State<UserMenu> {
                                   context, '/mainPage',
                                   arguments: MainPageArgs(
                                       usr: usr, group: this.widget.group));
-                            } else
-                              displayError(
-                                  "You can't have an empty name", context);
+
                           },
                           child: SizedBox(
                               width: 60, child: Center(child: Text('Confirm'))),
