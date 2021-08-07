@@ -132,9 +132,12 @@ class PrefPicker extends StatelessWidget {
                         valueListenable: secondaryDisplay,
                         builder:
                             (BuildContext context, String text, Widget child) {
-                          return Text(
-                              text,
-                              style: TextStyle(color: Colors.white));
+                          return Visibility(
+                            visible: (text != null && text != ""),
+                            child: Text(
+                                text,
+                                style: TextStyle(color: Colors.white)),
+                          );
                         })
                   ],
                 ),
