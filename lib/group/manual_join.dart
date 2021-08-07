@@ -23,12 +23,11 @@ class ManualJoin extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
         side: BorderSide(
-          color: Colors.white,
+          color: Theme.of(context).primaryColor,
           width: 1.5,
         ),
       ),
       clipBehavior: Clip.antiAlias,
-      color: Colors.grey[900],
       semanticContainer: true,
       elevation: 5,
       child: Padding(
@@ -42,14 +41,11 @@ class ManualJoin extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.build_outlined, color: Colors.white),
+                  child: Icon(Icons.build_outlined),
                 ),
                 Text(
                   "Manual join",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
+                  style: Theme.of(context).textTheme.headline2,
                 ),
               ],
             ),
@@ -57,20 +53,19 @@ class ManualJoin extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(icon: Icon(Icons.paste, color: Colors.white,), onPressed: () async {
+                IconButton(icon: Icon(Icons.paste), onPressed: () async {
                   ClipboardData data = await Clipboard.getData(Clipboard.kTextPlain);
                   groupId = data.text;
                   ctrl.text = data.text;
                 }),
                 Flexible(
                   child: TextField(
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(),
                       controller: ctrl,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8)),
                           hintText: 'Group code',
-                          fillColor: Colors.white,
                           filled: true),
                       onChanged: (String str) {
                         groupId = str;
@@ -79,7 +74,6 @@ class ManualJoin extends StatelessWidget {
                 IconButton(
                     icon: Icon(
                       Icons.east,
-                      color: Colors.white,
                     ),
                     onPressed: () async {
                       print(groupId);
@@ -110,13 +104,13 @@ class ManualJoin extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Icon(Icons.info_outline, color: Colors.white54,),
+                    child: Icon(Icons.info_outline, color: Colors.grey[500]),
                   ),
                   SizedBox(
                     width: 200,
                     child: Text(
                         "You can get the group Id by long pressing the group pill",
-                        style: TextStyle(color: Colors.white54)),
+                        style: TextStyle(color: Colors.grey[500],)),
                   ),
                 ],
               ),

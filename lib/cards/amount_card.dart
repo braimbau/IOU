@@ -115,12 +115,13 @@ class AmountCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
-              color: Colors.white,
+              color: Theme.of(context).primaryColor,
+
               width: 1.5,
             ),
           ),
+
           clipBehavior: Clip.antiAlias,
-          color: Colors.grey[900],
           semanticContainer: true,
           elevation: 5,
           child: Padding(
@@ -130,7 +131,7 @@ class AmountCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Payer:", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                    Text("Payer:", style: Theme.of(context).textTheme.bodyText2,),
                     PayerWidget(
                         userList: userList,
                         dropdownMenuItems: dropdownMenuItems,
@@ -151,7 +152,7 @@ class AmountCard extends StatelessWidget {
                     ),
                     SizedBox(
                       child: IconButton(
-                        icon: const Icon(Icons.east, color: Colors.white),
+                        icon: const Icon(Icons.east),
                         onPressed: () async {
                           onValidation(amountToPay, selectedUsers, context,
                               payer, label, amountToPayPerUser, group);
@@ -168,8 +169,7 @@ class AmountCard extends StatelessWidget {
                             (BuildContext context, String text, Widget child) {
                           return Visibility(
                             visible: (text != null && text != ""),
-                            child: Text(text,
-                                style: TextStyle(color: Colors.white)),
+                            child: Text(text),
                           );
                         }),
                   ],

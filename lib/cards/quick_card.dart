@@ -44,19 +44,18 @@ class QuickCard extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10), // if you need this
               side: BorderSide(
-                color: Colors.white,
+                color: Theme.of(context).primaryColor,
                 width: 1.5,
               ),
             ),
             clipBehavior: Clip.antiAlias,
-            color: Colors.black,
             semanticContainer: true,
             elevation: 5,
             child: Column(
               children: [
                 Padding(
                     child: Text("Quick Adds :",
-                        style: TextStyle(color: Colors.white, fontSize: 18)),
+                        style: Theme.of(context).textTheme.headline3),
                     padding: EdgeInsets.all(8)),
                 SizedBox(
                   height: 90,

@@ -17,14 +17,13 @@ import 'package:flutter/material.dart';
 Widget topAppBar(IOUser usr, String group, BuildContext context) {
   return AppBar(
     automaticallyImplyLeading: false,
-    backgroundColor: Colors.grey[850],
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
           icon: Icon(
             Icons.west,
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
           ),
           iconSize: 30,
           onPressed: () {
@@ -52,14 +51,14 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
                 child: Container(
                     decoration: BoxDecoration(
                         border: Border.all(
-                          color: Colors.white,
+                          color: Theme.of(context).primaryColor,
                         ),
                         borderRadius: BorderRadius.all(Radius.circular(25))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(children: [
-                        Icon(Icons.expand_more),
-                        Text((snap.hasData) ? groupName : "...", style: TextStyle(fontSize: 25),)
+                        Icon(Icons.expand_more, color: Theme.of(context).primaryColor),
+                        Text((snap.hasData) ? groupName : "...", style: Theme.of(context).textTheme.headline2,)
                       ]),
                     )),
               );

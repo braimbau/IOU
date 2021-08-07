@@ -35,10 +35,8 @@ class JoinGroup extends StatelessWidget {
         (_) async => handleRedirection(context, usr));
 
     return Scaffold(
-      backgroundColor: Colors.grey[900],
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey[850],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -52,10 +50,10 @@ class JoinGroup extends StatelessWidget {
                 await logOut(context);
               }
             ),
-            Center(child: Image.asset('asset/image/logo.png', height: 45)),
+            Center(child: Image.asset((Theme.of(context).brightness == Brightness.dark) ? 'asset/image/logo_dark.png' : 'asset/image/logo_light.png', height: 45)),
             CircleAvatar(
+              backgroundColor: Theme.of(context).primaryColor,
               radius: 20,
-              backgroundColor: Colors.white,
               child: CircleAvatar(
                   radius: 18, backgroundImage: NetworkImage(usr.getUrl())),
             )
@@ -83,9 +81,9 @@ class JoinGroup extends StatelessWidget {
             child: Text("join group manually", style: TextStyle(color: Colors.grey, decoration: TextDecoration.underline),),
           ),
           Divider(
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
           ),
-          Text("My groups:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 25),),
+          Text("My groups:", style: Theme.of(context).textTheme.headline2,),
           Flexible(
             child: GroupSelection(
               usr: usr,

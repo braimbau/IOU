@@ -52,11 +52,10 @@ class _UserMenuState extends State<UserMenu> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
           side: BorderSide(
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
             width: 1,
           ),
         ),
-        color: Colors.grey[850],
         child: SizedBox(
           width: 220,
           child: Padding(
@@ -72,25 +71,24 @@ class _UserMenuState extends State<UserMenu> {
                               onChanged: (String txt) {
                                 newName = txt;
                               },
-                              cursorColor: Colors.white,
-                              style: TextStyle(color: Colors.white),
+                              cursorColor: Theme.of(context).primaryColor,
                               decoration: InputDecoration(
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white54),
+                                  borderSide: BorderSide(color: Colors.grey[500]),
                                 ),
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
+                                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                                 ),
                                 border: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
+                                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
                                 ),
                               ))
                           : RichText(
                               text: TextSpan(children: [
-                              TextSpan(text: 'Logged in as\n'),
+                              TextSpan(text: 'Logged in as\n', style: Theme.of(context).textTheme.bodyText1),
                               TextSpan(
                                   text: usr.getName(),
-                                  style: TextStyle(fontWeight: FontWeight.bold))
+                                  style: Theme.of(context).textTheme.bodyText2)
                             ])),
                     ),
                   ),
@@ -105,7 +103,7 @@ class _UserMenuState extends State<UserMenu> {
                         child: Stack(children: [
                           CircleAvatar(
                               radius: 25,
-                              backgroundColor: Colors.white,
+                              backgroundColor: Theme.of(context).primaryColor,
                               child: CircleAvatar(
                                   radius: 24,
                                   backgroundImage: (img != null)

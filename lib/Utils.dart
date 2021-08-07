@@ -68,7 +68,7 @@ Future<String> getGroupDynamicLink(String group) async {
     uriPrefix: 'https://altua.page.link',
     link: Uri.parse('https://example.com/data?group=$group'),
     androidParameters: AndroidParameters(
-      packageName: 'com.example.deed',
+      packageName: 'com.altua.iou',
     ),
     iosParameters: IosParameters(
       bundleId: 'com.altua.iouapp',

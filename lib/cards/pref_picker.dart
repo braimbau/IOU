@@ -89,12 +89,11 @@ class PrefPicker extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
-              color: Colors.white,
+              color: Theme.of(context).primaryColor,
               width: 1.5,
             ),
           ),
           clipBehavior: Clip.antiAlias,
-          color: Colors.grey[900],
           semanticContainer: true,
           elevation: 5,
           child: Padding(
@@ -113,7 +112,7 @@ class PrefPicker extends StatelessWidget {
                     ),
                     SizedBox(
                       child: IconButton(
-                          icon: const Icon(Icons.east, color: Colors.white),
+                          icon: const Icon(Icons.east),
                           onPressed: () async {
                             onValidation(
                                 amountToPay,
@@ -135,8 +134,7 @@ class PrefPicker extends StatelessWidget {
                           return Visibility(
                             visible: (text != null && text != ""),
                             child: Text(
-                                text,
-                                style: TextStyle(color: Colors.white)),
+                                text),
                           );
                         })
                   ],
@@ -192,6 +190,7 @@ class PrefPicker extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   child: FittedBox(
                       child: EmojiPicker(
+                        bgColor: Theme.of(context).backgroundColor,
                     rows: 1,
                     selectedCategory: Category.FOODS,
                     columns: 8,

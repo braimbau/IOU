@@ -1,5 +1,6 @@
 import 'package:deed/Routes/join_group.dart';
 import 'package:deed/Utils.dart';
+import 'package:deed/utils/themes.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
@@ -24,26 +25,43 @@ class LogScreen extends StatefulWidget {
 }
 
 class _LogScreenState extends State<LogScreen> {
-
   @override
   Widget build(BuildContext context) {
     String groupInvite = this.widget.args;
 
-    SchedulerBinding.instance.addPostFrameCallback(
-            (_) async => handleAutoLogIn(context));
-
+    SchedulerBinding.instance
+        .addPostFrameCallback((_) async => handleAutoLogIn(context));
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      appBar: AppBar(
+        iconTheme: Theme.of(context).iconTheme,
+        backgroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+                icon: Icon(
+                  Icons.lightbulb_outline,
+                ),
+                onPressed: () {
+                }),
+          ],
+        ),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
               child: Text(
             "Welcome to",
-            style: TextStyle(
-                color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headline1,
           )),
-          Center(child: Image.asset('asset/image/IOU.png', height: 150)),
+          Center(
+              child: Image.asset(
+                  (Theme.of(context).brightness == Brightness.dark)
+                      ? 'asset/image/IOU_dark.png'
+                      : 'asset/image/IOU_light.png',
+                  height: 150)),
           SignInButton(
             Buttons.Apple,
             onPressed: () async {
@@ -60,6 +78,9 @@ class _LogScreenState extends State<LogScreen> {
                   arguments: JoinGroupArgs(usr: usr, groupInvite: groupInvite));
             },
           ),
+          SizedBox(
+            height: 100,
+          )
         ],
       ),
     );

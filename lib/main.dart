@@ -4,6 +4,7 @@ import 'package:deed/Other/invitation.dart';
 import 'package:deed/Routes/main_page.dart';
 import 'package:deed/utils/error_screen.dart';
 import 'package:deed/utils/loading.dart';
+import 'package:deed/utils/themes.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Utils.dart';
@@ -16,6 +17,10 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    themeMode: ThemeMode.system,
+    theme: MyThemes.light,
+    darkTheme: MyThemes.dark,
     title: 'IOU',
     initialRoute: '/',
     routes: {

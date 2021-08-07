@@ -22,7 +22,7 @@ class UserDisplay extends StatelessWidget {
             child: InkWell(
               child: CircleAvatar(
                   radius: 20,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).primaryColor,
                   child: (update.hasData)
                       ? CircleAvatar(
                           radius: 18,

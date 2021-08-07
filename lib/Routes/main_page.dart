@@ -69,20 +69,17 @@ class _MainPageState extends State<MainPage> {
           },
           child: const Icon(
             Icons.add,
-            color: Colors.black,
           ),
-          backgroundColor: Colors.white,
         ),
-        backgroundColor: Colors.grey[900],
         appBar: topAppBar(usr, group, context),
         bottomNavigationBar: BottomAppBar(
           color: Colors.transparent,
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.expand_less, color: Colors.white),
+            Icon(Icons.expand_less),
             Text(
               'Swipe up to show history',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white),
+              style: Theme.of(context).textTheme.bodyText1,
             ),
           ]),
           elevation: 0,

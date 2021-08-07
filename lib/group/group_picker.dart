@@ -58,7 +58,7 @@ class GroupPicker extends StatelessWidget {
                       if (groupList.contains(Group(group, null)))
                         Text(
                           groupList.firstWhere((element) => element.getId() == group).getName(),
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(),
                         )
                   else
                       FutureBuilder<String>(
@@ -68,12 +68,12 @@ class GroupPicker extends StatelessWidget {
                             if (groupName.hasData)
                               return Text(
                                 groupName.data,
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(),
                               );
                             else
                               return Text(
                                 "...",
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(),
                               );
                           }),
                       InkWell(
@@ -82,10 +82,7 @@ class GroupPicker extends StatelessWidget {
                           },
                           radius: 5,
                           customBorder: CircleBorder(),
-                          child: Icon(
-                            Icons.east_rounded,
-                            color: Colors.white,
-                          ))
+                          child: Icon(Icons.east_rounded, color: Theme.of(context).primaryColor))
                     ],
                   );
                 }),

@@ -33,7 +33,6 @@ class _PayerWidgetState extends State<PayerWidget> {
               width: 190,
               alignment: Alignment.centerLeft,
               child: Text(selectedItem.getName(),
-                style: TextStyle(color: Colors.white),
               ),
             ))
                 .toList();
@@ -90,8 +89,7 @@ List<DropdownMenuItem<IOUser>> buildDropDownMenuItems(List listItems) {
                 backgroundImage:
                 NetworkImage(listItem.getUrl()),
               ),
-              Text(listItem.getName(),
-                  style : TextStyle(color: Colors.black,))
+              Text(listItem.getName())
             ]),
         value: listItem,
       ),

@@ -7,6 +7,51 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1098086824093:android:f256bb531a4f182d04bc74",
+        "android_client_info": {
+          "package_name": "com.altua.iou"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1098086824093-0erogftgfvinsjca7i7lct8ajbm95ned.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.altua.iou",
+            "certificate_hash": "6da6d8d324756bd5c81def622ea2860861160491"
+          }
+        },
+        {
+          "client_id": "1098086824093-kajaked3doo3q8buo7491bg8e11a1dj9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKUsq7m_jUCS7S28k5LZoER3CogcBoHIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1098086824093-kajaked3doo3q8buo7491bg8e11a1dj9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1098086824093-1n823gtsmkknro342dkiq21773ntigtv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.altua.IOU",
+                "app_store_id": "1575234438"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1098086824093:android:e42b814007d2996004bc74",
         "android_client_info": {
           "package_name": "com.example.deed"
@@ -39,10 +84,11 @@
               "client_type": 3
             },
             {
-              "client_id": "1098086824093-a6hmgf35deob0f3782esi3van2a333a8.apps.googleusercontent.com",
+              "client_id": "1098086824093-1n823gtsmkknro342dkiq21773ntigtv.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.deed"
+                "bundle_id": "com.altua.IOU",
+                "app_store_id": "1575234438"
               }
             }
           ]

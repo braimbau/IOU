@@ -24,7 +24,6 @@ class _LabelTextInputState extends State<LabelTextInput> {
         decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             hintText: '(optional) Label',
-            fillColor: Colors.white,
             filled: true),
         onChanged: (String str) {
           setState(() {

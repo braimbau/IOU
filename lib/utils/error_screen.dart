@@ -6,7 +6,6 @@ import '../Routes/log_screen.dart';
 
 Widget errorScreen(String err) {
   return (Scaffold(
-    backgroundColor: Colors.black,
   body: Center(
     child: Text(err, style: TextStyle(color: Colors.red, fontSize: 15)),
   )));
@@ -14,7 +13,6 @@ Widget errorScreen(String err) {
 
 Widget logErrorScreen(String err, BuildContext context) {
   return (Scaffold(
-      backgroundColor: Colors.black,
       body: Center(
           child: Row(
               children: [

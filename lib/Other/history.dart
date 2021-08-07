@@ -83,6 +83,20 @@ class HistoryUser extends StatelessWidget {
               snapshot.data.docs[i]["label"]));
         }
 
+      /*  int compareByDate(IouTransaction a, IouTransaction b) {
+          return (a.getTimestamp() - b.getTimestamp());
+        }
+        int compareByDateReverse(IouTransaction a, IouTransaction b) {
+          return (b.getTimestamp() - a.getTimestamp());
+        }
+        int compareByAmount(IouTransaction a, IouTransaction b) {
+          return (a.getBalanceEvo() - b.getBalanceEvo());
+        }
+        int compareByAmountReverse(IouTransaction a, IouTransaction b) {
+          return (a.getBalanceEvo() - b.getBalanceEvo());
+        }*/
+
+
         return new Scaffold(
           body: Column(
             children: [
@@ -92,7 +106,6 @@ class HistoryUser extends StatelessWidget {
                   Container(width: 72.0, height: 0.0),
                   Text("History",
                       style: TextStyle(
-                          color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 50)),
                   Padding(
@@ -106,26 +119,14 @@ class HistoryUser extends StatelessWidget {
                   )
                 ],
               ),
-              Divider(color: Colors.grey[800], thickness: 1),
+              Divider(thickness: 1),
               Expanded(
-                //height: 500,
-
-                /*     child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return HistoryElement(
-                    transaction: transactionList[index],
-                  );
-                },
-              )*/
-
                 child: ListView.separated(
                   padding: const EdgeInsets.all(8),
                   itemCount: snapshot.data.docs.length,
                   separatorBuilder: (BuildContext context, int index) {
                     return Divider(
-                      color: Colors.grey,
+                      color: Colors.grey[500],
                       endIndent: 10,
                       indent: 10,
                     );
@@ -177,12 +178,11 @@ class _HistoryElementState extends State<HistoryElement> {
             padding: EdgeInsets.all(4.0),
             child: Column(children: [
               Text(this.widget.transaction.getLabel(),
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
+                  style: Theme.of(context).textTheme.bodyText2),
               Row(children: [
                 Text(formattedDate,
                     style: TextStyle(
-                        color: Colors.grey, fontStyle: FontStyle.italic)),
+                        color: Colors.grey[500], fontStyle: FontStyle.italic)),
                 Expanded(child: Container()),
                 Text(
                   evo,
@@ -196,21 +196,18 @@ class _HistoryElementState extends State<HistoryElement> {
               if (isExpanded)
                 Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Payer: ${this.widget.transaction.getPayer()}",
-                        style: TextStyle(color: Colors.black))),
+                    child: Text("Payer: ${this.widget.transaction.getPayer()}",)),
               if (isExpanded)
                 Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Total amount: $displayedAmount€",
-                        style: TextStyle(color: Colors.black))),
+                    child: Text("Total amount: $displayedAmount€",)),
               if (isExpanded &&
                   this.widget.transaction.getUsers() != "" &&
                   2 == 3)
                 Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                        "Other users: ${this.widget.transaction.getUsers()}",
-                        style: TextStyle(color: Colors.black))),
+                        "Other users: ${this.widget.transaction.getUsers()}",)),
               if (isExpanded)
                 IconButton(
                   icon: Icon(Icons.replay, color: Colors.blue),

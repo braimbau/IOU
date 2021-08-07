@@ -34,11 +34,10 @@ class _GroupMenuState extends State<GroupMenu> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
           side: BorderSide(
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
             width: 1,
           ),
         ),
-        color: Colors.grey[850],
         child: SizedBox(
           width: 175,
           child: Padding(
@@ -51,12 +50,12 @@ class _GroupMenuState extends State<GroupMenu> {
                       child: FittedBox(
                         child: Text(
                           groupList.firstWhere((element) => element.getId() == group).getName(),
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 30),
+                          style: Theme.of(context).textTheme.headline2,
                         ),
                       ),
                     ),
                     IconButton(
-                        icon: Icon(Icons.ios_share),
+                        icon: Icon(Icons.ios_share, color: Theme.of(context).primaryColor,),
                         onPressed: () async {
                           String url = await getGroupDynamicLink(group);
                           await Share.share(url);
@@ -103,7 +102,7 @@ class FavGroup extends StatelessWidget {
           return IconButton(
               icon: Icon((snapshot.data["defaultGroup"] == group)
                   ? Icons.favorite
-                  : Icons.favorite_border),
+                  : Icons.favorite_border, color: Theme.of(context).primaryColor,),
               onPressed: () async {
                 await toggleDefaultGroup(usrId, group);
               });

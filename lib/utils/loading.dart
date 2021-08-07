@@ -31,13 +31,12 @@ class _LoadingState extends State<Loading>
   Widget build(BuildContext context) {
     return new Container(
       alignment: Alignment.center,
-      color: Colors.black,
       child: new AnimatedBuilder(
         animation: animationController,
         child: new Container(
           height: 150.0,
           width: 150.0,
-          child: new Image.asset('asset/image/logo.png'),
+          child: new Image.asset((Theme.of(context).brightness == Brightness.dark) ? 'asset/image/logo_dark.png' : 'asset/image/logo_light.png'),
         ),
         builder: (BuildContext context, Widget _widget) {
           return new Transform.rotate(

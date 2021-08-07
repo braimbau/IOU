@@ -29,7 +29,6 @@ class _AmountTextInputState extends State<AmountTextInput> {
   Widget build(BuildContext context) {
     return Stack(alignment: Alignment.center, children: [
       TextField(
-          style: TextStyle(color: Colors.black),
           keyboardType: TextInputType.numberWithOptions(
             decimal: true,
           ),
@@ -38,7 +37,6 @@ class _AmountTextInputState extends State<AmountTextInput> {
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               hintText: 'Enter the amount',
-              fillColor: Colors.white,
               filled: true),
           onChanged: (String str) {
             setState(() {

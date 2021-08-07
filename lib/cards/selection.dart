@@ -33,7 +33,7 @@ class _SelectionWidgetState extends State<SelectionWidget> {
         },
         child: CircleAvatar(
             radius: 25,
-            backgroundColor: (this.isSelected) ? Colors.blue : Colors.white,
+            backgroundColor: (this.isSelected) ? Colors.blue : Theme.of(context).primaryColor,
             child: CircleAvatar(radius: 22,  backgroundImage: NetworkImage(this.widget.user.getUrl()))
         )
     );

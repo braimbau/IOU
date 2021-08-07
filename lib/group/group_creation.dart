@@ -36,12 +36,11 @@ class _GroupCreationState extends State<GroupCreation> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
-              color: Colors.white,
+              color: Theme.of(context).primaryColor,
               width: 1.5,
             ),
           ),
           clipBehavior: Clip.antiAlias,
-          color: Colors.black,
           semanticContainer: true,
           elevation: 5,
           child: SizedBox(
@@ -52,10 +51,7 @@ class _GroupCreationState extends State<GroupCreation> {
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
                   "Create a new group",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
+                  style: Theme.of(context).textTheme.headline3,
                 ),
               ),
               Padding(
@@ -66,12 +62,10 @@ class _GroupCreationState extends State<GroupCreation> {
                     SizedBox(
                       width: 200,
                       child: TextField(
-                          style: TextStyle(color: Colors.black),
                           decoration: InputDecoration(
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8)),
                               hintText: 'Group name',
-                              fillColor: Colors.white,
                               filled: true),
                           onChanged: (String str) {
                             groupName = str;
@@ -80,7 +74,6 @@ class _GroupCreationState extends State<GroupCreation> {
                     IconButton(
                         icon: Icon(
                           Icons.east,
-                          color: Colors.white,
                         ),
                         onPressed: () async {
                           if (groupName == null || groupName.length == 0) {
@@ -119,7 +112,7 @@ class _GroupCreationState extends State<GroupCreation> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
-              color: Colors.white,
+              color: Theme.of(context).primaryColor,
               width: 1.5,
             ),
           ),
