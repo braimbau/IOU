@@ -82,7 +82,7 @@ Future<String> getGroupDynamicLink(String group) async {
   return dynamicUrl.toString();
 }
 
-Future<String> getDefaultGroups(String userId) async {
+Future<String> getDefaultGroup(String userId) async {
   final DocumentReference document = FirebaseFirestore.instance.collection(
       "users").doc(userId);
   var doc = await document.get();
@@ -104,7 +104,7 @@ Future<void> setDefaultGroup(String usrId, String group) async {
 }
 
 Future<bool> toggleDefaultGroup(String usrId, String group) async {
-  String def = await getDefaultGroups(usrId);
+  String def = await getDefaultGroup(usrId);
   if (def != group) {
     setDefaultGroup(usrId, group);
     return true;
@@ -157,7 +157,7 @@ Future<void> changePhotoUrl(String id, String url, String group) async {
 Future<String> leaveGroup(String usrId, String group) async {
   if (!await groupExist(group))
     return("You can't leave a group that doesn't exist anymore");
-  if (await getDefaultGroups(usrId) == group)
+  if (await getDefaultGroup(usrId) == group)
     setDefaultGroup(usrId, null);
   if (!await isInGroup(usrId, group)) {
     return ("This user already left the group");

@@ -86,18 +86,18 @@ class ManualJoin extends StatelessWidget {
                       WidgetsBinding.instance.focusManager.primaryFocus
                           ?.unfocus();
                       if (!await groupExist(groupId)) {
-                        Navigator.of(context).popUntil(ModalRoute.withName('/'));
+                        Navigator.of(context).popUntil(ModalRoute.withName('/joinGroup'));
                         displayError("Invalid code", context);
                         return;
                       }
                       if (await userIsInGroup(groupId, usr.getId())) {
-                        Navigator.of(context).popUntil(ModalRoute.withName('/'));
+                        Navigator.of(context).popUntil(ModalRoute.withName('/joinGroup'));
                         displayError("You're already in that group", context);
                         return;
                       }
                       addGroup(groupId, usr.getId());
                       checkGroup(usr, groupId);
-                      Navigator.of(context).popUntil(ModalRoute.withName('/'));
+                      Navigator.of(context).popUntil(ModalRoute.withName('/joinGroup'));
                       displayMessage(
                           "You've successfully join this group", context);
                     }),

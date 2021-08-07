@@ -41,6 +41,16 @@ class GroupSelection extends StatelessWidget {
 
           if (excludeGroup != null) stringGroupList.remove(excludeGroup);
 
+          if (stringGroupList.isEmpty)
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                Text("Nothing to display", style: TextStyle(color: Colors.red),),
+              Text("create or join a group to continue", style: TextStyle(color: Colors.red),),
+              ],
+              ),
+            );
           return FutureBuilder<List<Group>>(
               future: getGroupsById(stringGroupList),
               builder: (BuildContext context,
@@ -152,7 +162,7 @@ _confirmLeaveGroup(BuildContext context, String usrId, String group) {
               if (spam == false) {
                 spam = true;
                 String err = await leaveGroup(usrId, group);
-                Navigator.of(context).popUntil(ModalRoute.withName('/'));
+                Navigator.of(context).popUntil(ModalRoute.withName('/joinGroup'));
                 if (err != null) displayError(err, context);
               }
             },

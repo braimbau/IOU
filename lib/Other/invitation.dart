@@ -50,6 +50,10 @@ class _InvitationPanelState extends State<InvitationPanel> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(Icons.mail, color: Colors.white,),
+                        ),
                         Column(
                           children: [
                             Row(

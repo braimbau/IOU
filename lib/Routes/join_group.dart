@@ -13,20 +13,27 @@ import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class JoinGroup extends StatelessWidget {
-  final IOUser usr;
-  final String groupInvite;
-  final String defaultGroup;
+class JoinGroupArgs {
+  IOUser usr;
+  String groupInvite;
 
-  JoinGroup({this.usr, this.groupInvite, this.defaultGroup});
+  JoinGroupArgs({this.usr, this.groupInvite});
+}
+
+class JoinGroup extends StatelessWidget {
+  final JoinGroupArgs args;
+
+  JoinGroup({this.args});
 
   @override
   Widget build(BuildContext context) {
-    SchedulerBinding.instance.addPostFrameCallback(
-        (_) async => handleRedirection(context, usr, defaultGroup));
+    IOUser usr = args.usr;
+    String groupInvite = args.groupInvite;
+    print("group invitation : $groupInvite");
 
-    String group;
-    String groupName;
+    SchedulerBinding.instance.addPostFrameCallback(
+        (_) async => handleRedirection(context, usr));
+
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
@@ -73,11 +80,12 @@ class JoinGroup extends StatelessWidget {
             onPressed: () {
               showManualJoin(context, usr);
             },
-            child: Text("join group manually"),
+            child: Text("join group manually", style: TextStyle(color: Colors.grey, decoration: TextDecoration.underline),),
           ),
           Divider(
             color: Colors.white,
           ),
+          Text("My groups:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 25),),
           Flexible(
             child: GroupSelection(
               usr: usr,
@@ -137,13 +145,13 @@ void showFlushBar(
 
 Future<void> goMainPageWithGroup(
     BuildContext context, IOUser usr, String group) async {
-  print("_____${usr.getUrl()}");
   Navigator.pushNamed(context, '/mainPage',
       arguments: MainPageArgs(usr: usr, group: group));
 }
 
 Future<void> handleRedirection(
-    BuildContext context, IOUser usr, String defaultGroup) async {
+    BuildContext context, IOUser usr) async {
+  String defaultGroup = await getDefaultGroup(usr.getId());
   if (defaultGroup == null || defaultGroup == "") return;
   if (await groupExist(defaultGroup) &&
       await userIsInGroup(defaultGroup, usr.getId()))

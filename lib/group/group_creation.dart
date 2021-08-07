@@ -170,12 +170,15 @@ class _GroupCreationState extends State<GroupCreation> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                              Icons.ios_share,
-                              color: Colors.blue,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Icon(
+                                Icons.forward_to_inbox,
+                                color: Colors.blue,
+                            ),
                           ),
                           Text(
-                            "Share Invitation",
+                            "Send Invitation",
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,
