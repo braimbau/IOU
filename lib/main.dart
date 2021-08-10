@@ -145,13 +145,13 @@ class _HomeState extends State<Home> {
 
     if (args.getUsr() != null) {
       print("Auto logged in as ${args.getUsr().getName()}");
-      Navigator.pushReplacementNamed(context, '/joinGroup',
+      Navigator.pushNamed(context, '/joinGroup',
           arguments: JoinGroupArgs(
               usr: args.getUsr(), groupInvite: args.getGroupInvitation()));
     }
     else {
       print ("No logs stored, show log page");
-      Navigator.pushReplacementNamed(
+      Navigator.pushNamed(
           context, '/logScreen', arguments: args.getGroupInvitation());
     }
   }

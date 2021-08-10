@@ -5,6 +5,7 @@ import 'package:deed/Other/user_menu.dart';
 import 'package:deed/group/group_creation.dart';
 import 'package:deed/Other/invitation.dart';
 import 'package:deed/group/manual_join.dart';
+import 'package:deed/utils/logo.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Utils.dart';
@@ -56,7 +57,7 @@ class JoinGroup extends StatelessWidget {
                   await logOut(context);
                 }
               ),
-              Center(child: Image.asset((Theme.of(context).brightness == Brightness.dark) ? 'asset/image/logo_dark.png' : 'asset/image/logo_light.png', height: 45)),
+              Logo(),
               CircleAvatar(
                 backgroundColor: Theme.of(context).primaryColor,
                 radius: 20,

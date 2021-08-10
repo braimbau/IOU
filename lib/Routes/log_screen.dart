@@ -40,8 +40,16 @@ class _LogScreenState extends State<LogScreen> {
         backgroundColor: Colors.transparent,
         shadowColor: Colors.transparent,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Visibility(
+              visible: groupInvite != null && groupInvite != "",
+                child: IconButton(
+                  onPressed: () {
+                    displayMessage("Log in to accept the invitation", context);
+                  },
+              icon: Icon(Icons.mail, color: Colors.orange,),
+            )),
             ChangeThemeButtonWidget(),
           ],
         ),
