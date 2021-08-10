@@ -28,12 +28,18 @@ class LogScreen extends StatefulWidget {
 }
 
 class _LogScreenState extends State<LogScreen> {
+
+  @override
+  void initState() {
+    //SchedulerBinding.instance
+      //  .addPostFrameCallback((_) async => handleAutoLogIn(context));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     String groupInvite = this.widget.args;
 
-    SchedulerBinding.instance
-        .addPostFrameCallback((_) async => handleAutoLogIn(context));
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
@@ -91,7 +97,15 @@ Future<void> handleAutoLogIn(BuildContext context) async {
   String id = prefs.getString("userId");
   if (id != null && id != "") {
     IOUser usr = await getUserById(id);
-    Navigator.pushNamed(context, '/joinGroup',
-        arguments: JoinGroupArgs(usr: usr));
+    //Navigator.pushNamed(context, '/joinGroup',
+      //  arguments: JoinGroupArgs(usr: usr));
+
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation1, animation2) => JoinGroup(args: JoinGroupArgs(usr:usr),),
+        transitionDuration: Duration(seconds: 0),
+      ),
+    );
   }
 }
