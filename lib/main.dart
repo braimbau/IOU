@@ -12,29 +12,42 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Routes/log_screen.dart';
+import 'package:provider/provider.dart';
+
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    themeMode: ThemeMode.system,
-    theme: MyThemes.light,
-    darkTheme: MyThemes.dark,
-    title: 'IOU',
-    initialRoute: '/',
-    routes: {
-      '/': (context) => Home(
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => ChangeNotifierProvider(
+    create: (context) => ThemeProvider(),
+    builder: (context, _) {
+      final themProvider = Provider.of<ThemeProvider>(context);
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        themeMode: themProvider.themeMode,
+        theme: MyThemes.light,
+        darkTheme: MyThemes.dark,
+        title: 'IOU',
+        initialRoute: '/',
+        routes: {
+          '/': (context) => Home(
             args: ModalRoute.of(context).settings.arguments,
           ),
-      '/joinGroup': (context) => JoinGroup(
+          '/joinGroup': (context) => JoinGroup(
             args: ModalRoute.of(context).settings.arguments,
           ),
-      '/mainPage': (context) => MainPage(
+          '/mainPage': (context) => MainPage(
             args: ModalRoute.of(context).settings.arguments,
           ),
-    },
-  ));
+        },
+      );
+    }
+  );
 }
 
 class Home extends StatefulWidget {
@@ -47,16 +60,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
-  String groupInvite;
 
-  @override
-  void initState() {
-    super.initState();
-    this.initDynamicLinks();
-  }
-
-  void initDynamicLinks() async {
+  Future<String> initDynamicLinks() async {
+    Firebase.initializeApp();
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
       await handleDynamicLink(dynamicLink, context);
@@ -70,25 +76,17 @@ class _HomeState extends State<Home> {
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
-      print("link 2");
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) => LogScreen(
-                  args: deepLink.queryParameters['group'],
-                ),
-            transitionDuration: Duration(seconds: 0)),
-      );
+      return (deepLink.queryParameters['group']);
     } else
       print("link null 2");
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    groupInvite = this.widget.args;
     return FutureBuilder(
       // Initialize FlutterFire:
-      future: _initialization,
+      future: initDynamicLinks(),
       builder: (context, snapshot) {
         // Check for errors
         if (snapshot.hasError) {
@@ -97,14 +95,16 @@ class _HomeState extends State<Home> {
 
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
-          //return mainPage(context);
+          if (snapshot.data != null)
           return LogScreen(
-            args: groupInvite,
+            args: snapshot.data,
           );
+          else
+            return LogScreen();
         }
 
         // Otherwise, show something whilst waiting for initialization to complete
-        return Loading();
+        return Container();
       },
     );
   }

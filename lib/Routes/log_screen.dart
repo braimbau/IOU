@@ -1,5 +1,8 @@
+import 'dart:io' show Platform;
+
 import 'package:deed/Routes/join_group.dart';
 import 'package:deed/Utils.dart';
+import 'package:deed/utils/error.dart';
 import 'package:deed/utils/themes.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_signin_button/button_list.dart';
@@ -39,12 +42,7 @@ class _LogScreenState extends State<LogScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            IconButton(
-                icon: Icon(
-                  Icons.lightbulb_outline,
-                ),
-                onPressed: () {
-                }),
+            ChangeThemeButtonWidget(),
           ],
         ),
       ),
@@ -62,7 +60,8 @@ class _LogScreenState extends State<LogScreen> {
                       ? 'asset/image/IOU_dark.png'
                       : 'asset/image/IOU_light.png',
                   height: 150)),
-          SignInButton(
+          if (Platform.isIOS)
+            SignInButton(
             Buttons.Apple,
             onPressed: () async {
               IOUser usr = await signInWithApple();

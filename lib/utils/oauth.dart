@@ -41,6 +41,7 @@ Future<IOUser> signInWithApple() async {
 
   // Trigger the authentication flow
   final appleUser = await SignInWithApple.getAppleIDCredential(
+    webAuthenticationOptions: WebAuthenticationOptions(clientId: "com.altua.iou", redirectUri: Uri.parse('https://developer.apple.com/account/resources/identifiers/list/serviceId')),
     scopes: [
       AppleIDAuthorizationScopes.fullName,
     ],

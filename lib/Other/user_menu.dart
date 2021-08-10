@@ -250,5 +250,4 @@ Future<void> logOut(BuildContext context) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString("userId", null);
   Navigator.of(context).popUntil(ModalRoute.withName('/'));
-  Navigator.of(context).pushNamed('/');
 }

@@ -1,4 +1,4 @@
-package com.example.deed
+package com.altua.iou
 
 import io.flutter.embedding.android.FlutterActivity
 
