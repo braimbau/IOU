@@ -63,10 +63,10 @@ Future<void> checkGroup(IOUser usr, String group) async {
   }
 }
 
-Future<String> getGroupDynamicLink(String group) async {
+Future<String> getGroupDynamicLink(String group, String groupName) async {
   final DynamicLinkParameters parameters = DynamicLinkParameters(
     uriPrefix: 'https://altua.page.link',
-    link: Uri.parse('https://example.com/data?group=$group'),
+    link: Uri.parse('https://iouapp.carrd.co/?group=$group'),
     androidParameters: AndroidParameters(
       packageName: 'com.altua.iou',
     ),
@@ -75,6 +75,11 @@ Future<String> getGroupDynamicLink(String group) async {
       minimumVersion: '1.0.0',
       appStoreId: '1575234438',
     ),
+    socialMetaTagParameters: SocialMetaTagParameters(
+      title: "IOU - Invitation to $groupName",
+      imageUrl: Uri.parse("https://firebasestorage.googleapis.com/v0/b/iou-71bca.appspot.com/o/InvitationPreview.png?alt=media&token=6ed44008-7fcd-4a4e-9bd0-18462da18bda"),
+
+    )
   );
 
   final ShortDynamicLink short = await parameters.buildShortLink();

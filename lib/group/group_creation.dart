@@ -155,7 +155,7 @@ class _GroupCreationState extends State<GroupCreation> {
                   ),
                   ElevatedButton(
                       onPressed: () async {
-                        String url = await getGroupDynamicLink(groupId);
+                        String url = await getGroupDynamicLink(groupId, groupName);
                         await Share.share(url);
                       },
                       style: ElevatedButton.styleFrom(

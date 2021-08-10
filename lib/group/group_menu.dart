@@ -57,7 +57,8 @@ class _GroupMenuState extends State<GroupMenu> {
                     IconButton(
                         icon: Icon(Icons.ios_share, color: Theme.of(context).primaryColor,),
                         onPressed: () async {
-                          String url = await getGroupDynamicLink(group);
+                          String groupName = await getGroupNameById(group);
+                          String url = await getGroupDynamicLink(group, groupName);
                           await Share.share(url);
                         }),
                   ]),
