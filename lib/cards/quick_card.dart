@@ -28,6 +28,10 @@ class QuickCard extends StatelessWidget {
             return Text('Something went wrong');
           }
 
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Loading();
+          }
+
           List<QuickPref> quickPrefList = List<QuickPref>.empty(growable: true);
           for (int i = 0; i < snapshot.data.docs.length; i++) {
             quickPrefList.add(QuickPref(

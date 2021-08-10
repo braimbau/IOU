@@ -25,6 +25,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
@@ -78,7 +79,6 @@ class _HomeState extends State<Home> {
   Future<InitArgs> globalInitialization() async {
     InitArgs args = InitArgs();
     Firebase.initializeApp();
-   // FirebaseFirestore.instance.settings = Settings(persistenceEnabled: false,);
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
       await handleDynamicLink(dynamicLink, context);
@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       String usrId = prefs.getString("userId");
       if (usrId == null) {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           PageRouteBuilder(
             pageBuilder: (_, __, ___) => LogScreen(args: group,),
@@ -145,13 +145,13 @@ class _HomeState extends State<Home> {
 
     if (args.getUsr() != null) {
       print("Auto logged in as ${args.getUsr().getName()}");
-      Navigator.pushNamed(context, '/joinGroup',
+      Navigator.pushReplacementNamed(context, '/joinGroup',
           arguments: JoinGroupArgs(
               usr: args.getUsr(), groupInvite: args.getGroupInvitation()));
     }
     else {
       print ("No logs stored, show log page");
-      Navigator.pushNamed(
+      Navigator.pushReplacementNamed(
           context, '/logScreen', arguments: args.getGroupInvitation());
     }
   }

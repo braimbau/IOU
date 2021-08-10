@@ -61,15 +61,33 @@ class _GroupCreationState extends State<GroupCreation> {
                   children: [
                     SizedBox(
                       width: 200,
-                      child: TextField(
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              hintText: 'Group name',
-                              filled: true),
-                          onChanged: (String str) {
-                            groupName = str;
-                          }),
+                      child: Stack(
+                        children: [
+                          TextField(
+                              maxLength: 10,
+                              decoration: InputDecoration(
+                                  counterText: '',
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  hintText: 'Group name',
+                                  filled: true),
+                              onChanged: (String str) {
+                                setState(() {
+                                  groupName = str;
+                                });
+                              }),
+                          if ((groupName != null)) Container(
+                              alignment: Alignment.bottomRight,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 4, top: 22),
+                                child: Text("${groupName.length}/10",
+                                    style: TextStyle(
+                                        color: Theme.of(context).hintColor,
+                                        fontWeight: FontWeight.normal)),
+                              ))
+                        ],
+                      ),
                     ),
                     IconButton(
                         icon: Icon(
@@ -155,7 +173,8 @@ class _GroupCreationState extends State<GroupCreation> {
                   ),
                   ElevatedButton(
                       onPressed: () async {
-                        String url = await getGroupDynamicLink(groupId, groupName);
+                        String url =
+                            await getGroupDynamicLink(groupId, groupName);
                         await Share.share(url);
                       },
                       style: ElevatedButton.styleFrom(
@@ -166,8 +185,8 @@ class _GroupCreationState extends State<GroupCreation> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Icon(
-                                Icons.forward_to_inbox,
-                                color: Colors.blue,
+                              Icons.forward_to_inbox,
+                              color: Colors.blue,
                             ),
                           ),
                           Text(

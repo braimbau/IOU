@@ -67,12 +67,16 @@ class _UserMenuState extends State<UserMenu> {
                     child: Center(
                       child: (btnMode != 0)
                           ? TextFormField(
+                              maxLength: 20,
                               initialValue: usr.getName(),
                               onChanged: (String txt) {
+                                if (newName.length == 20 && txt.length == 20)
+                                  displayError("Max name length is 20 characters", context);
                                 newName = txt;
                               },
                               cursorColor: Theme.of(context).primaryColor,
                               decoration: InputDecoration(
+                                counterText: '',
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide:
                                       BorderSide(color: Colors.grey[500]),
@@ -173,11 +177,6 @@ class _UserMenuState extends State<UserMenu> {
                             if (newName == "") {
                               displayError(
                                   "You can't have an empty name", context);
-                              return;
-                            }
-                            if (newName.length > 20) {
-                              displayError(
-                                  "Max name length is 20 characters", context);
                               return;
                             }
 

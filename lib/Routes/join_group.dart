@@ -36,8 +36,10 @@ class JoinGroup extends StatelessWidget {
               (_) async => handleRedirection(context, usr));
     }
 
-    return WillPopScope(
-      onWillPop: () => null,
+    return GestureDetector(
+      onTap: () {
+        WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+      },
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
