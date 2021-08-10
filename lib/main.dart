@@ -79,13 +79,13 @@ class _HomeState extends State<Home> {
   Future<InitArgs> globalInitialization() async {
     InitArgs args = InitArgs();
     Firebase.initializeApp();
-    FirebaseDynamicLinks.instance.onLink(
+    /*FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
       await handleDynamicLink(dynamicLink, context);
     }, onError: (OnLinkErrorException e) async {
       print('onLinkError');
       print(e.message);
-    });
+    }); */
 
     final PendingDynamicLinkData data =
         await FirebaseDynamicLinks.instance.getInitialLink();
@@ -101,60 +101,60 @@ class _HomeState extends State<Home> {
     return args;
   }
 
-  Future<void> handleDynamicLink(
-    PendingDynamicLinkData dynamicLink,
-    BuildContext context,
-  ) async {
-    final Uri deepLink = dynamicLink?.link;
-
-    if (deepLink != null) {
-      String group = deepLink.queryParameters['group'];
-      if (!await groupExist(group)) {
-        displayError("This group doesn't exist anymore", context);
-        return;
-      }
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      String usrId = prefs.getString("userId");
-      if (usrId == null) {
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => LogScreen(args: group,),
-            transitionDuration: Duration(seconds: 0),
-          ),
-        );
-        return;
-      }
-      print(
-          "is in group ${await userIsInGroup(group, usrId)}, group $group usrid $usrId");
-      if (await userIsInGroup(group, usrId) == false)
-        showInvitation(context, usrId, group);
-      else {
-        String groupName = await getGroupNameById(group);
-        displayError(
-            "You've been invited to join the group $groupName, but you're already in that group",
-            context);
-      }
-    } else
-      print("link null 1");
-  }
-
   void handleInitialization(BuildContext context) async {
     print("yo");
     InitArgs args = await globalInitialization();
 
     if (args.getUsr() != null) {
       print("Auto logged in as ${args.getUsr().getName()}");
-      Navigator.pushNamed(context, '/joinGroup',
+      Navigator.pushReplacementNamed(context, '/joinGroup',
           arguments: JoinGroupArgs(
               usr: args.getUsr(), groupInvite: args.getGroupInvitation()));
     }
     else {
       print ("No logs stored, show log page");
-      Navigator.pushNamed(
+      Navigator.pushReplacementNamed(
           context, '/logScreen', arguments: args.getGroupInvitation());
     }
   }
+}
+
+Future<void> handleDynamicLink(
+    PendingDynamicLinkData dynamicLink,
+    BuildContext context,
+    ) async {
+  final Uri deepLink = dynamicLink?.link;
+
+  if (deepLink != null) {
+    String group = deepLink.queryParameters['group'];
+    if (!await groupExist(group)) {
+      displayError("This group doesn't exist anymore", context);
+      return;
+    }
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String usrId = prefs.getString("userId");
+    if (usrId == null) {
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => LogScreen(args: group,),
+          transitionDuration: Duration(seconds: 0),
+        ),
+      );
+      return;
+    }
+    print(
+        "is in group ${await userIsInGroup(group, usrId)}, group $group usrid $usrId");
+    if (await userIsInGroup(group, usrId) == false)
+      showInvitation(context, usrId, group);
+    else {
+      String groupName = await getGroupNameById(group);
+      displayError(
+          "You've been invited to join the group $groupName, but you're already in that group",
+          context);
+    }
+  } else
+    print("link null 1");
 }
 
 class InitArgs {

@@ -6,10 +6,12 @@ import 'package:deed/group/group_creation.dart';
 import 'package:deed/Other/invitation.dart';
 import 'package:deed/group/manual_join.dart';
 import 'package:deed/utils/logo.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Utils.dart';
 import '../group/group_selection.dart';
+import '../main.dart';
 import 'main_page.dart';
 import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,15 +24,32 @@ class JoinGroupArgs {
   JoinGroupArgs({this.usr, this.groupInvite});
 }
 
-class JoinGroup extends StatelessWidget {
+class JoinGroup extends StatefulWidget {
   final JoinGroupArgs args;
 
   JoinGroup({this.args});
 
   @override
+  _JoinGroupState createState() => _JoinGroupState();
+}
+
+class _JoinGroupState extends State<JoinGroup> {
+
+  @override
+  void initState() {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+          await handleDynamicLink(dynamicLink, context);
+        }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    IOUser usr = args.usr;
-    String groupInvite = args.groupInvite;
+    IOUser usr = this.widget.args.usr;
+    String groupInvite = this.widget.args.groupInvite;
 
      if (groupInvite == null || groupInvite == "") {
       SchedulerBinding.instance.addPostFrameCallback(

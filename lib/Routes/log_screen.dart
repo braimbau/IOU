@@ -4,12 +4,15 @@ import 'package:deed/Routes/join_group.dart';
 import 'package:deed/Utils.dart';
 import 'package:deed/utils/error.dart';
 import 'package:deed/utils/themes.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../main.dart';
+import '../main.dart';
 import '../utils/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +32,17 @@ class LogScreen extends StatefulWidget {
 
 class _LogScreenState extends State<LogScreen> {
 
+  @override
+  void initState() {
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+      await handleDynamicLink(dynamicLink, context);
+    }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     String groupInvite = this.widget.args;
