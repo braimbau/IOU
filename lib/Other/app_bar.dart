@@ -30,39 +30,43 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
             Navigator.of(context).pop();
           },
         ),
-        FutureBuilder<List<Group>>(
-            future: getGroupsByUserId(usr.getId()),
-            builder: (BuildContext context,
-                AsyncSnapshot<List<Group>> snap) {
-              List<Group> groupList = snap.data;
-              String groupName;
-              if (snap.hasData)
-                groupName = groupList.firstWhere((element) => element.getId() == group).getName();
-              return InkWell(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                onTap: () {
-                  if (snap.hasData)
-                  showGroupPicker(context, usr, group, groupList);
-                },
-                onLongPress: () {
-                  Clipboard.setData(ClipboardData(text: group));
-                  displayMessage("Group Id succesffully pasted in clipboard !", context);
-                },
-                child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Theme.of(context).primaryColor,
+        Flexible(
+          child: FutureBuilder<List<Group>>(
+              future: getGroupsByUserId(usr.getId()),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Group>> snap) {
+                List<Group> groupList = snap.data;
+                String groupName;
+                if (snap.hasData)
+                  groupName = groupList.firstWhere((element) => element.getId() == group).getName();
+                return InkWell(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  onTap: () {
+                    if (snap.hasData)
+                    showGroupPicker(context, usr, group, groupList);
+                  },
+                  onLongPress: () {
+                    Clipboard.setData(ClipboardData(text: group));
+                    displayMessage("Group Id succesffully pasted in clipboard !", context);
+                  },
+                  child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(25))),
+                      child: FittedBox(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Row(children: [
+                            Icon(Icons.expand_more, color: Theme.of(context).primaryColor),
+                            Text((snap.hasData) ? groupName : "...", style: Theme.of(context).textTheme.headline2,)
+                          ]),
                         ),
-                        borderRadius: BorderRadius.all(Radius.circular(25))),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Row(children: [
-                        Icon(Icons.expand_more, color: Theme.of(context).primaryColor),
-                        Text((snap.hasData) ? groupName : "...", style: Theme.of(context).textTheme.headline2,)
-                      ]),
-                    )),
-              );
-            }),
+                      )),
+                );
+              }),
+        ),
         UserDisplay(usr: usr, group: group),
       ],
     ),

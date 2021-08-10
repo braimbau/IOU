@@ -74,18 +74,23 @@ class _UserMenuState extends State<UserMenu> {
                               cursorColor: Theme.of(context).primaryColor,
                               decoration: InputDecoration(
                                 enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.grey[500]),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[500]),
                                 ),
                                 focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                                  borderSide: BorderSide(
+                                      color: Theme.of(context).primaryColor),
                                 ),
                                 border: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                                  borderSide: BorderSide(
+                                      color: Theme.of(context).primaryColor),
                                 ),
                               ))
                           : RichText(
                               text: TextSpan(children: [
-                              TextSpan(text: 'Logged in as\n', style: Theme.of(context).textTheme.bodyText1),
+                              TextSpan(
+                                  text: 'Logged in as\n',
+                                  style: Theme.of(context).textTheme.bodyText1),
                               TextSpan(
                                   text: usr.getName(),
                                   style: Theme.of(context).textTheme.bodyText2)
@@ -176,27 +181,32 @@ class _UserMenuState extends State<UserMenu> {
                               return;
                             }
 
-                              setState(() {
-                                btnMode = 2;
-                              });
-                              await changeName(
-                                  usr.getId(), newName, this.widget.group);
-                              usr.setName(newName);
-                              if (img != null) {
-                                String url = await uploadImageToFirebase(
-                                    img, usr.getId() + this.widget.group);
-                                print(url);
-                                usr.setUrl(url);
-                                await changePhotoUrl(
-                                    usr.getId(), url, this.widget.group);
-                              }
-                              Navigator.of(context)
-                                  .popUntil(ModalRoute.withName('/mainPage'));
-                              Navigator.pushReplacementNamed(
-                                  context, '/mainPage',
-                                  arguments: MainPageArgs(
-                                      usr: usr, group: this.widget.group));
-
+                            setState(() {
+                              btnMode = 2;
+                            });
+                            await changeName(
+                                usr.getId(), newName, this.widget.group);
+                            usr.setName(newName);
+                            if (img != null) {
+                              String url = await uploadImageToFirebase(
+                                  img, usr.getId() + this.widget.group);
+                              print(url);
+                              usr.setUrl(url);
+                              await changePhotoUrl(
+                                  usr.getId(), url, this.widget.group);
+                            }
+                            Navigator.of(context)
+                                .popUntil(ModalRoute.withName('/mainPage'));
+                            Navigator.pushReplacement(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder: (_, __, ___) => MainPage(
+                                  args: MainPageArgs(
+                                      usr: usr, group: this.widget.group),
+                                ),
+                                transitionDuration: Duration(seconds: 0),
+                              ),
+                            );
                           },
                           child: SizedBox(
                               width: 60, child: Center(child: Text('Confirm'))),
@@ -250,4 +260,5 @@ Future<void> logOut(BuildContext context) async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setString("userId", null);
   Navigator.of(context).popUntil(ModalRoute.withName('/'));
+  Navigator.pushNamed(context, '/logScreen');
 }

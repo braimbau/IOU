@@ -191,7 +191,7 @@ class PrefPicker extends StatelessWidget {
                   child: FittedBox(
                       child: EmojiPicker(
                         bgColor: Theme.of(context).backgroundColor,
-                    rows: 1,
+                    rows: 4,
                     selectedCategory: Category.FOODS,
                     columns: 8,
                     buttonMode: ButtonMode.CUPERTINO,

@@ -6,6 +6,7 @@ import 'package:deed/group/group_creation.dart';
 import 'package:deed/Other/invitation.dart';
 import 'package:deed/group/manual_join.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Utils.dart';
 import '../group/group_selection.dart';
 import 'main_page.dart';
@@ -29,67 +30,71 @@ class JoinGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     IOUser usr = args.usr;
     String groupInvite = args.groupInvite;
-    print("group invitation : $groupInvite");
 
-    SchedulerBinding.instance.addPostFrameCallback(
-        (_) async => handleRedirection(context, usr));
+     if (groupInvite == null || groupInvite == "") {
+      SchedulerBinding.instance.addPostFrameCallback(
+              (_) async => handleRedirection(context, usr));
+    }
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.logout,
-                color: Colors.red,
+    return WillPopScope(
+      onWillPop: () => null,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(
+                  Icons.logout,
+                  color: Colors.red,
+                ),
+                iconSize: 30,
+                onPressed: () async {
+                  await logOut(context);
+                }
               ),
-              iconSize: 30,
-              onPressed: () async {
-                await logOut(context);
-              }
-            ),
-            Center(child: Image.asset((Theme.of(context).brightness == Brightness.dark) ? 'asset/image/logo_dark.png' : 'asset/image/logo_light.png', height: 45)),
-            CircleAvatar(
-              backgroundColor: Theme.of(context).primaryColor,
-              radius: 20,
-              child: CircleAvatar(
-                  radius: 18, backgroundImage: NetworkImage(usr.getUrl())),
-            )
-          ],
+              Center(child: Image.asset((Theme.of(context).brightness == Brightness.dark) ? 'asset/image/logo_dark.png' : 'asset/image/logo_light.png', height: 45)),
+              CircleAvatar(
+                backgroundColor: Theme.of(context).primaryColor,
+                radius: 20,
+                child: CircleAvatar(
+                    radius: 18, backgroundImage: NetworkImage(usr.getUrl())),
+              )
+            ],
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Container(),
-          if (groupInvite != null)
-            InvitationPanel(
-              group: groupInvite,
-              usrId: usr.getId(),
+        body: Column(
+          children: [
+            Container(),
+            if (groupInvite != null)
+              InvitationPanel(
+                group: groupInvite,
+                usrId: usr.getId(),
+              ),
+            SizedBox(
+              height: 50,
             ),
-          SizedBox(
-            height: 50,
-          ),
-          GroupCreation(
-            usr: usr,
-          ),
-          TextButton(
-            onPressed: () {
-              showManualJoin(context, usr);
-            },
-            child: Text("join group manually", style: TextStyle(color: Colors.grey, decoration: TextDecoration.underline),),
-          ),
-          Divider(
-            color: Theme.of(context).primaryColor,
-          ),
-          Text("My groups:", style: Theme.of(context).textTheme.headline2,),
-          Flexible(
-            child: GroupSelection(
+            GroupCreation(
               usr: usr,
             ),
-          ),
-        ],
+            TextButton(
+              onPressed: () {
+                showManualJoin(context, usr);
+              },
+              child: Text("join group manually", style: TextStyle(color: Colors.grey, decoration: TextDecoration.underline),),
+            ),
+            Divider(
+              color: Theme.of(context).primaryColor,
+            ),
+            Text("My groups:", style: Theme.of(context).textTheme.headline2,),
+            Flexible(
+              child: GroupSelection(
+                usr: usr,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -156,4 +161,10 @@ Future<void> handleRedirection(
     await goMainPageWithGroup(context, usr, defaultGroup);
   else
     await setDefaultGroup(usr.getId(), null);
+}
+
+Future<void> logOut(BuildContext context) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString("userId", null);
+  Navigator.of(context).pushReplacementNamed('/logScreen');
 }

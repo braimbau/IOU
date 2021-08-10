@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:deed/utils/loading.dart';
 import 'amount_card.dart';
 import 'pref_picker.dart';
 import '../classes/quick_pref.dart';
@@ -25,10 +26,6 @@ class QuickCard extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text('Something went wrong');
-          }
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
           }
 
           List<QuickPref> quickPrefList = List<QuickPref>.empty(growable: true);
@@ -69,23 +66,23 @@ class QuickCard extends StatelessWidget {
                           itemCount: quickPrefList.length,
                           itemBuilder: (BuildContext context, int index) {
                             return TextButton(
-                                    child: Text(
-                                      quickPrefList[index].getEmoji(),
-                                      style: TextStyle(fontSize: 50),
-                                    ),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            _buildPopupDialog(context, usr,
-                                                quickPrefList[index], group),
-                                      );
-                                    },
-                                    onLongPress: () {
-                                      _confirmQuickDelete(
-                                          context, quickPrefList[index], group);
-                                    },
-                                  );
+                              child: Text(
+                                quickPrefList[index].getEmoji(),
+                                style: TextStyle(fontSize: 50),
+                              ),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) =>
+                                      _buildPopupDialog(context, usr,
+                                          quickPrefList[index], group),
+                                );
+                              },
+                              onLongPress: () {
+                                _confirmQuickDelete(
+                                    context, quickPrefList[index], group);
+                              },
+                            );
                           },
                         ),
                       ),
@@ -186,5 +183,9 @@ Widget _buildPrefPicker(String group) {
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
-          child: Wrap(children: <Widget>[PrefPicker(group: group,)])));
+          child: Wrap(children: <Widget>[
+            PrefPicker(
+              group: group,
+            )
+          ])));
 }

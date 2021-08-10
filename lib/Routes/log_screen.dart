@@ -30,81 +30,64 @@ class LogScreen extends StatefulWidget {
 class _LogScreenState extends State<LogScreen> {
 
   @override
-  void initState() {
-    //SchedulerBinding.instance
-      //  .addPostFrameCallback((_) async => handleAutoLogIn(context));
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     String groupInvite = this.widget.args;
 
-    return Scaffold(
-      appBar: AppBar(
-        iconTheme: Theme.of(context).iconTheme,
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+        return;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          iconTheme: Theme.of(context).iconTheme,
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ChangeThemeButtonWidget(),
+            ],
+          ),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ChangeThemeButtonWidget(),
+            Center(
+                child: Text(
+              "Welcome to",
+              style: Theme.of(context).textTheme.headline1,
+            )),
+            Center(
+                child: Image.asset(
+                    (Theme.of(context).brightness == Brightness.dark)
+                        ? 'asset/image/IOU_dark.png'
+                        : 'asset/image/IOU_light.png',
+                    height: 150)),
+            if (Platform.isIOS)
+              SignInButton(
+              Buttons.Apple,
+              onPressed: () async {
+                IOUser usr = await signInWithApple();
+                Navigator.pushReplacementNamed(context, '/joinGroup',
+                    arguments: JoinGroupArgs(usr: usr, groupInvite: groupInvite));
+              },
+            ),
+            SignInButton(
+              Buttons.Google,
+              onPressed: () async {
+                IOUser usr = await signInWithGoogle();
+                Navigator.pushReplacementNamed(context, '/joinGroup',
+                    arguments: JoinGroupArgs(usr: usr, groupInvite: groupInvite));
+              },
+            ),
+            SizedBox(
+              height: 100,
+            )
           ],
         ),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-              child: Text(
-            "Welcome to",
-            style: Theme.of(context).textTheme.headline1,
-          )),
-          Center(
-              child: Image.asset(
-                  (Theme.of(context).brightness == Brightness.dark)
-                      ? 'asset/image/IOU_dark.png'
-                      : 'asset/image/IOU_light.png',
-                  height: 150)),
-          if (Platform.isIOS)
-            SignInButton(
-            Buttons.Apple,
-            onPressed: () async {
-              IOUser usr = await signInWithApple();
-              Navigator.pushNamed(context, '/joinGroup',
-                  arguments: JoinGroupArgs(usr: usr, groupInvite: groupInvite));
-            },
-          ),
-          SignInButton(
-            Buttons.Google,
-            onPressed: () async {
-              IOUser usr = await signInWithGoogle();
-              Navigator.pushNamed(context, '/joinGroup',
-                  arguments: JoinGroupArgs(usr: usr, groupInvite: groupInvite));
-            },
-          ),
-          SizedBox(
-            height: 100,
-          )
-        ],
-      ),
-    );
-  }
-}
-
-Future<void> handleAutoLogIn(BuildContext context) async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  String id = prefs.getString("userId");
-  if (id != null && id != "") {
-    IOUser usr = await getUserById(id);
-    //Navigator.pushNamed(context, '/joinGroup',
-      //  arguments: JoinGroupArgs(usr: usr));
-
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation1, animation2) => JoinGroup(args: JoinGroupArgs(usr:usr),),
-        transitionDuration: Duration(seconds: 0),
       ),
     );
   }

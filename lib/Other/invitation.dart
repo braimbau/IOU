@@ -54,39 +54,43 @@ class _InvitationPanelState extends State<InvitationPanel> {
                           padding: const EdgeInsets.all(8.0),
                           child: Icon(Icons.mail, color: Colors.white,),
                         ),
-                        Column(
-                          children: [
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "You've been invited to join the group : ",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  FutureBuilder<String>(
-                                      future: getGroupNameById(this.widget.group),
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<String> groupName) {
-                                        if (groupName.hasData)
-                                          return Text(
-                                            groupName.data,
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold),
-                                          );
-                                        else
-                                          return Text(
-                                            "...",
-                                            style: TextStyle(color: Colors.white),
-                                          );
-                                      }),
-                                ]),
-                            if (isInGroup.data == true)
-                              Text(
-                                "But you're already in that group",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                          ],
+                        Flexible(
+                          child: Column(
+                            children: [
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    FittedBox(
+                                      child: Text(
+                                        "You've been invited to join : ",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                    FutureBuilder<String>(
+                                        future: getGroupNameById(this.widget.group),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<String> groupName) {
+                                          if (groupName.hasData)
+                                            return Text(
+                                              groupName.data,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            );
+                                          else
+                                            return Text(
+                                              "...",
+                                              style: TextStyle(color: Colors.white),
+                                            );
+                                        }),
+                                  ]),
+                              if (isInGroup.data == true)
+                                Text(
+                                  "But you're already in that group",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                            ],
+                          ),
                         ),
                         IconButton(
                             onPressed: () {

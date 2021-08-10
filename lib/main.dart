@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/Routes/join_group.dart';
 import 'package:deed/utils/error.dart';
 import 'package:deed/Other/invitation.dart';
@@ -6,6 +7,7 @@ import 'package:deed/utils/error_screen.dart';
 import 'package:deed/utils/loading.dart';
 import 'package:deed/utils/themes.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +16,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'Routes/log_screen.dart';
 import 'package:provider/provider.dart';
 
+import 'classes/user.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -24,30 +27,29 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (context) => ThemeProvider(),
-    builder: (context, _) {
-      final themProvider = Provider.of<ThemeProvider>(context);
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        themeMode: themProvider.themeMode,
-        theme: MyThemes.light,
-        darkTheme: MyThemes.dark,
-        title: 'IOU',
-        initialRoute: '/',
-        routes: {
-          '/': (context) => Home(
-            args: ModalRoute.of(context).settings.arguments,
-          ),
-          '/joinGroup': (context) => JoinGroup(
-            args: ModalRoute.of(context).settings.arguments,
-          ),
-          '/mainPage': (context) => MainPage(
-            args: ModalRoute.of(context).settings.arguments,
-          ),
-        },
-      );
-    }
-  );
+      create: (context) => ThemeProvider(),
+      builder: (context, _) {
+        final themProvider = Provider.of<ThemeProvider>(context);
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          themeMode: themProvider.themeMode,
+          theme: MyThemes.light,
+          darkTheme: MyThemes.dark,
+          title: 'IOU',
+          initialRoute: '/',
+          routes: {
+            '/': (context) => Home(),
+            '/logScreen': (context) =>
+                LogScreen(args: ModalRoute.of(context).settings.arguments),
+            '/joinGroup': (context) => JoinGroup(
+                  args: ModalRoute.of(context).settings.arguments,
+                ),
+            '/mainPage': (context) => MainPage(
+                  args: ModalRoute.of(context).settings.arguments,
+                ),
+          },
+        );
+      });
 }
 
 class Home extends StatefulWidget {
@@ -61,8 +63,22 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  Future<String> initDynamicLinks() async {
+  @override
+  void initState() {
+    SchedulerBinding.instance
+        .addPostFrameCallback((_) async => handleInitialization(context));
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Loading();
+  }
+
+  Future<InitArgs> globalInitialization() async {
+    InitArgs args = InitArgs();
     Firebase.initializeApp();
+   // FirebaseFirestore.instance.settings = Settings(persistenceEnabled: false,);
     FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
       await handleDynamicLink(dynamicLink, context);
@@ -76,37 +92,13 @@ class _HomeState extends State<Home> {
     final Uri deepLink = data?.link;
 
     if (deepLink != null) {
-      return (deepLink.queryParameters['group']);
-    } else
-      print("link null 2");
-    return null;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      // Initialize FlutterFire:
-      future: initDynamicLinks(),
-      builder: (context, snapshot) {
-        // Check for errors
-        if (snapshot.hasError) {
-          return errorScreen("An error occured while loading dynamic links");
-        }
-
-        // Once complete, show your application
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.data != null)
-          return LogScreen(
-            args: snapshot.data,
-          );
-          else
-            return LogScreen();
-        }
-
-        // Otherwise, show something whilst waiting for initialization to complete
-        return Container();
-      },
-    );
+      args.setGroupInvitation(deepLink.queryParameters['group']);
+    }
+    //auto log
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String id = prefs.getString("userId");
+    if (await userExist(id)) args.setUsr(await getUserById(id));
+    return args;
   }
 
   Future<void> handleDynamicLink(
@@ -124,8 +116,13 @@ class _HomeState extends State<Home> {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       String usrId = prefs.getString("userId");
       if (usrId == null) {
-        Navigator.of(context).popUntil(ModalRoute.withName('/'));
-        Navigator.of(context).pushReplacementNamed('/', arguments: group);
+        Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => LogScreen(args: group,),
+            transitionDuration: Duration(seconds: 0),
+          ),
+        );
         return;
       }
       print(
@@ -140,5 +137,48 @@ class _HomeState extends State<Home> {
       }
     } else
       print("link null 1");
+  }
+
+  void handleInitialization(BuildContext context) async {
+    print("yo");
+    InitArgs args = await globalInitialization();
+
+    if (args.getUsr() != null) {
+      print("Auto logged in as ${args.getUsr().getName()}");
+      Navigator.pushNamed(context, '/joinGroup',
+          arguments: JoinGroupArgs(
+              usr: args.getUsr(), groupInvite: args.getGroupInvitation()));
+    }
+    else {
+      print ("No logs stored, show log page");
+      Navigator.pushNamed(
+          context, '/logScreen', arguments: args.getGroupInvitation());
+    }
+  }
+}
+
+class InitArgs {
+  String _groupInvitation;
+  IOUser _usr;
+
+  InitArgs() {
+    _groupInvitation = null;
+    _usr = null;
+  }
+
+  void setGroupInvitation(String groupInvitation) {
+    _groupInvitation = groupInvitation;
+  }
+
+  void setUsr(IOUser usr) {
+    _usr = usr;
+  }
+
+  String getGroupInvitation() {
+    return _groupInvitation;
+  }
+
+  IOUser getUsr() {
+    return _usr;
   }
 }
