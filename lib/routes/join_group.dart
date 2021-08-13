@@ -5,6 +5,7 @@ import 'package:deed/Other/user_menu.dart';
 import 'package:deed/group/group_creation.dart';
 import 'package:deed/Other/invitation.dart';
 import 'package:deed/group/manual_join.dart';
+import 'package:deed/utils/error.dart';
 import 'package:deed/utils/logo.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/scheduler.dart';
@@ -77,11 +78,17 @@ class _JoinGroupState extends State<JoinGroup> {
                 }
               ),
               Logo(),
-              CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColor,
-                radius: 20,
+              InkWell(
+                customBorder: CircleBorder(),
+                onTap: () {
+                  displayError("You can only edit profile in the group interface.", context);
+                },
                 child: CircleAvatar(
-                    radius: 18, backgroundImage: NetworkImage(usr.getUrl())),
+                  backgroundColor: Theme.of(context).primaryColor,
+                  radius: 20,
+                  child: CircleAvatar(
+                      radius: 18, backgroundImage: NetworkImage(usr.getUrl())),
+                ),
               )
             ],
           ),
