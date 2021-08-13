@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:deed/classes/user.dart';
+import 'package:deed/utils/user_list_preview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -36,7 +37,6 @@ class _BalancingOptionCardState extends State<BalancingOptionCard> {
     List<UserBalance> balancing = this.widget.balancing;
     bool isBest = this.widget.isBest;
     bool isDeployed = this.widget.isDeployed;
-    print(isDeployed);
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -130,39 +130,9 @@ class BalancingOptionPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (list.length > 5) {
-      list[4].setUrl(
-          "https://firebasestorage.googleapis.com/v0/b/iou-71bca.appspot.com/o/InvitationPreview.png?alt=media&token=6ed44008-7fcd-4a4e-9bd0-18462da18bda");
-      list.removeRange(5, list.length - 1);
-    }
     return Row(
       children: [
-        SizedBox(
-          height: 30,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 4),
-            child: ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (BuildContext context, int index) {
-                return SizedBox(
-                    width: 20,
-                    child: OverflowBox(
-                      maxWidth: 30,
-                      child: CircleAvatar(
-                        radius: 15,
-                        backgroundColor: Theme.of(context).primaryColor,
-                        child: CircleAvatar(
-                            radius: 13,
-                            backgroundImage:
-                                NetworkImage(list[index].getUrl())),
-                      ),
-                    ));
-              },
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-            ),
-          ),
-        ),
+        BalanceUserListPreview(list: list, maxLength: 5,),
         Padding(
           padding: const EdgeInsets.only(left: 12.0),
           child: Column(

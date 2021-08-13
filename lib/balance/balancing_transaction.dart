@@ -61,8 +61,7 @@ class _BalancingTransactionState extends State<BalancingTransaction> {
                   selected,
                   this.widget.group,
                   transaction.getBalance(),
-                  this.widget.usr,
-                  "Balancing");
+                  this.widget.usr);
               if (err == null) {
                 newTransaction(
                     transaction.getBalance(),

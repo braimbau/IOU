@@ -103,7 +103,6 @@ class _HomeState extends State<Home> {
   void handleInitialization(BuildContext context) async {
     InitArgs args = await globalInitialization();
     if (!await isVersionUpToDate()) {
-      print("yp");
       Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => errorScreen("Update the app to continue using IOU")));
       return;
     }

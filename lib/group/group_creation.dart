@@ -121,7 +121,7 @@ class _GroupCreationState extends State<GroupCreation> {
                             setState(() {
                               isLoading = true;
                             });
-                            groupId = await createGroupT(groupName);
+                            groupId = await createGroupT(groupName, usr.getId());
                             setState(() {
                               isLoading = false;
                             });

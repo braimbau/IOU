@@ -172,8 +172,7 @@ class AmountCard extends StatelessWidget {
                               selectedUsers,
                               group,
                               amountToPay.value,
-                              payer,
-                              label);
+                              payer);
                           if (err != null) {
                             displayError(err, context);
                             return;
@@ -285,6 +284,7 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
       'label': label,
       'payer': payer.getId(),
       'displayedAmount': displayedAmount,
+      'actualAmount': actualAmount,
       'transactor' : transactorId,
       'time': DateTime.now().millisecondsSinceEpoch,
     });
@@ -306,6 +306,7 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
       'label': label,
       'payer': payer.getId(),
       'displayedAmount': displayedAmount,
+      'actualAmount': actualAmount,
       'transactor' : transactorId,
       'time': DateTime.now().millisecondsSinceEpoch,
     });
@@ -325,7 +326,7 @@ onValidation(
 
   if (err == null)
     err = await runTransactionToUpdateBalances(
-        selectedUsers, group, amountToPay.value, payer, label);
+        selectedUsers, group, amountToPay.value, payer);
 
   print("Ici err = $err");
   if (err != null) {
@@ -341,7 +342,7 @@ onValidation(
 }
 
 Future<String> runTransactionToUpdateBalances(List<IOUser> selectedUsers,
-    String group, int amountToPay, IOUser payer, String label) async {
+    String group, int amountToPay, IOUser payer) async {
   final db = FirebaseFirestore.instance;
   return await db.runTransaction((Transaction tr) async {
     if (!await checkUsersInGroupT(tr, selectedUsers, group))

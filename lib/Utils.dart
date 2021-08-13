@@ -116,7 +116,7 @@ Future<bool> userIsInGroup(String group, String usrId) async {
 Future<void> createUser(String name, String url, String id) async
 {
   var  docRef = FirebaseFirestore.instance.collection('users').doc(id);
-  docRef.set({'name': name, 'url' : url, 'id': id, 'groups': "", 'defaultGroup': ""});
+  docRef.set({'name': name, 'url' : url, 'id': id, 'groups': "", 'defaultGroup': "", 'creationDate': DateTime.now().millisecondsSinceEpoch});
 }
 
 Future<bool> userExist(String id) async {
@@ -244,4 +244,15 @@ Future<bool> isVersionUpToDate() async {
     return true;
   print("Versions not matching : DB: $dbVersion Local: $localVersion");
   return false;
+}
+
+Future<List<IOUser>> getGroupUserList(String group) async {
+  List<IOUser> userList = [];
+  CollectionReference ref = FirebaseFirestore.instance.collection("groups").doc(group).collection('users');
+  QuerySnapshot snap = await ref.get();
+  for (int i = 0; i < snap.docs.length; i++) {
+    userList.add(IOUser(snap.docs[i]["id"],
+        snap.docs[i]["name"], snap.docs[i]["url"]));
+  }
+  return userList;
 }

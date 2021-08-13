@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:deed/balance/balance_display.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:deed/history/history.dart';
 
 import '../Other/app_bar.dart';
 import '../cards/quick_card.dart';
@@ -11,7 +11,6 @@ import '../cards/amount_card.dart';
 import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../Other/history.dart';
 import '../Utils.dart';
 
 //BuildContext context, IOUser usr, String group
@@ -54,7 +53,7 @@ class _MainPageState extends State<MainPage> {
         if (details.delta.dy < -25) {
           showCupertinoModalBottomSheet(
             context: context,
-            builder: (context) => History(usr: usr, group: group),
+            builder: (context) => History(usr: usr, group: group,),
           );
         }
       },

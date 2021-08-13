@@ -122,13 +122,13 @@ class _JoinGroupState extends State<JoinGroup> {
   }
 }
 
-Future<String> createGroupT(String groupName) async {
+Future<String> createGroupT(String groupName, String creatorId) async {
   return await FirebaseFirestore.instance
       .runTransaction((Transaction tr) async {
     final DocumentReference ref =
     FirebaseFirestore.instance.collection("groups").doc();
     String group = ref.id;
-    tr.set(ref, {'name': groupName});
+    tr.set(ref, {'name': groupName, 'creationDate': DateTime.now().millisecondsSinceEpoch, 'creator' : creatorId});
     return group;
   }).then((value) {
     print("__$value");

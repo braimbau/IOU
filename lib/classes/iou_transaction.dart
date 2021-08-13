@@ -3,16 +3,18 @@ class IouTransaction {
   int     _timestamp;
   int     _balanceEvo;
   int     _displayedAmount;
-  String  _users;
+  int     _actualAmount;
+  String  _selectedUsers;
   String  _payer;
   String  _label;
 
-  IouTransaction(int id, int timestamp, int balanceEvo, int displayedAmount, String otherUsers, String payer, String label) {
+  IouTransaction(int id, int timestamp, int balanceEvo, int displayedAmount, String otherUsers, String payer, String label, int actualAmount) {
     this._id = id;
     this._timestamp = timestamp;
     this._balanceEvo = balanceEvo;
     this._displayedAmount = displayedAmount;
-    this._users = otherUsers;
+    this._actualAmount = actualAmount;
+    this._selectedUsers = otherUsers;
     this._payer = payer;
     this._label = label;
   }
@@ -33,8 +35,12 @@ class IouTransaction {
     return (_displayedAmount);
   }
 
+  int getActualAmount() {
+    return _actualAmount;
+  }
+
   String getUsers() {
-    return (_users);
+    return (_selectedUsers);
   }
 
   String getPayer() {
