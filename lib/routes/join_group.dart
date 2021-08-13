@@ -122,12 +122,21 @@ class _JoinGroupState extends State<JoinGroup> {
   }
 }
 
-Future<String> createGroup(String groupName) async {
-  final DocumentReference document =
-      FirebaseFirestore.instance.collection("groups").doc();
-  String group = document.id;
-  await document.set({'name': groupName});
-  return group;
+Future<String> createGroupT(String groupName) async {
+  return await FirebaseFirestore.instance
+      .runTransaction((Transaction tr) async {
+    final DocumentReference ref =
+    FirebaseFirestore.instance.collection("groups").doc();
+    String group = ref.id;
+    tr.set(ref, {'name': groupName});
+    return group;
+  }).then((value) {
+    print("__$value");
+    return value;
+  }).catchError((error) {
+    print("Transaction error : $error");
+    return null;
+  }).timeout(Duration(seconds: 1), onTimeout: () {return null;});
 }
 
 Future<bool> addGroup(String group, String userId) async {

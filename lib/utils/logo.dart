@@ -15,7 +15,7 @@ class _LogoState extends State<Logo>
   AnimationController animationController;
 
   bool state;
-  int speed = 1;
+  int speed = 7;
 
   @override
   void dispose() {

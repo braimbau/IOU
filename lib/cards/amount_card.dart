@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/Utils.dart';
+import 'package:deed/utils/transaction_utils.dart';
 
 import '../classes/InputInfo.dart';
 import '../utils/error.dart';
@@ -79,7 +80,11 @@ class AmountCard extends StatelessWidget {
     }
 
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection("groups").doc(group).collection("users").snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection("groups")
+          .doc(group)
+          .collection("users")
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Text('Something went wrong');
@@ -116,11 +121,9 @@ class AmountCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
               color: Theme.of(context).primaryColor,
-
               width: 1.5,
             ),
           ),
-
           clipBehavior: Clip.antiAlias,
           semanticContainer: true,
           elevation: 5,
@@ -131,7 +134,10 @@ class AmountCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Payer:", style: Theme.of(context).textTheme.bodyText2,),
+                    Text(
+                      "Payer:",
+                      style: Theme.of(context).textTheme.bodyText2,
+                    ),
                     PayerWidget(
                         userList: userList,
                         dropdownMenuItems: dropdownMenuItems,
@@ -154,8 +160,28 @@ class AmountCard extends StatelessWidget {
                       child: IconButton(
                         icon: const Icon(Icons.east),
                         onPressed: () async {
-                          onValidation(amountToPay, selectedUsers, context,
-                              payer, label, amountToPayPerUser, group);
+                          WidgetsBinding.instance.focusManager.primaryFocus
+                              ?.unfocus();
+                          String err = amountError(
+                              amountToPay.value, selectedUsers.length);
+                          if (err != null) {
+                            displayError(err, context);
+                            return;
+                          }
+                          err = await runTransactionToUpdateBalances(
+                              selectedUsers,
+                              group,
+                              amountToPay.value,
+                              payer,
+                              label);
+                          if (err != null) {
+                            displayError(err, context);
+                            return;
+                          }
+                          newTransaction(
+                              amountToPay.value, amountToPay.value ~/ selectedUsers.length * selectedUsers.length, payer, selectedUsers, label, group, currentUserId);
+                          Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
+                          displayMessage("Transaction confirmed !", context);
                         },
                       ),
                     ),
@@ -225,26 +251,25 @@ Future<void> changeBalance(String id, int amount, String group) async {
 }
 
 Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
-    List<IOUser> selectedUsers, String label, String group) async {
+    List<IOUser> selectedUsers, String label, String group, String transactorId) async {
+  String users = selectedUsers.join(":");
   var timestamp = DateTime.now().millisecondsSinceEpoch;
   CollectionReference ref =
-      FirebaseFirestore.instance.collection('transactions');
-  //add transaction in global transaction list
+      FirebaseFirestore.instance.collection('groups').doc(group).collection('transactions');
+  //add transaction in group transaction list
   ref.doc(timestamp.toString()).set({
     'displayedAmount': displayedAmount,
     'actualAmount': actualAmount,
-    'payer': payer.getName(),
+    'selectedUsers': users,
+    'payer': payer.getId(),
     'label': label,
-    'amountPerUser': actualAmount / selectedUsers.length
+    'amountPerUser': actualAmount / selectedUsers.length,
+    'transactor' : transactorId,
+    'time': DateTime.now().millisecondsSinceEpoch,
   });
-  String users = selectedUsers.join(":");
   selectedUsers.forEach((element) {
     int balanceEvo = -actualAmount ~/ selectedUsers.length;
     if (element == payer) balanceEvo += actualAmount;
-    ref
-        .doc(timestamp.toString())
-        .collection('users')
-        .add({'name': element.getName()});
     //add transaction in users transaction list
     FirebaseFirestore.instance
         .collection('users')
@@ -256,10 +281,12 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
         .set({
       'transactionID': timestamp,
       'balanceEvo': balanceEvo,
-      'otherUsers': users,
+      'selectedUsers': users,
       'label': label,
-      'payer': payer.getName(),
-      'displayedAmount': displayedAmount
+      'payer': payer.getId(),
+      'displayedAmount': displayedAmount,
+      'transactor' : transactorId,
+      'time': DateTime.now().millisecondsSinceEpoch,
     });
   });
   //add transaction in payer transaction list
@@ -275,10 +302,12 @@ Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
         .set({
       'transactionID': timestamp,
       'balanceEvo': actualAmount,
-      'otherUsers': users,
+      'selectedUsers': users,
       'label': label,
-      'payer': payer.getName(),
-      'displayedAmount': displayedAmount
+      'payer': payer.getId(),
+      'displayedAmount': displayedAmount,
+      'transactor' : transactorId,
+      'time': DateTime.now().millisecondsSinceEpoch,
     });
   }
 }
@@ -293,24 +322,44 @@ onValidation(
     String group) async {
   WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
   String err = amountError(amountToPay.value, selectedUsers.length);
+
   if (err == null)
-    err = await checkUsersInGroup(selectedUsers, group) ? null : "An user isn't in the group anymore";
-  int amountToCredit = 0;
+    err = await runTransactionToUpdateBalances(
+        selectedUsers, group, amountToPay.value, payer, label);
+
+  print("Ici err = $err");
   if (err != null) {
     displayError(err, context);
-  } else {
-    selectedUsers.forEach((element) {
-      changeBalance(
-          element.getId(), -amountToPay.value ~/ selectedUsers.length, group);
-      amountToCredit += amountToPay.value ~/ selectedUsers.length;
-    });
-    changeBalance(payer.getId(), amountToCredit, group);
-    newTransaction(
-        amountToPay.value, amountToCredit, payer, selectedUsers, label, group);
+
     amountToPayPerUser.value = 0;
     amountToPay.value = 0;
+  } else {
     //pop until main page to avoid poping only flushbar
     Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
     displayMessage("yeah", context);
   }
+}
+
+Future<String> runTransactionToUpdateBalances(List<IOUser> selectedUsers,
+    String group, int amountToPay, IOUser payer, String label) async {
+  final db = FirebaseFirestore.instance;
+  return await db.runTransaction((Transaction tr) async {
+    if (!await checkUsersInGroupT(tr, selectedUsers, group))
+      return "An user isn't in the group anymore";
+    int amountToCredit =
+        amountToPay ~/ selectedUsers.length * selectedUsers.length;
+
+    selectedUsers.forEach((element) async {
+      await changeBalanceT(
+          tr, element.getId(), -amountToPay ~/ selectedUsers.length, group);
+      amountToCredit += amountToPay ~/ selectedUsers.length;
+    });
+    await changeBalanceT(tr, payer.getId(), amountToCredit, group);
+    return null;
+  }).then((value) {
+    return value;
+  }).catchError((error) {
+    print("Transaction error : $error");
+    return "An error occured, please retry";
+  });
 }

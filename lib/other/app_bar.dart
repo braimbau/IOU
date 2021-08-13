@@ -27,6 +27,7 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
           ),
           iconSize: 30,
           onPressed: () {
+            Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
             Navigator.of(context).pop();
           },
         ),

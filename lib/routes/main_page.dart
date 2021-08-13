@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:deed/balance/balance_display.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../Other/app_bar.dart';
@@ -7,7 +8,6 @@ import '../cards/quick_card.dart';
 import 'package:flutter/rendering.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../cards/amount_card.dart';
-import '../Other/balance_display.dart';
 import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +88,7 @@ class _MainPageState extends State<MainPage> {
           padding: const EdgeInsets.symmetric(horizontal: 5.0),
           child: Column(
             children: <Widget>[
-              Visibility(child: Flexible(child: BalanceCard(usr: usr, group: group))),
+              BalanceCard(usr: usr, group: group),
               QuickCard(usr: usr, group: group),
             ],
           ),

@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/classes/user.dart';
+import 'package:deed/utils/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -21,6 +23,7 @@ class _GroupCreationState extends State<GroupCreation> {
   String groupName;
   IOUser usr;
   String groupId;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -76,50 +79,70 @@ class _GroupCreationState extends State<GroupCreation> {
                                   groupName = str;
                                 });
                               }),
-                          if ((groupName != null)) Container(
-                              alignment: Alignment.bottomRight,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(right: 4, top: 22),
-                                child: Text("${groupName.length}/10",
-                                    style: TextStyle(
-                                        color: Theme.of(context).hintColor,
-                                        fontWeight: FontWeight.normal)),
-                              ))
+                          if (groupName != null && groupName.length > 0)
+                            Container(
+                                alignment: Alignment.bottomRight,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(right: 4, top: 22),
+                                  child: Text(
+                                      "${groupName.characters.length}/10",
+                                      style: TextStyle(
+                                          color: Theme.of(context).hintColor,
+                                          fontWeight: FontWeight.normal)),
+                                ))
                         ],
                       ),
                     ),
-                    IconButton(
-                        icon: Icon(
-                          Icons.east,
-                        ),
-                        onPressed: () async {
-                          if (groupName == null || groupName.length == 0) {
+                    Visibility(
+                      visible: isLoading == false,
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.east,
+                          ),
+                          onPressed: () async {
+                            if (groupName == null || groupName.length == 0) {
+                              WidgetsBinding.instance.focusManager.primaryFocus
+                                  ?.unfocus();
+                              displayError(
+                                  "Chose a name to create a group", context);
+                              return;
+                            }
+                            if (groupName.characters.length > 10) {
+                              WidgetsBinding.instance.focusManager.primaryFocus
+                                  ?.unfocus();
+                              displayError(
+                                  "The max length of the group name is 10 characters",
+                                  context);
+                              return;
+                            }
                             WidgetsBinding.instance.focusManager.primaryFocus
                                 ?.unfocus();
-                            displayError(
-                                "Chose a name to create a group", context);
-                            return;
-                          }
-                          if (groupName.length > 10) {
-                            WidgetsBinding.instance.focusManager.primaryFocus
-                                ?.unfocus();
-                            displayError(
-                                "The max length of the group name is 10 characters",
-                                context);
-                            return;
-                          }
-                          groupId = await createGroup(groupName);
-                          displayMessage(
-                              'Group $groupName is created', context);
-                          addGroup(groupId, usr.getId());
-                          checkGroup(usr, groupId);
-                          WidgetsBinding.instance.focusManager.primaryFocus
-                              ?.unfocus();
-                          setState(() {
-                            isCreated = true;
-                          });
-                        }),
+                            setState(() {
+                              isLoading = true;
+                            });
+                            groupId = await createGroupT(groupName);
+                            setState(() {
+                              isLoading = false;
+                            });
+                            if (groupId == null)
+                              displayError(
+                                  "An error occured, please retry", context);
+                            else {
+                              displayMessage(
+                                  'Group $groupName is created', context);
+                              addGroup(groupId, usr.getId());
+                              checkGroup(usr, groupId);
+                              setState(() {
+                                isCreated = true;
+                              });
+                              groupName = "";
+                            }
+                          }),
+                    ),
+                    Visibility(
+                      visible: isLoading,
+                        child: IconButton(icon: Icon(Icons.pending)))
                   ],
                 ),
               ),

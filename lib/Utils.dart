@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/utils/image_import.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 
 import 'classes/group.dart';
 import 'classes/user.dart';
@@ -11,16 +12,6 @@ Future<String> getGroupNameById(String id) async {
   FirebaseFirestore.instance.collection("groups").doc(id);
   var doc = await document.get();
   return doc["name"];
-}
-
-Future<bool> isInGroup(String id, String group) async {
-  final DocumentReference document = FirebaseFirestore.instance
-      .collection("users")
-      .doc(id)
-      .collection("groups")
-      .doc(group);
-  var doc = await document.get();
-  return doc.exists;
 }
 
 Future<bool> updateUserInfosFromGroup(IOUser usr, String group) async {
@@ -37,29 +28,23 @@ Future<bool> updateUserInfosFromGroup(IOUser usr, String group) async {
 
 Future<int> getBalance(String usrId, String group) async {
   final DocumentReference document = FirebaseFirestore.instance
-      .collection("users")
-      .doc(usrId)
       .collection("groups")
-      .doc(group);
+      .doc(group)
+      .collection("users")
+      .doc(usrId);
   var doc = await document.get();
   return doc["balance"];
 }
 
 Future<void> checkGroup(IOUser usr, String group) async {
-  if (!await isInGroup(usr.getId(), group)) {
+  if (!await userIsInGroup(group,usr.getId())) {
     var docRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(usr.getId())
-        .collection("groups")
-        .doc(group);
-    docRef.set({'balance': 0});
-    print("creating balance for this user");
-    docRef = FirebaseFirestore.instance
         .collection('groups')
         .doc(group)
         .collection("users")
         .doc(usr.getId());
-    docRef.set({'name': usr.getName(), 'url': usr.getUrl(), 'id': usr.getId()});
+    docRef.set({'balance': 0, 'name': usr.getName(), 'url': usr.getUrl(), 'id': usr.getId()});
+    print("creating balance for this user");
   }
 }
 
@@ -120,10 +105,10 @@ Future<bool> toggleDefaultGroup(String usrId, String group) async {
 
 Future<bool> userIsInGroup(String group, String usrId) async {
   final DocumentReference document = FirebaseFirestore.instance
-      .collection("users")
-      .doc(usrId)
       .collection("groups")
-      .doc(group);
+      .doc(group)
+      .collection("users")
+      .doc(usrId);
   var doc = await document.get();
   return doc.exists;
 }
@@ -164,7 +149,7 @@ Future<String> leaveGroup(String usrId, String group) async {
     return("You can't leave a group that doesn't exist anymore");
   if (await getDefaultGroup(usrId) == group)
     setDefaultGroup(usrId, null);
-  if (!await isInGroup(usrId, group)) {
+  if (!await userIsInGroup(group, usrId)) {
     return ("This user already left the group");
   }
   if (await getBalance(usrId, group) != 0)
@@ -190,16 +175,6 @@ Future<String> leaveGroup(String usrId, String group) async {
   return null;
 }
 
-Future<bool> checkUsersInGroup(List<IOUser> list, String group) async {
-  if (!await groupExist(group))
-    return false;
-  for (IOUser usr in list) {
-    if (!await userIsInGroup(group, usr.getId()))
-      return false;
-  }
-  return true;
-}
-
 Future<bool> groupIsEmpty(String group) async {
   var ref = await FirebaseFirestore.instance.collection("groups").doc(group).collection("users").get();
   if (ref.docs.length == 0)
@@ -208,7 +183,13 @@ Future<bool> groupIsEmpty(String group) async {
 }
 
 Future<void> deleteGroup(String group) async {
-  var ref = await FirebaseFirestore.instance.collection("groups").doc(group).delete();
+  DocumentReference ref = FirebaseFirestore.instance.collection("groups").doc(group);
+  ref.collection('transactions').snapshots().forEach((element) {
+    for (QueryDocumentSnapshot snapshot in element.docs) {
+      snapshot.reference.delete();
+    }
+  });
+  ref.delete();
 }
 
 Future<void> deleteGroupIfEmpty(String groupId) async {
@@ -250,4 +231,17 @@ Future<Map<String, String>> getUserGroupsMap(String usrId) async {
   map[groupId] = await getGroupNameById(groupId);
   }
   return map;
+}
+
+Future<bool> isVersionUpToDate() async {
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  String localVersion = packageInfo.version;
+  DocumentReference ref = FirebaseFirestore.instance.collection('infos').doc('app');
+  DocumentSnapshot doc = await ref.get();
+  String dbVersion = doc['version'];
+  localVersion = localVersion.substring(0, localVersion.lastIndexOf('.'));
+  if (localVersion == dbVersion)
+    return true;
+  print("Versions not matching : DB: $dbVersion Local: $localVersion");
+  return false;
 }

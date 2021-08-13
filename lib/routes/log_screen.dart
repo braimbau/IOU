@@ -99,8 +99,10 @@ class _LogScreenState extends State<LogScreen> {
                   arguments: JoinGroupArgs(usr: usr, groupInvite: groupInvite));
             },
           ),
-          SizedBox(
-            height: 100,
+          Flexible(
+            child: SizedBox(
+              height: 100,
+            ),
           )
         ],
       ),

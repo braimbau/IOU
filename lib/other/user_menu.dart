@@ -70,7 +70,7 @@ class _UserMenuState extends State<UserMenu> {
                               maxLength: 20,
                               initialValue: usr.getName(),
                               onChanged: (String txt) {
-                                if (newName.length == 20 && txt.length == 20)
+                                if (newName.characters.length == 20 && txt.characters.length == 20)
                                   displayError("Max name length is 20 characters", context);
                                 newName = txt;
                               },

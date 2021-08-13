@@ -15,7 +15,7 @@ Future<IOUser> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
 
-    id = "G:" + googleUser.id;
+    id = "G-" + googleUser.id;
     name = googleUser.displayName;
     photoUrl = googleUser.photoUrl;
 
@@ -48,7 +48,7 @@ Future<IOUser> signInWithApple() async {
   );
 
 
-  id = "A:" + appleUser.userIdentifier;
+  id = "A-" + appleUser.userIdentifier;
   name = (appleUser.familyName == null) ? "Unknow user" : "${appleUser.givenName} ${appleUser.familyName}";
   photoUrl = "https://www.ndugaonwheels.com/wp-content/uploads/2020/04/apple.jpg";
 

@@ -78,25 +78,10 @@ class HistoryUser extends StatelessWidget {
               snapshot.data.docs[i]["transactionID"],
               snapshot.data.docs[i]["balanceEvo"],
               snapshot.data.docs[i]["displayedAmount"],
-              snapshot.data.docs[i]["otherUsers"],
+              snapshot.data.docs[i]["selectedUsers"],
               snapshot.data.docs[i]["payer"],
               snapshot.data.docs[i]["label"]));
         }
-
-      /*  int compareByDate(IouTransaction a, IouTransaction b) {
-          return (a.getTimestamp() - b.getTimestamp());
-        }
-        int compareByDateReverse(IouTransaction a, IouTransaction b) {
-          return (b.getTimestamp() - a.getTimestamp());
-        }
-        int compareByAmount(IouTransaction a, IouTransaction b) {
-          return (a.getBalanceEvo() - b.getBalanceEvo());
-        }
-        int compareByAmountReverse(IouTransaction a, IouTransaction b) {
-          return (a.getBalanceEvo() - b.getBalanceEvo());
-        }*/
-
-
         return new Scaffold(
           body: Column(
             children: [
@@ -182,7 +167,7 @@ class _HistoryElementState extends State<HistoryElement> {
               Row(children: [
                 Text(formattedDate,
                     style: TextStyle(
-                        color: Colors.grey[500], fontStyle: FontStyle.italic)),
+                        color: Colors.grey[500], fontStyle: FontStyle.italic, fontWeight: FontWeight.normal)),
                 Expanded(child: Container()),
                 Text(
                   evo,
@@ -193,14 +178,14 @@ class _HistoryElementState extends State<HistoryElement> {
                           : Colors.red),
                 ),
               ]),
-              if (isExpanded)
+              if (isExpanded && false)
                 Align(
                     alignment: Alignment.centerLeft,
                     child: Text("Payer: ${this.widget.transaction.getPayer()}",)),
               if (isExpanded)
                 Align(
                     alignment: Alignment.centerLeft,
-                    child: Text("Total amount: $displayedAmount€",)),
+                    child: Text("Total amount: $displayedAmount€", style: Theme.of(context).textTheme.bodyText1,)),
               if (isExpanded &&
                   this.widget.transaction.getUsers() != "" &&
                   2 == 3)

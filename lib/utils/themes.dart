@@ -1,27 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
   ThemeMode themeMode = ThemeMode.system;
 
-  bool get isDarkMode => themeMode == ThemeMode.dark;
+  int getTheme() {
+    if (themeMode == ThemeMode.system) return 0;
+    if (themeMode == ThemeMode.dark) return 1;
+    return 2;
+  }
 
-  void toggleTheme(bool isOn) {
-    themeMode = isOn ? ThemeMode.dark : ThemeMode.light;
+  void toggleTheme(int state) {
+    if (state == 0) themeMode = ThemeMode.system;
+    if (state == 1) themeMode = ThemeMode.dark;
+    if (state == 2) themeMode = ThemeMode.light;
     notifyListeners();
   }
 }
 
-class ChangeThemeButtonWidget extends StatelessWidget {
+class ChangeThemeButtonWidget extends StatefulWidget {
+  @override
+  _ChangeThemeButtonWidgetState createState() =>
+      _ChangeThemeButtonWidgetState();
+}
+
+class _ChangeThemeButtonWidgetState extends State<ChangeThemeButtonWidget> {
   @override
   Widget build(BuildContext context) {
     final themProvider = Provider.of<ThemeProvider>(context);
-    bool value = themProvider.isDarkMode;
-    return IconButton(icon: Icon(Icons.lightbulb_outline), onPressed: () {
-      value = !value;
-      final provider = Provider.of<ThemeProvider>(context, listen: false);
-      provider.toggleTheme(value);
-    });
+    int theme = themProvider.getTheme();
+    print("_$theme");
+    return InkWell(
+      onTap: () {
+        theme++;
+        if (theme == 3) theme = 0;
+        final provider = Provider.of<ThemeProvider>(context, listen: false);
+        provider.toggleTheme(theme);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Visibility(
+                visible: theme == 0,
+                child: Text(
+                  "A",
+                  style: Theme.of(context).textTheme.headline3,
+                )),
+            Icon(Icons.lightbulb_outline),
+          ],
+        ),
+      ),
+    );
+    return IconButton(
+        icon: Icon(Icons.lightbulb),
+        onPressed: () {
+          theme++;
+          if (theme == 3) theme = 0;
+          final provider = Provider.of<ThemeProvider>(context, listen: false);
+          provider.toggleTheme(theme);
+          print(theme);
+        });
   }
 }
 
@@ -40,12 +81,8 @@ class MyThemes {
       bodyText1: TextStyle(
         color: Colors.white,
       ),
-      bodyText2: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold
-      ),
+      bodyText2: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
     ),
-
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.grey[800],
     ),
@@ -53,9 +90,7 @@ class MyThemes {
       color: Colors.white,
     ),
     primaryColor: Colors.white,
-    cardTheme: CardTheme(
-        color: Colors.grey[900]
-    ),
+    cardTheme: CardTheme(color: Colors.grey[900]),
     floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.white,
     ),
@@ -75,11 +110,7 @@ class MyThemes {
       bodyText1: TextStyle(
         color: Colors.black,
       ),
-      bodyText2: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold
-      ),
-
+      bodyText2: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.grey[300],

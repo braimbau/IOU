@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/Routes/join_group.dart';
 import 'package:deed/utils/error.dart';
 import 'package:deed/Other/invitation.dart';
@@ -102,8 +101,12 @@ class _HomeState extends State<Home> {
   }
 
   void handleInitialization(BuildContext context) async {
-    print("yo");
     InitArgs args = await globalInitialization();
+    if (!await isVersionUpToDate()) {
+      print("yp");
+      Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => errorScreen("Update the app to continue using IOU")));
+      return;
+    }
 
     if (args.getUsr() != null) {
       print("Auto logged in as ${args.getUsr().getName()}");
