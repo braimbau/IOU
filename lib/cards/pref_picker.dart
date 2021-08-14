@@ -120,7 +120,8 @@ class PrefPicker extends StatelessWidget {
                                 emoji.value,
                                 context,
                                 label,
-                                group);
+                                group,
+                            inputInfo.getIsIndividual());
                           }),
                     ),
                   ],
@@ -220,13 +221,13 @@ String amountError(int amount, int nbUsers, String emoji) {
 }
 
 Future<void> addQuickPref(String groupId, String label, String users,
-    int amount, String emoji) async {
+    int amount, String emoji, bool isIndividual) async {
   var docRef = FirebaseFirestore.instance
       .collection('groups')
       .doc(groupId)
       .collection("quickadds")
       .doc();
-  docRef.set({'name': label, 'amount': amount, 'users': users, 'emoji': emoji});
+  docRef.set({'name': label, 'amount': amount, 'users': users, 'emoji': emoji, 'isIndividual': isIndividual});
 }
 
 Future<void> onValidation(
@@ -235,7 +236,7 @@ Future<void> onValidation(
     String emoji,
     BuildContext context,
     String label,
-    String groupId,) {
+    String groupId, bool isIndividual) {
   WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
   String err = amountError(amountToPay.value, selectedUsers.length, emoji);
   if (err != null) {
@@ -253,7 +254,7 @@ Future<void> onValidation(
     )..show(context);
   } else {
     addQuickPref(
-        groupId, label, selectedUsers.join(":"), amountToPay.value, emoji);
+        groupId, label, selectedUsers.join(":"), amountToPay.value, emoji, isIndividual);
     //pop until main page to avoid poping only flushbar
     Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
     Flushbar(

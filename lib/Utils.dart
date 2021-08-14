@@ -214,6 +214,12 @@ Future<String> leaveGroup(String usrId, String group) async {
     ref = FirebaseFirestore.instance.collection('users').doc(usrId).collection('groups');
     tr.delete(ref.doc(group));
 
+    ref.doc(group).collection('transactions').snapshots().forEach((element) {
+      for (QueryDocumentSnapshot snapshot in element.docs) {
+        snapshot.reference.delete();
+      }
+    });
+
     return null;
 
 
@@ -227,37 +233,6 @@ Future<String> leaveGroup(String usrId, String group) async {
     print("Transaction error : $error");
     return "An error occured, please retry";
   });
-
-
-
-  if (!await groupExist(group))
-    return("You can't leave a group that doesn't exist anymore");
-  if (await getDefaultGroup(usrId) == group)
-    setDefaultGroup(usrId, null);
-  if (!await userIsInGroup(group, usrId)) {
-    return ("This user already left the group");
-  }
-  if (await getBalance(usrId, group) != 0)
-    return ("You need to have a null balance to leave a group");
-  CollectionReference ref = FirebaseFirestore.instance.collection('groups').doc(group).collection('users');
-  ref.doc(usrId).delete();
-
-  ref = FirebaseFirestore.instance.collection('users').doc(usrId).collection('groups');
-  ref.doc(group).delete();
-
-  ref = FirebaseFirestore.instance.collection('users');
-  var doc = await ref.doc(usrId).get();
-  String groups = doc["groups"];
-  List<String> groupList = (groups == "" || groups == null) ? [] : groups.split(':');
-  groupList.remove(group);
-  groups = groupList.join(":");
-  ref.doc(usrId).update({"groups": groups});
-
-  await removeImageOfFirebase(usrId + group);
-
-  deleteGroupIfEmpty(group);
-
-  return null;
 }
 
 Future<bool> groupIsEmpty(String group) async {
