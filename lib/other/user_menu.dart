@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/utils/error.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Utils.dart';
 import '../group/group_picker.dart';
@@ -57,7 +58,7 @@ class _UserMenuState extends State<UserMenu> {
           ),
         ),
         child: SizedBox(
-          width: 220,
+          width: 240,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -66,30 +67,33 @@ class _UserMenuState extends State<UserMenu> {
                   Expanded(
                     child: Center(
                       child: (btnMode != 0)
-                          ? TextFormField(
-                              maxLength: 20,
-                              initialValue: usr.getName(),
-                              onChanged: (String txt) {
-                                if (newName.characters.length == 20 && txt.characters.length == 20)
-                                  displayError("Max name length is 20 characters", context);
-                                newName = txt;
-                              },
-                              cursorColor: Theme.of(context).primaryColor,
-                              decoration: InputDecoration(
-                                counterText: '',
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.grey[500]),
-                                ),
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor),
-                                ),
-                                border: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor),
-                                ),
-                              ))
+                          ? Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            child: TextFormField(
+                                maxLength: 20,
+                                initialValue: usr.getName(),
+                                onChanged: (String txt) {
+                                  if (newName.characters.length == 20 && txt.characters.length == 20)
+                                    displayError("Max name length is 20 characters", context);
+                                  newName = txt;
+                                },
+                                cursorColor: Theme.of(context).primaryColor,
+                                decoration: InputDecoration(
+                                  counterText: '',
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.grey[500]),
+                                  ),
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor),
+                                  ),
+                                  border: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor),
+                                  ),
+                                )),
+                          )
                           : RichText(
                               text: TextSpan(children: [
                               TextSpan(
@@ -101,32 +105,34 @@ class _UserMenuState extends State<UserMenu> {
                             ])),
                     ),
                   ),
-                  Padding(
-                      padding: EdgeInsets.only(right: 6),
-                      child: InkWell(
-                        customBorder: CircleBorder(),
-                        onTap: () async {
-                          if (btnMode == 1) img = await pickImage();
-                          setState(() {});
-                        },
-                        child: Stack(children: [
-                          CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Theme.of(context).primaryColor,
-                              child: CircleAvatar(
-                                  radius: 24,
-                                  backgroundImage: (img != null)
-                                      ? FileImage(img)
-                                      : NetworkImage(usr.getUrl()))),
-                          if (btnMode == 1)
-                            Positioned(
-                              child: Icon(Icons.edit, size: 20),
-                              right: 4,
-                              bottom: 4,
-                            ),
-                        ]),
-                      )),
+                  InkWell(
+                    customBorder: CircleBorder(),
+                    onTap: () async {
+                      if (btnMode == 1) img = await pickImage();
+                      setState(() {});
+                    },
+                    child: Stack(children: [
+                      CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: CircleAvatar(
+                              radius: 24,
+                              backgroundImage: (img != null)
+                                  ? FileImage(img)
+                                  : NetworkImage(usr.getUrl()))),
+                      if (btnMode == 1)
+                        Positioned(
+                          child: Icon(Icons.edit, size: 20),
+                          right: 4,
+                          bottom: 4,
+                        ),
+                    ]),
+                  ),
                 ]),
+                SizedBox(
+                  height: 8,
+                  child: Container(),
+                ),
                 Visibility(
                   visible: btnMode == 0,
                   child: Row(
@@ -196,16 +202,8 @@ class _UserMenuState extends State<UserMenu> {
                             }
                             Navigator.of(context)
                                 .popUntil(ModalRoute.withName('/mainPage'));
-                            Navigator.pushReplacement(
-                              context,
-                              PageRouteBuilder(
-                                pageBuilder: (_, __, ___) => MainPage(
-                                  args: MainPageArgs(
-                                      usr: usr, group: this.widget.group),
-                                ),
-                                transitionDuration: Duration(seconds: 0),
-                              ),
-                            );
+                            Navigator.pushReplacementNamed(context, '/mainPage', arguments: MainPageArgs(
+                                usr: usr, group: this.widget.group));
                           },
                           child: SizedBox(
                               width: 60, child: Center(child: Text('Confirm'))),

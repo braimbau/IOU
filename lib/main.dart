@@ -137,13 +137,7 @@ Future<void> handleDynamicLink(
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String usrId = prefs.getString("userId");
     if (usrId == null) {
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => LogScreen(args: group,),
-          transitionDuration: Duration(seconds: 0),
-        ),
-      );
+      Navigator.pushReplacementNamed(context, '/logScreen', arguments: group);
       return;
     }
     print(

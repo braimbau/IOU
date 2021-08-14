@@ -23,10 +23,7 @@ Widget logErrorScreen(String err, BuildContext context) {
                       prefs.setString("userId", null);
                       prefs.setString("name", null);
                       prefs.setString("photoUrl", null);
-                      Navigator.pushReplacement(
-                        context,
-                        PageRouteBuilder(pageBuilder: (context, animation1, animation2) => LogScreen(), transitionDuration: Duration(seconds: 0)),
-                      );
+                      Navigator.pushReplacementNamed(context, '/logScreen');
                     },
                     child: Text("Retry")),
               ]

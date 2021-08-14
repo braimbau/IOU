@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -68,6 +69,7 @@ class _ChangeThemeButtonWidgetState extends State<ChangeThemeButtonWidget> {
 
 class MyThemes {
   static final ThemeData dark = ThemeData(
+    fontFamily: GoogleFonts.roboto().fontFamily,
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Colors.grey[900],
     backgroundColor: Colors.grey[100],
