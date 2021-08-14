@@ -159,7 +159,7 @@ class _HistoryElementState extends State<HistoryElement> {
                             ],
                           ))),
                 ),
-              if (isExpanded)
+              if (isExpanded && transaction.getActualAmount() > 0)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

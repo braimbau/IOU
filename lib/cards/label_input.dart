@@ -19,7 +19,6 @@ class _LabelTextInputState extends State<LabelTextInput> {
   @override
   Widget build(BuildContext context) {
     return TextField(
-        style: TextStyle(color : Colors.black),
         controller: this.widget.controller,
         decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),

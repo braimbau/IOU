@@ -106,21 +106,24 @@ class _BalancingState extends State<Balancing> {
                   shrinkWrap: true,
                   itemCount: balancingOptions.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            picked = index;
-                          });
-                        },
-                        child: BalancingOptionCard(
-                          balancing: balancingOptions[index],
-                          isBest: (index == 0),
-                          isDeployed: (picked == index),
-                          resetPicked: resetPicked,
-                          group: groupId,
-                          usr: usr,
-                          updateBalancingOptions: updateBalancingOptions,
-                        ));
+                    return Visibility(
+                      visible: picked == null || picked == index,
+                      child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              picked = index;
+                            });
+                          },
+                          child: BalancingOptionCard(
+                            balancing: balancingOptions[index],
+                            isBest: (index == 0),
+                            isDeployed: (picked == index),
+                            resetPicked: resetPicked,
+                            group: groupId,
+                            usr: usr,
+                            updateBalancingOptions: updateBalancingOptions,
+                          )),
+                    );
                   },
                 ),
               ),

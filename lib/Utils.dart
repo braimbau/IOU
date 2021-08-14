@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/utils/image_import.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 
@@ -33,6 +34,16 @@ Future<int> getBalance(String usrId, String group) async {
       .collection("users")
       .doc(usrId);
   var doc = await document.get();
+  return doc["balance"];
+}
+
+Future<int> getBalanceT(String usrId, String group, Transaction tr) async {
+  final DocumentReference document = FirebaseFirestore.instance
+      .collection("groups")
+      .doc(group)
+      .collection("users")
+      .doc(usrId);
+  var doc = await tr.get(document);
   return doc["balance"];
 }
 
@@ -79,6 +90,13 @@ Future<String> getDefaultGroup(String userId) async {
   return doc["defaultGroup"];
 }
 
+Future<String> getDefaultGroupT(String userId, Transaction tr) async {
+  final DocumentReference document = FirebaseFirestore.instance.collection(
+      "users").doc(userId);
+  var doc = await tr.get(document);
+  return doc["defaultGroup"];
+}
+
 Future<List<String>> getGroups(String userId) async {
   final DocumentReference document = FirebaseFirestore.instance.collection(
       "users").doc(userId);
@@ -91,6 +109,12 @@ Future<void> setDefaultGroup(String usrId, String group) async {
   final DocumentReference document = FirebaseFirestore.instance.collection(
       "users").doc(usrId);
   await document.update({'defaultGroup': group});
+}
+
+Future<void> setDefaultGroupT(String usrId, String group, Transaction tr) async {
+  final DocumentReference document = FirebaseFirestore.instance.collection(
+      "users").doc(usrId);
+  tr.update(document, {'defaultGroup': group});
 }
 
 Future<bool> toggleDefaultGroup(String usrId, String group) async {
@@ -113,6 +137,16 @@ Future<bool> userIsInGroup(String group, String usrId) async {
   return doc.exists;
 }
 
+Future<bool> userIsInGroupT(String group, String usrId, Transaction tr) async {
+  final DocumentReference document = FirebaseFirestore.instance
+      .collection("groups")
+      .doc(group)
+      .collection("users")
+      .doc(usrId);
+  var doc = await tr.get(document);
+  return doc.exists;
+}
+
 Future<void> createUser(String name, String url, String id) async
 {
   var  docRef = FirebaseFirestore.instance.collection('users').doc(id);
@@ -131,6 +165,12 @@ Future<bool> groupExist(String id) async {
   return doc.exists;
 }
 
+Future<bool> groupExistT(String id, Transaction tr) async {
+  final DocumentReference document = FirebaseFirestore.instance.collection("groups").doc(id);
+  var doc = await tr.get(document);
+  return doc.exists;
+}
+
 Future<IOUser> getUserById (String id) async {
   final DocumentReference document = FirebaseFirestore.instance.collection("users").doc(id);
   var doc = await document.get();
@@ -145,6 +185,51 @@ Future<void> changePhotoUrl(String id, String url, String group) async {
 }
 
 Future<String> leaveGroup(String usrId, String group) async {
+  final db = FirebaseFirestore.instance;
+  return await db.runTransaction((Transaction tr) async {
+
+    if (!await groupExistT(group, tr))
+      return("You can't leave a group that doesn't exist anymore");
+    if (!await userIsInGroupT(group, usrId, tr)) {
+      return ("This user already left the group");
+    }
+    if (await getBalanceT(usrId, group, tr) != 0)
+      return ("You need to have a null balance to leave a group");
+
+    CollectionReference ref = FirebaseFirestore.instance.collection('users');
+    var doc = await tr.get(ref.doc(usrId));
+
+    if (await getDefaultGroupT(usrId, tr) == group)
+      setDefaultGroupT(usrId, null, tr);
+
+    String groups = doc["groups"];
+    List<String> groupList = (groups == "" || groups == null) ? [] : groups.split(':');
+    groupList.remove(group);
+    groups = groupList.join(":");
+    ref.doc(usrId).update({"groups": groups});
+
+    ref = FirebaseFirestore.instance.collection('groups').doc(group).collection('users');
+    tr.delete(ref.doc(usrId));
+
+    ref = FirebaseFirestore.instance.collection('users').doc(usrId).collection('groups');
+    tr.delete(ref.doc(group));
+
+    return null;
+
+
+  }).then((value) {
+    if (value == null) {
+      removeImageOfFirebase(usrId + group);
+      deleteGroupIfEmpty(group);
+    }
+    return value;
+  }).catchError((error) {
+    print("Transaction error : $error");
+    return "An error occured, please retry";
+  });
+
+
+
   if (!await groupExist(group))
     return("You can't leave a group that doesn't exist anymore");
   if (await getDefaultGroup(usrId) == group)
@@ -239,11 +324,19 @@ Future<bool> isVersionUpToDate() async {
   DocumentReference ref = FirebaseFirestore.instance.collection('infos').doc('app');
   DocumentSnapshot doc = await ref.get();
   String dbVersion = doc['version'];
-  localVersion = localVersion.substring(0, localVersion.lastIndexOf('.'));
-  if (localVersion == dbVersion)
-    return true;
-  print("Versions not matching : DB: $dbVersion Local: $localVersion");
-  return false;
+  var dbTab = dbVersion.split('.').map(int.parse).toList();
+  var localTab = localVersion.split('.').map(int.parse).toList();
+  print(dbTab);
+  print(localTab);
+  if (dbTab[0] > localTab[0]) {
+    print("Versions not matching : DB: $dbVersion Local: $localVersion");
+    return false;
+  }
+  if (dbTab[0] == localTab[0] && dbTab[1] > localTab[1]) {
+    print("Versions not matching : DB: $dbVersion Local: $localVersion");
+    return false;
+  }
+  return true;
 }
 
 Future<List<IOUser>> getGroupUserList(String group) async {
@@ -255,4 +348,40 @@ Future<List<IOUser>> getGroupUserList(String group) async {
         snap.docs[i]["name"], snap.docs[i]["url"]));
   }
   return userList;
+}
+
+Future<bool> addGroupT(String group, String userId, Transaction tr) async {
+  final DocumentReference document =
+  FirebaseFirestore.instance.collection("users").doc(userId);
+  var doc = await tr.get(document);
+  String groups = doc["groups"];
+  List<String> groupList =
+  (groups == null || groups == "") ? [] : groups.split(":");
+  if (groupList.contains(group)) {
+    return (false);
+  } else {
+    groupList.add(group);
+    tr.update(document, {
+      'groups': (groupList.length == 1) ? groupList[0] : groupList.join(":")
+    });
+    return true;
+  }
+}
+
+Future<String> joinGroupT(String usrId, String groupId) async {
+  final db = FirebaseFirestore.instance;
+  return await db.runTransaction((Transaction tr) async {
+    if (! await groupExistT(groupId, tr))
+      return ("This group doesn't exist");
+    if (await userIsInGroupT(groupId, usrId, tr))
+      return ("User is already in this group");
+    if (await addGroupT(groupId, usrId, tr))
+    checkGroup(await getUserById(usrId), groupId);
+    return null;
+  }).then((value) {
+    return value;
+  }).catchError((error) {
+    print("Transaction error : $error");
+    return "An error occured, please retry";
+  });
 }

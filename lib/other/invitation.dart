@@ -190,17 +190,15 @@ class _InvitationPopUpState extends State<InvitationPopUp> {
                     style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.black)),
                     child: Text("Yes", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                     onPressed: () async {
-                      bool success = false;
-                      if (await groupExist(this.widget.group)) if (await addGroup(this.widget.group, this.widget.usrId))
-                        success = true;
-                      checkGroup(await getUserById(this.widget.usrId), this.widget.group);
+
+                      String err = await joinGroupT(this.widget.usrId, this.widget.group);
                       Navigator.of(context).pop();
                       showFlushBar(
-                          success
+                          (err == null)
                               ? "You've been added to the group"
-                              : "An error occured",
-                          success ? Colors.green : Colors.red,
-                          success ? Icons.info_outline : Icons.error_outline,
+                              : err,
+                          (err == null) ? Colors.green : Colors.red,
+                          (err == null) ? Icons.info_outline : Icons.error_outline,
                           context);
                     },
                   ),
@@ -247,17 +245,14 @@ Future<void> showInvite(
           TextButton(
             child: Text('Yes'),
             onPressed: () async {
-              bool success = false;
-              if (await groupExist(group)) if (await addGroup(group, usrId))
-                success = true;
-              checkGroup(await getUserById(usrId), group);
+              String err = await joinGroupT(usrId, group);
               Navigator.of(context).pop();
               showFlushBar(
-                  success
+                  (err == null)
                       ? "You've been added to the group"
-                      : "An error occured",
-                  success ? Colors.green : Colors.red,
-                  success ? Icons.info_outline : Icons.error_outline,
+                      : err,
+                  (err == null) ? Colors.green : Colors.red,
+                  (err == null) ? Icons.info_outline : Icons.error_outline,
                   context);
             },
           ),

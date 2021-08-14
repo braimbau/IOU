@@ -16,6 +16,7 @@ import 'Routes/log_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'classes/user.dart';
+import 'other/update_screen.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -103,7 +104,7 @@ class _HomeState extends State<Home> {
   void handleInitialization(BuildContext context) async {
     InitArgs args = await globalInitialization();
     if (!await isVersionUpToDate()) {
-      Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => errorScreen("Update the app to continue using IOU")));
+      Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context, animation1, animation2) => UpdateScreen()));
       return;
     }
 

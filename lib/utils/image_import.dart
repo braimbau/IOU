@@ -46,5 +46,4 @@ Future removeImageOfFirebase(String id) async {
   } catch(err) {
     print("No user photo in database, not deleted");
   }
-
 }
