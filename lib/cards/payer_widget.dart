@@ -84,10 +84,13 @@ List<DropdownMenuItem<IOUser>> buildDropDownMenuItems(List listItems) {
       DropdownMenuItem(
         child: Row(
             children:<Widget>[
-              CircleAvatar(
-                radius: 15,
-                backgroundImage:
-                NetworkImage(listItem.getUrl()),
+              Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: CircleAvatar(
+                  radius: 15,
+                  backgroundImage:
+                  NetworkImage(listItem.getUrl()),
+                ),
               ),
               Text(listItem.getName())
             ]),

@@ -111,13 +111,20 @@ class _HistoryElementState extends State<HistoryElement> {
                           padding: const EdgeInsets.all(8.0),
                           child: Column(
                             children: [
-                              Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    "Receivers:",
-                                    style:
-                                        Theme.of(context).textTheme.bodyText1,
-                                  )),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Text(
+                                      "Receivers:",
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                  ),
+                                  Icon((listExpanded) ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down)
+                                ],
+                              ),
                               if (listExpanded)
                                 ListView.builder(
                                     shrinkWrap: true,
