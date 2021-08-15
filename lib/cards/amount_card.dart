@@ -194,7 +194,7 @@ class AmountCard extends StatelessWidget {
                             (BuildContext context, String text, Widget child) {
                           return Visibility(
                             visible: (text != null && text != ""),
-                            child: Text(text),
+                            child: Text(text, style: Theme.of(context).textTheme.bodyText1,),
                           );
                         }),
                   ],
