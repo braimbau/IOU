@@ -63,7 +63,9 @@ class _UserMenuState extends State<UserMenu> {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Row(children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                   Expanded(
                     child: Center(
                       child: (btnMode != 0)
@@ -94,15 +96,21 @@ class _UserMenuState extends State<UserMenu> {
                                   ),
                                 )),
                           )
-                          : RichText(
-                              text: TextSpan(children: [
-                              TextSpan(
-                                  text: 'Logged in as\n',
-                                  style: Theme.of(context).textTheme.bodyText1),
-                              TextSpan(
-                                  text: usr.getName(),
-                                  style: Theme.of(context).textTheme.bodyText2)
-                            ])),
+                          : Align(
+                        alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16),
+                              child: RichText(
+                                  text: TextSpan(children: [
+                                  TextSpan(
+                                      text: 'Logged in as\n',
+                                      style: Theme.of(context).textTheme.bodyText1),
+                                  TextSpan(
+                                      text: usr.getName(),
+                                      style: Theme.of(context).textTheme.bodyText2)
+                                ])),
+                            ),
+                          ),
                     ),
                   ),
                   InkWell(

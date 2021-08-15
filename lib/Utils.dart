@@ -249,6 +249,11 @@ Future<void> deleteGroup(String group) async {
       snapshot.reference.delete();
     }
   });
+  ref.collection('quickadds').snapshots().forEach((element) {
+    for (QueryDocumentSnapshot snapshot in element.docs) {
+      snapshot.reference.delete();
+    }
+  });
   ref.delete();
 }
 

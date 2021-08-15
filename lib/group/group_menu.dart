@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/classes/group.dart';
 import 'package:deed/classes/user.dart';
+import 'package:deed/history/history_group.dart';
+import 'package:deed/other/user_list_display.dart';
 import 'package:deed/utils/error.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../Utils.dart';
@@ -31,42 +34,89 @@ class _GroupMenuState extends State<GroupMenu> {
     group = this.widget.excludeGroup;
     groupList = this.widget.groupList;
     return Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-          side: BorderSide(
-            color: Theme.of(context).primaryColor,
-            width: 1,
-          ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+        side: BorderSide(
+          color: Theme.of(context).primaryColor,
+          width: 1,
         ),
-        child: SizedBox(
-          width: 175,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                    FavGroup(usrId: usr.getId(), group: group),
-                    Flexible(
-                      child: FittedBox(
-                        child: Text(
-                          groupList.firstWhere((element) => element.getId() == group).getName(),
-                          style: Theme.of(context).textTheme.headline2,
+      ),
+      child: SizedBox(
+        width: 175,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Flexible(
+                  child: InkWell(
+                    onTap: () {},
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: FittedBox(
+                            child: Text(
+                              groupList
+                                  .firstWhere((element) => element.getId() == group)
+                                  .getName(),
+                              style: Theme.of(context).textTheme.headline2,
+                            ),
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Icon(
+                            Icons.edit,
+                            size: 15,
+                            color: Colors.grey[500],
+                          ),
+                        )
+                      ],
                     ),
-                    IconButton(
-                        icon: Icon(Icons.ios_share, color: Theme.of(context).primaryColor,),
-                        onPressed: () async {
-                          String groupName = await getGroupNameById(group);
-                          String url = await getGroupDynamicLink(group, groupName);
-                          await Share.share(url);
-                        }),
-                  ]),
-                  GroupPicker(
-                    usr: usr,
-                    excludeGroup: this.widget.excludeGroup,
-                    groupList: groupList,
                   ),
+                ),
+              ]),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      icon: Icon(
+                        Icons.ios_share,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onPressed: () async {
+                        String groupName = await getGroupNameById(group);
+                        String url =
+                            await getGroupDynamicLink(group, groupName);
+                        await Share.share(url);
+                      }),
+                  IconButton(
+                    onPressed: (){
+                      showUserListDisplay(context, group);
+                    },
+                    icon: Icon(
+                      Icons.people,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: (){
+                      showCupertinoModalBottomSheet(
+                        context: context,
+                        builder: (context) => HistoryGroup(usr: usr, group: group,),
+                      );
+                    },
+                    icon: Icon(
+                      Icons.list,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  FavGroup(usrId: usr.getId(), group: group),
                   ElevatedButton(
                     onPressed: () {
                       confirmLeaveGroup(context, usr.getId(), group);
@@ -79,9 +129,17 @@ class _GroupMenuState extends State<GroupMenu> {
                   ),
                 ],
               ),
-            ),
+              if (groupList.isNotEmpty) Divider(),
+              GroupPicker(
+                usr: usr,
+                excludeGroup: this.widget.excludeGroup,
+                groupList: groupList,
+              ),
+            ],
           ),
-        );
+        ),
+      ),
+    );
   }
 }
 
@@ -101,9 +159,12 @@ class FavGroup extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasError || !snapshot.hasData) return Container();
           return IconButton(
-              icon: Icon((snapshot.data["defaultGroup"] == group)
-                  ? Icons.favorite
-                  : Icons.favorite_border, color: Theme.of(context).primaryColor,),
+              icon: Icon(
+                (snapshot.data["defaultGroup"] == group)
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                color: Theme.of(context).primaryColor,
+              ),
               onPressed: () async {
                 await toggleDefaultGroup(usrId, group);
               });
