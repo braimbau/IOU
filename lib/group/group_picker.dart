@@ -31,7 +31,7 @@ class GroupPicker extends StatelessWidget {
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Loading();
+            return Container();
           }
 
           String groups = snapshot.data["groups"];

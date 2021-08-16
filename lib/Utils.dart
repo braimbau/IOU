@@ -356,7 +356,23 @@ Future<String> joinGroupT(String usrId, String groupId) async {
     if (await userIsInGroupT(groupId, usrId, tr))
       return ("User is already in this group");
     if (await addGroupT(groupId, usrId, tr))
-    checkGroup(await getUserById(usrId), groupId);
+      checkGroup(await getUserById(usrId), groupId);
+    return null;
+  }).then((value) {
+    return value;
+  }).catchError((error) {
+    print("Transaction error : $error");
+    return "An error occured, please retry";
+  });
+}
+
+Future<String> renameGroupT(String groupId, String groupName) async {
+  final db = FirebaseFirestore.instance;
+  return await db.runTransaction((Transaction tr) async {
+    if (! await groupExistT(groupId, tr))
+      return ("This group doesn't exist");
+    DocumentReference ref = db.collection('groups').doc(groupId);
+    await ref.update({'name': groupName});
     return null;
   }).then((value) {
     return value;

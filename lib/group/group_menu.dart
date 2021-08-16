@@ -3,9 +3,11 @@ import 'package:deed/classes/group.dart';
 import 'package:deed/classes/user.dart';
 import 'package:deed/history/history_group.dart';
 import 'package:deed/other/user_list_display.dart';
+import 'package:deed/routes/main_page.dart';
 import 'package:deed/utils/error.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -27,6 +29,8 @@ class _GroupMenuState extends State<GroupMenu> {
   IOUser usr;
   String group;
   List<Group> groupList;
+  //bool isEditable = false;
+  //TextEditingController ctrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -47,36 +51,19 @@ class _GroupMenuState extends State<GroupMenu> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Flexible(
-                  child: InkWell(
-                    onTap: () {},
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Flexible(
-                          child: FittedBox(
-                            child: Text(
-                              groupList
-                                  .firstWhere((element) => element.getId() == group)
-                                  .getName(),
-                              style: Theme.of(context).textTheme.headline2,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(4.0),
-                          child: Icon(
-                            Icons.edit,
-                            size: 15,
-                            color: Colors.grey[500],
-                          ),
-                        )
-                      ],
+              SizedBox(
+                height: 30,
+                child: Flexible(
+                  child: FittedBox(
+                    child: Text(
+                      groupList
+                          .firstWhere((element) => element.getId() == group)
+                          .getName(),
+                      style: Theme.of(context).textTheme.headline2,
                     ),
                   ),
                 ),
-              ]),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
