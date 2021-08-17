@@ -53,14 +53,12 @@ class _GroupMenuState extends State<GroupMenu> {
             children: [
               SizedBox(
                 height: 30,
-                child: Flexible(
-                  child: FittedBox(
-                    child: Text(
-                      groupList
-                          .firstWhere((element) => element.getId() == group)
-                          .getName(),
-                      style: Theme.of(context).textTheme.headline2,
-                    ),
+                child: FittedBox(
+                  child: Text(
+                    groupList
+                        .firstWhere((element) => element.getId() == group)
+                        .getName(),
+                    style: Theme.of(context).textTheme.headline2,
                   ),
                 ),
               ),
@@ -102,6 +100,7 @@ class _GroupMenuState extends State<GroupMenu> {
                 ],
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   FavGroup(usrId: usr.getId(), group: group),
                   ElevatedButton(
