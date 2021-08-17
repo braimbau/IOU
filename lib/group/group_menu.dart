@@ -46,7 +46,7 @@ class _GroupMenuState extends State<GroupMenu> {
         ),
       ),
       child: SizedBox(
-        width: 175,
+        width: 185,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(

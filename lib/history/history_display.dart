@@ -97,7 +97,7 @@ class _HistoryDisplayState extends State<HistoryDisplay> {
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.all(8),
-              itemCount: userList.length,
+              itemCount: transactionList.length,
               separatorBuilder: (BuildContext context, int index) {
                 return Divider(
                   color: Colors.grey[500],
