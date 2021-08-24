@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:deed/balance/balancing.dart';
 import 'package:deed/cards/amount_card.dart';
+import 'package:deed/classes/quick_pref.dart';
 import 'package:deed/classes/user.dart';
 import 'package:deed/utils/error.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,7 +20,6 @@ class BalancingTransaction extends StatefulWidget {
 }
 
 class _BalancingTransactionState extends State<BalancingTransaction> {
-  int state = 0; // 0:to do 1:ongoing 2:done
   @override
   Widget build(BuildContext context) {
     UserBalance transaction = this.widget.transaction;
@@ -47,39 +49,11 @@ class _BalancingTransactionState extends State<BalancingTransaction> {
             )
           ],
         ),
-        if (state == 0)
           InkWell(
             customBorder: CircleBorder(),
-            onTap: () async {
-              setState(() {
-                state = 1;
-              });
-              List<IOUser> selected = [];
-              selected.add(IOUser(transaction.getId(), transaction.getName(),
-                  transaction.getUrl()));
-              String err = await runTransactionToUpdateBalances(
-                  selected,
-                  this.widget.group,
-                  transaction.getBalance(),
-                  this.widget.usr);
-              if (err == null) {
-                newTransaction(
-                    transaction.getBalance(),
-                    transaction.getBalance(),
-                    this.widget.usr,
-                    selected,
-                    "Balancing",
-                    this.widget.group,
-                    this.widget.usr.getId());
-                setState(() {
-                  state = 2;
-                });
-              } else {
-                displayError("An error occured, please retry", context);
-                setState(() {
-                  state = 0;
-                });
-              }
+            onTap: () {
+              QuickPref pref = QuickPref("Balancing", this.widget.usr.getId(), -transaction.getBalance(), null, transaction.getId());
+              showPopUpDialog(context, transaction.getId(), pref, this.widget.group);
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -91,23 +65,35 @@ class _BalancingTransactionState extends State<BalancingTransaction> {
                   )),
             ),
           ),
-        if (state == 1)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.pending,
-              color: Colors.grey[500],
-            ),
-          ),
-        if (state == 2)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Icon(
-              Icons.check_circle_outline_outlined,
-              color: Colors.green,
-            ),
-          ),
       ],
     );
   }
+}
+
+void showPopUpDialog(BuildContext context, String usrId, QuickPref pref, String group) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) =>
+        _buildPopupDialog(context, usrId,
+            pref, group),
+  );
+}
+
+Widget _buildPopupDialog(
+    BuildContext context, String usrId, QuickPref pref, String group) {
+  return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Wrap(children: <Widget>[
+            AmountCard(
+                currentUserId: usrId,
+                isPreFilled: true,
+                pref: pref,
+                group: group)
+          ])));
 }
