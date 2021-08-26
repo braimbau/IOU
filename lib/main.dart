@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:deed/Routes/join_group.dart';
 import 'package:deed/classes/user_prefs.dart';
 import 'package:deed/utils/error.dart';
@@ -27,22 +29,43 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  UserPrefs usrPrefs = UserPrefs();
-  usrPrefs.get(prefs);
-  runApp(MyApp(userPrefs: usrPrefs,));
+  UserPrefs().update(prefs);
+  runApp(MyApp(prefs: prefs));
 }
 
-class MyApp extends StatelessWidget {
-  final UserPrefs userPrefs;
+class MyApp extends StatefulWidget {
+  final SharedPreferences prefs;
 
-  MyApp({this.userPrefs});
+  MyApp({this.prefs});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+
+  static _MyAppState of(BuildContext context) => context.findAncestorStateOfType<_MyAppState>();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale _locale;
+
+  void setLocale(Locale value) {
+    setState(() {
+      _locale = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
       builder: (context, _) {
+        if (UserPrefs.language != null)
+          _locale = (Locale.fromSubtags(languageCode: UserPrefs.language));
+        else {
+          UserPrefs.language = Platform.localeName.split("_")[0];
+          this.widget.prefs.setString(UserPrefs.languageKey, UserPrefs.language);
+        }
         final themProvider = Provider.of<ThemeProvider>(context);
         return MaterialApp(
+          locale: _locale,
           localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

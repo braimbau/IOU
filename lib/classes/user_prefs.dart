@@ -7,8 +7,15 @@ class UserPrefs {
   static const String languageKey = "language";
   static String language = "en";
 
-  void get(SharedPreferences prefs) {
+  void update(SharedPreferences prefs) {
     theme = prefs.getInt(themeKey);
     language = prefs.getString(languageKey);
+  }
+
+  void toggleLanguage() {
+    if (language == 'fr')
+      language = 'en';
+    else
+      language = 'fr';
   }
 }

@@ -1,12 +1,14 @@
 import 'dart:io' show Platform;
 
 import 'package:deed/Routes/join_group.dart';
+import 'package:deed/classes/user_prefs.dart';
 import 'package:deed/utils/error.dart';
 import 'package:deed/utils/themes.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +52,15 @@ class _LogScreenState extends State<LogScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             InkWell(
-              child: Text("FR", style: Theme.of(context).textTheme.headline3,),
+              onTap: () async {
+                final SharedPreferences prefs = await SharedPreferences.getInstance();
+                String lang = prefs.getString(UserPrefs.languageKey);
+                UserPrefs usrPrefs = UserPrefs();
+                usrPrefs.toggleLanguage();
+                prefs.setString(UserPrefs.languageKey, UserPrefs.language);
+                MyApp.of(context).setLocale(Locale.fromSubtags(languageCode: 'fr'));
+              },
+              child: Text(UserPrefs.language.toUpperCase(), style: Theme.of(context).textTheme.headline3,),
             ),
         Visibility(
               visible: groupInvite != null && groupInvite != "",
