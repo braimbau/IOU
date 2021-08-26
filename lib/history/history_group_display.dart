@@ -3,7 +3,7 @@ import 'package:deed/classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'history_element.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'history_group_element.dart';
 
 class HistoryGroupDisplay extends StatefulWidget {
@@ -38,6 +38,8 @@ class _HistoryGroupDisplayState extends State<HistoryGroupDisplay> {
         return a.getTimestamp() - b.getTimestamp();
       return a.getDisplayedAmount() - b.getDisplayedAmount();
     });
+
+    AppLocalizations t = AppLocalizations.of(context);
 
     return Scaffold(
       body: Column(
@@ -81,7 +83,7 @@ class _HistoryGroupDisplayState extends State<HistoryGroupDisplay> {
                         })
                   ],
                 ),
-                Text("Group history",
+                Text(t.groupHistory,
                     style:
                     TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
                 IconButton(

@@ -12,6 +12,8 @@ import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 //BuildContext context, IOUser usr, String group
 
@@ -45,6 +47,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
+
     return GestureDetector(
       onTap: () {
         WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
@@ -76,7 +80,7 @@ class _MainPageState extends State<MainPage> {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             Icon(Icons.expand_less),
             Text(
-              'Swipe up to show history',
+              t.swipeUpHistory,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyText1,
             ),

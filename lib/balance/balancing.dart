@@ -4,10 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
 import 'Balancing_option.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Balancing extends StatefulWidget {
   final BalancingArgs args;
@@ -40,6 +40,8 @@ class _BalancingState extends State<Balancing> {
     IOUser usr = this.widget.args.usr;
     String groupId = this.widget.args.groupId;
 
+    AppLocalizations t = AppLocalizations.of(context);
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -57,7 +59,7 @@ class _BalancingState extends State<Balancing> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              "Balancing Options",
+              t.balancingOptions,
               style: Theme.of(context).textTheme.headline1,
             ),
             Divider(
@@ -74,7 +76,7 @@ class _BalancingState extends State<Balancing> {
                 color: Theme.of(context).appBarTheme.backgroundColor,
                 child: Container(
                   height: 78,
-                  child: Text("Loading..."),
+                  child: Text(t.loading),
                 ),
               ),
             if (balancingOptions != null && balancingOptions.isEmpty)

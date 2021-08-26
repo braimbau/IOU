@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'amount_input.dart';
 import '../classes/user.dart';
 import 'selection.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class AmountCard extends StatelessWidget {
   final String currentUserId;
@@ -24,6 +26,8 @@ class AmountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
+
     ValueNotifier<int> amountToPayPerUser = ValueNotifier(0);
     ValueNotifier<int> amountToPay = ValueNotifier(0);
     ValueNotifier<String> secondaryDisplay = ValueNotifier("");
@@ -31,9 +35,9 @@ class AmountCard extends StatelessWidget {
     List<IOUser> selectedUsers = [];
 
     //if card is pre filled
-    String label = (isPreFilled) ? pref.getName() : "unnamed transaction";
+    String label = (isPreFilled) ? pref.getName() : t.unnamedTransaction;
     InputInfo inputInfo =
-        InputInfo(false, (isPreFilled) ? pref.getAmount() : 0);
+    InputInfo(false, (isPreFilled) ? pref.getAmount() : 0);
 
     void updateAmountToPay() {
       if (inputInfo.getIsIndividual() == false) {
@@ -45,14 +49,14 @@ class AmountCard extends StatelessWidget {
           amountToPayPerUser.value = amountToPay.value ~/ selectedUsers.length;
           double dAmount = amountToPayPerUser.value / 100;
           secondaryDisplay.value =
-              (amountToPayPerUser.value > 0) ? " Each user owe $dAmount" : "";
+          (amountToPayPerUser.value > 0) ? t.usersOwe + "$dAmount" : "";
         }
       } else {
         amountToPayPerUser.value = inputInfo.getAmount();
         amountToPay.value = amountToPayPerUser.value * selectedUsers.length;
         double dAmount = amountToPay.value / 100;
         secondaryDisplay.value =
-            (amountToPay.value > 0) ? " The total amount is $dAmount" : "";
+        (amountToPay.value > 0) ? t.totalAmount + "$dAmount" : "";
       }
     }
 
@@ -87,14 +91,14 @@ class AmountCard extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return Text(t.err1);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Text(t.loading);
         }
 
-        if (snapshot.data.docs.length == 0) return Text("No users to display");
+        if (snapshot.data.docs.length == 0) return Text(t.noUsers);
 
         List<IOUser> userList = List<IOUser>.empty(growable: true);
         for (int i = 0; i < snapshot.data.docs.length; i++) {
@@ -103,7 +107,7 @@ class AmountCard extends StatelessWidget {
         }
 
         List<DropdownMenuItem<IOUser>> dropdownMenuItems =
-            buildDropDownMenuItems(userList);
+        buildDropDownMenuItems(userList);
 
         if (isPreFilled) {
           pref.getUsers().split(":").forEach((element) {
@@ -114,13 +118,14 @@ class AmountCard extends StatelessWidget {
           updateAmountToPay();
         }
 
-        print("selected : $currentUserId");
         selectedUsers.removeWhere((element) => !userList.contains(element));
         return Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(
-              color: Theme.of(context).primaryColor,
+              color: Theme
+                  .of(context)
+                  .primaryColor,
               width: 1.5,
             ),
           ),
@@ -136,13 +141,16 @@ class AmountCard extends StatelessWidget {
                   children: [
                     Text(
                       "Payer:",
-                      style: Theme.of(context).textTheme.bodyText2,
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyText2,
                     ),
                     PayerWidget(
                         userList: userList,
                         dropdownMenuItems: dropdownMenuItems,
                         firstSelected: userList.firstWhere(
-                            (element) => element.getId() == currentUserId),
+                                (element) => element.getId() == currentUserId),
                         setPayer: setPayer),
                   ],
                 ),
@@ -163,7 +171,7 @@ class AmountCard extends StatelessWidget {
                           WidgetsBinding.instance.focusManager.primaryFocus
                               ?.unfocus();
                           String err = amountError(
-                              amountToPay.value, selectedUsers.length);
+                              amountToPay.value, selectedUsers.length, t);
                           if (err != null) {
                             displayError(err, context);
                             return;
@@ -172,15 +180,23 @@ class AmountCard extends StatelessWidget {
                               selectedUsers,
                               group,
                               amountToPay.value,
-                              payer);
+                              payer, t);
                           if (err != null) {
                             displayError(err, context);
                             return;
                           }
                           newTransaction(
-                              amountToPay.value, amountToPay.value ~/ selectedUsers.length * selectedUsers.length, payer, selectedUsers, label, group, currentUserId);
-                          Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
-                          displayMessage("Transaction confirmed !", context);
+                              amountToPay.value,
+                              amountToPay.value ~/ selectedUsers.length *
+                                  selectedUsers.length,
+                              payer,
+                              selectedUsers,
+                              label,
+                              group,
+                              currentUserId);
+                          Navigator.of(context).popUntil(
+                              ModalRoute.withName('/mainPage'));
+                          displayMessage(t.transactionConfirmed, context);
                         },
                       ),
                     ),
@@ -194,7 +210,10 @@ class AmountCard extends StatelessWidget {
                             (BuildContext context, String text, Widget child) {
                           return Visibility(
                             visible: (text != null && text != ""),
-                            child: Text(text, style: Theme.of(context).textTheme.bodyText1,),
+                            child: Text(text, style: Theme
+                                .of(context)
+                                .textTheme
+                                .bodyText1,),
                           );
                         }),
                   ],
@@ -233,134 +252,146 @@ class AmountCard extends StatelessWidget {
   }
 }
 
-String amountError(int amount, int nbUsers) {
-  if (nbUsers == 0) return ("You have to select at least one user");
-  if (amount <= 0) return ("Enter an amount");
-  if (amount ~/ nbUsers == 0) return ("Bro...");
-  if (amount > 100000000) return ("You're not Jeff Bezos");
-  return null;
-}
 
-Future<void> changeBalance(String id, int amount, String group) async {
-  CollectionReference ref = FirebaseFirestore.instance
-      .collection('users')
-      .doc(id)
-      .collection("groups");
-  ref.doc(group).update({"balance": FieldValue.increment(amount)});
-}
-
-Future<void> newTransaction(int displayedAmount, int actualAmount, IOUser payer,
-    List<IOUser> selectedUsers, String label, String group, String transactorId) async {
-  String users = selectedUsers.join(":");
-  var timestamp = DateTime.now().millisecondsSinceEpoch;
-  CollectionReference ref =
-      FirebaseFirestore.instance.collection('groups').doc(group).collection('transactions');
-  //add transaction in group transaction list
-  ref.doc(timestamp.toString()).set({
-    'displayedAmount': displayedAmount,
-    'actualAmount': actualAmount,
-    'selectedUsers': users,
-    'payer': payer.getId(),
-    'label': label,
-    'amountPerUser': actualAmount / selectedUsers.length,
-    'transactor' : transactorId,
-    'time': DateTime.now().millisecondsSinceEpoch,
-  });
-  selectedUsers.forEach((element) {
-    int balanceEvo = -actualAmount ~/ selectedUsers.length;
-    if (element == payer) balanceEvo += actualAmount;
-    //add transaction in users transaction list
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(element.getId())
-        .collection("groups")
-        .doc(group)
-        .collection('transactions')
-        .doc(timestamp.toString())
-        .set({
-      'transactionID': timestamp,
-      'balanceEvo': balanceEvo,
-      'selectedUsers': users,
-      'label': label,
-      'payer': payer.getId(),
-      'displayedAmount': displayedAmount,
-      'actualAmount': actualAmount,
-      'transactor' : transactorId,
-      'time': DateTime.now().millisecondsSinceEpoch,
-    });
-  });
-  //add transaction in payer transaction list
-  if (!selectedUsers.contains(payer)) {
-    String users = selectedUsers.join(":");
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(payer.getId())
-        .collection("groups")
-        .doc(group)
-        .collection('transactions')
-        .doc(timestamp.toString())
-        .set({
-      'transactionID': timestamp,
-      'balanceEvo': actualAmount,
-      'selectedUsers': users,
-      'label': label,
-      'payer': payer.getId(),
-      'displayedAmount': displayedAmount,
-      'actualAmount': actualAmount,
-      'transactor' : transactorId,
-      'time': DateTime.now().millisecondsSinceEpoch,
-    });
-  }
-}
-
-onValidation(
-    ValueNotifier<int> amountToPay,
-    List<IOUser> selectedUsers,
-    BuildContext context,
-    IOUser payer,
-    String label,
-    ValueNotifier<int> amountToPayPerUser,
-    String group) async {
-  WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-  String err = amountError(amountToPay.value, selectedUsers.length);
-
-  if (err == null)
-    err = await runTransactionToUpdateBalances(
-        selectedUsers, group, amountToPay.value, payer);
-
-  print("Ici err = $err");
-  if (err != null) {
-    displayError(err, context);
-
-    amountToPayPerUser.value = 0;
-    amountToPay.value = 0;
-  } else {
-    //pop until main page to avoid poping only flushbar
-    Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
-    displayMessage("yeah", context);
-  }
-}
-
-Future<String> runTransactionToUpdateBalances(List<IOUser> selectedUsers,
-    String group, int amountToPay, IOUser payer) async {
-  final db = FirebaseFirestore.instance;
-  return await db.runTransaction((Transaction tr) async {
-    if (!await checkUsersInGroupT(tr, selectedUsers, group))
-      return "An user isn't in the group anymore";
-    int amountToCredit =
-        amountToPay ~/ selectedUsers.length * selectedUsers.length;
-
-    selectedUsers.forEach((element) async {
-      await changeBalanceT(
-          tr, element.getId(), -amountToPay ~/ selectedUsers.length, group);
-      amountToCredit += amountToPay ~/ selectedUsers.length;
-    });
-    await changeBalanceT(tr, payer.getId(), amountToCredit, group);
+  String amountError(int amount, int nbUsers, AppLocalizations t) {
+    if (nbUsers == 0) return (t.amountError1);
+    if (amount <= 0) return (t.amountError2);
+    if (amount ~/ nbUsers == 0) return (t.amountError3);
+    if (amount > 100000000) return (t.amountError4);
     return null;
-  }).then((value) {
-    return value;
-  }).catchError((error) {
-    print("Transaction error : $error");
-    return "An error occured, please retry";
-  });
-}
+  }
+
+  Future<void> changeBalance(String id, int amount, String group) async {
+    CollectionReference ref = FirebaseFirestore.instance
+        .collection('users')
+        .doc(id)
+        .collection("groups");
+    ref.doc(group).update({"balance": FieldValue.increment(amount)});
+  }
+
+  Future<void> newTransaction(int displayedAmount, int actualAmount,
+      IOUser payer,
+      List<IOUser> selectedUsers, String label, String group,
+      String transactorId) async {
+    String users = selectedUsers.join(":");
+    var timestamp = DateTime
+        .now()
+        .millisecondsSinceEpoch;
+    CollectionReference ref =
+    FirebaseFirestore.instance.collection('groups').doc(group).collection(
+        'transactions');
+    //add transaction in group transaction list
+    ref.doc(timestamp.toString()).set({
+      'displayedAmount': displayedAmount,
+      'actualAmount': actualAmount,
+      'selectedUsers': users,
+      'payer': payer.getId(),
+      'label': label,
+      'amountPerUser': actualAmount / selectedUsers.length,
+      'transactor': transactorId,
+      'time': DateTime
+          .now()
+          .millisecondsSinceEpoch,
+    });
+    selectedUsers.forEach((element) {
+      int balanceEvo = -actualAmount ~/ selectedUsers.length;
+      if (element == payer) balanceEvo += actualAmount;
+      //add transaction in users transaction list
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(element.getId())
+          .collection("groups")
+          .doc(group)
+          .collection('transactions')
+          .doc(timestamp.toString())
+          .set({
+        'transactionID': timestamp,
+        'balanceEvo': balanceEvo,
+        'selectedUsers': users,
+        'label': label,
+        'payer': payer.getId(),
+        'displayedAmount': displayedAmount,
+        'actualAmount': actualAmount,
+        'transactor': transactorId,
+        'time': DateTime
+            .now()
+            .millisecondsSinceEpoch,
+      });
+    });
+    //add transaction in payer transaction list
+    if (!selectedUsers.contains(payer)) {
+      String users = selectedUsers.join(":");
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(payer.getId())
+          .collection("groups")
+          .doc(group)
+          .collection('transactions')
+          .doc(timestamp.toString())
+          .set({
+        'transactionID': timestamp,
+        'balanceEvo': actualAmount,
+        'selectedUsers': users,
+        'label': label,
+        'payer': payer.getId(),
+        'displayedAmount': displayedAmount,
+        'actualAmount': actualAmount,
+        'transactor': transactorId,
+        'time': DateTime
+            .now()
+            .millisecondsSinceEpoch,
+      });
+    }
+  }
+
+  onValidation(ValueNotifier<int> amountToPay,
+      List<IOUser> selectedUsers,
+      BuildContext context,
+      IOUser payer,
+      String label,
+      ValueNotifier<int> amountToPayPerUser,
+      String group) async {
+
+    AppLocalizations t = AppLocalizations.of(context);
+
+    WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+    String err = amountError(amountToPay.value, selectedUsers.length, t);
+
+    if (err == null)
+      err = await runTransactionToUpdateBalances(
+          selectedUsers, group, amountToPay.value, payer, t);
+
+    if (err != null) {
+      displayError(err, context);
+
+      amountToPayPerUser.value = 0;
+      amountToPay.value = 0;
+    } else {
+      //pop until main page to avoid poping only flushbar
+      Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
+      displayMessage(t.yeah, context);
+    }
+  }
+
+  Future<String> runTransactionToUpdateBalances(List<IOUser> selectedUsers,
+      String group, int amountToPay, IOUser payer, AppLocalizations t) async {
+    final db = FirebaseFirestore.instance;
+    return await db.runTransaction((Transaction tr) async {
+      if (!await checkUsersInGroupT(tr, selectedUsers, group))
+        return t.userNotInGroup;
+      int amountToCredit =
+          amountToPay ~/ selectedUsers.length * selectedUsers.length;
+
+      selectedUsers.forEach((element) async {
+        await changeBalanceT(
+            tr, element.getId(), -amountToPay ~/ selectedUsers.length, group);
+        amountToCredit += amountToPay ~/ selectedUsers.length;
+      });
+      await changeBalanceT(tr, payer.getId(), amountToCredit, group);
+      return null;
+    }).then((value) {
+      return value;
+    }).catchError((error) {
+      return t.err2;
+    });
+  }

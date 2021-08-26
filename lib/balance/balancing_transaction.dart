@@ -7,6 +7,7 @@ import 'package:deed/classes/user.dart';
 import 'package:deed/utils/error.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BalancingTransaction extends StatefulWidget {
   final UserBalance transaction;
@@ -25,6 +26,9 @@ class _BalancingTransactionState extends State<BalancingTransaction> {
     UserBalance transaction = this.widget.transaction;
     double amount = transaction.getBalance().abs() / 100;
     String dAmount = amount.toStringAsFixed(amount.truncateToDouble() == amount ? 0 : 2);
+
+    AppLocalizations t = AppLocalizations.of(context);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -38,12 +42,12 @@ class _BalancingTransactionState extends State<BalancingTransaction> {
           children: [
             Text(
               (transaction.getBalance() > 0)
-                  ? "Refund $dAmount€ "
-                  : "Get a $dAmount€ refund",
+                  ? t.refund + dAmount + "€"
+                  : t.geta + dAmount + "€" +  t.arefund,
               style: Theme.of(context).textTheme.bodyText1,
             ),
             Text(
-              ((transaction.getBalance() > 0) ? "to" : "from") +
+              ((transaction.getBalance() > 0) ? t.to : t.from) +
                   " ${transaction.getName()}",
               style: Theme.of(context).textTheme.bodyText1,
             )
@@ -52,7 +56,7 @@ class _BalancingTransactionState extends State<BalancingTransaction> {
           InkWell(
             customBorder: CircleBorder(),
             onTap: () {
-              QuickPref pref = QuickPref("Balancing", this.widget.usr.getId(), -transaction.getBalance(), null, transaction.getId());
+              QuickPref pref = QuickPref(t.balancing, this.widget.usr.getId(), -transaction.getBalance(), null, transaction.getId());
               showPopUpDialog(context, transaction.getId(), pref, this.widget.group);
             },
             child: Padding(

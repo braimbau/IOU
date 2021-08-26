@@ -3,9 +3,10 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../classes/user.dart';
 import 'balancing.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BalanceCard extends StatelessWidget {
   final IOUser usr;
@@ -15,6 +16,9 @@ class BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    AppLocalizations t = AppLocalizations.of(context);
+    
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("groups")
@@ -24,11 +28,11 @@ class BalanceCard extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Text('Something went wrong');
+            return Text(t.err1);
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
+            return Text(t.loading);
           }
           double balance;
           try {
@@ -67,7 +71,7 @@ class BalanceCard extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.swap_horiz),
-                          Text("Balancing options")
+                          Text(t.balancingOptions)
                         ],
                       ),
                     ),

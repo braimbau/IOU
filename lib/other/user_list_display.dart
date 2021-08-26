@@ -5,6 +5,8 @@ import 'package:deed/classes/user.dart';
 import 'package:deed/utils/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class UserListDisplay extends StatelessWidget {
   final String group;
@@ -13,6 +15,8 @@ class UserListDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
+
     return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -30,7 +34,7 @@ class UserListDisplay extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "Group members",
+                t.groupMembers,
                 style: Theme.of(context).textTheme.headline2,
               ),
               Divider(),

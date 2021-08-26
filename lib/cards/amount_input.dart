@@ -1,6 +1,8 @@
 import '../classes/InputInfo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class AmountTextInput extends StatefulWidget {
   final void Function(InputInfo inputInfo) changeInputInfo;
@@ -27,6 +29,9 @@ class _AmountTextInputState extends State<AmountTextInput> {
 
   @override
   Widget build(BuildContext context) {
+
+    AppLocalizations t = AppLocalizations.of(context);
+
     return Stack(alignment: Alignment.center, children: [
       TextField(
           keyboardType: TextInputType.numberWithOptions(
@@ -36,7 +41,7 @@ class _AmountTextInputState extends State<AmountTextInput> {
           decoration: InputDecoration(
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              hintText: 'Enter the amount',
+              hintText: t.enterAmount,
               filled: true),
           onChanged: (String str) {
             setState(() {

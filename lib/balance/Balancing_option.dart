@@ -9,6 +9,8 @@ import 'package:flutter/rendering.dart';
 import 'balancing.dart';
 import 'balancing_transaction.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class BalancingOptionCard extends StatefulWidget {
   final List<UserBalance> balancing;
   final bool isBest;
@@ -37,6 +39,9 @@ class _BalancingOptionCardState extends State<BalancingOptionCard> {
     List<UserBalance> balancing = this.widget.balancing;
     bool isBest = this.widget.isBest;
     bool isDeployed = this.widget.isDeployed;
+
+    AppLocalizations t = AppLocalizations.of(context);
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -59,7 +64,7 @@ class _BalancingOptionCardState extends State<BalancingOptionCard> {
                     children: [
                       Icon(Icons.star, color: Colors.white),
                       Text(
-                        "BEST OPTION",
+                        t.bestOption,
                         style: TextStyle(color: Colors.white),
                       )
                     ],
@@ -84,8 +89,8 @@ class _BalancingOptionCardState extends State<BalancingOptionCard> {
                           width: 20,
                         ),
                         Text((balancing.first.getBalance() > 0)
-                            ? "Refund ${balancing.length} people"
-                            : "Get ${balancing.length} refunds"),
+                            ? t.refund + balancing.length.toString() + t.peoples
+                            : t.get + balancing.length.toString() + t.refunds),
                         InkWell(
                             customBorder: CircleBorder(),
                             child: Padding(
@@ -130,6 +135,9 @@ class BalancingOptionPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    AppLocalizations t = AppLocalizations.of(context);
+
     return Row(
       children: [
         BalanceUserListPreview(list: list, maxLength: 5,),
@@ -138,8 +146,8 @@ class BalancingOptionPreview extends StatelessWidget {
           child: Column(
             children: [
               Text((list.first.getBalance() > 0)
-                  ? "Refund ${list.length} people"
-                  : "Get ${list.length} refunds"),
+                  ? t.refund + list.length.toString() + t.peoples
+                  : t.get + list.length.toString() + t.refunds),
             ],
           ),
         )

@@ -13,6 +13,8 @@ import 'package:share_plus/share_plus.dart';
 
 import '../Utils.dart';
 import 'group_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class GroupMenu extends StatefulWidget {
   final IOUser usr;
@@ -37,6 +39,8 @@ class _GroupMenuState extends State<GroupMenu> {
     usr = this.widget.usr;
     group = this.widget.excludeGroup;
     groupList = this.widget.groupList;
+    AppLocalizations t = AppLocalizations.of(context);
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
@@ -73,7 +77,7 @@ class _GroupMenuState extends State<GroupMenu> {
                       onPressed: () async {
                         String groupName = await getGroupNameById(group);
                         String url =
-                            await getGroupDynamicLink(group, groupName);
+                            await getGroupDynamicLink(group, groupName, context);
                         await Share.share(url);
                       }),
                   IconButton(
@@ -108,7 +112,7 @@ class _GroupMenuState extends State<GroupMenu> {
                       confirmLeaveGroup(context, usr.getId(), group);
                     },
                     child: Text(
-                      'Leave group',
+                      t.leaveGroup,
                     ),
                     style: ElevatedButton.styleFrom(
                         shape: StadiumBorder(), primary: Colors.red),
@@ -163,26 +167,28 @@ confirmLeaveGroup(BuildContext context, String usrId, String group) {
     context: context,
     barrierDismissible: true,
     builder: (BuildContext context) {
+      AppLocalizations t = AppLocalizations.of(context);
+
       return AlertDialog(
-        title: Text('Leave group'),
+        title: Text(t.leaveGroup),
         content: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Text('Are you sure you want to leave this group ?'),
+              Text(t.confirmLeaveGroup),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel'),
+            child: Text(t.cancel),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
           TextButton(
-            child: Text('Leave'),
+            child: Text(t.leave),
             onPressed: () async {
-              String err = await leaveGroup(usrId, group);
+              String err = await leaveGroup(usrId, group, context);
               Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
               if (err != null)
                 displayError(err, context);

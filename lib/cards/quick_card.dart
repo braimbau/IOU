@@ -8,6 +8,8 @@ import '../classes/quick_pref.dart';
 import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class QuickCard extends StatelessWidget {
   final IOUser usr;
@@ -17,6 +19,8 @@ class QuickCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
+
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("groups")
@@ -25,7 +29,7 @@ class QuickCard extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Text('Something went wrong');
+            return Text(t.err1);
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -55,7 +59,7 @@ class QuickCard extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                    child: Text("Quick Adds :",
+                    child: Text(t.quickAdds,
                         style: Theme.of(context).textTheme.headline3),
                     padding: EdgeInsets.all(8)),
                 SizedBox(
@@ -122,24 +126,26 @@ Future<void> _confirmQuickDelete(
     context: context,
     barrierDismissible: true,
     builder: (BuildContext context) {
+      AppLocalizations t = AppLocalizations.of(context);
+
       return AlertDialog(
-        title: Text('Delete ${pref.getName()}'),
+        title: Text(t.delete + " " + pref.getName()),
         content: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Text('Are you sure you want to delete this quick add ?'),
+              Text(t.confirmDeleteQuickAdd),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel'),
+            child: Text(t.cancel),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
           TextButton(
-            child: Text('Delete'),
+            child: Text(t.delete),
             onPressed: () {
               removeQuickPref(group, pref.getId());
               Navigator.of(context).pop();

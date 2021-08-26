@@ -9,6 +9,8 @@ import '../utils/error_screen.dart';
 import '../classes/user.dart';
 import '../classes/iou_transaction.dart';
 import 'history_group_display.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class HistoryGroup extends StatelessWidget {
   final String group;
@@ -18,6 +20,8 @@ class HistoryGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection("groups")
@@ -26,7 +30,7 @@ class HistoryGroup extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return errorScreen("something went wrong in history 2");
+          return errorScreen(t.err1);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -34,7 +38,7 @@ class HistoryGroup extends StatelessWidget {
         }
 
         if (snapshot.data.docs.length == 0) {
-          return errorScreen("No transactions in this group");
+          return errorScreen(t.noTransactionsGroup);
         }
 
         List<IouTransaction> transactionList =

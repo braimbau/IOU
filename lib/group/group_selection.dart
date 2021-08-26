@@ -10,6 +10,7 @@ import '../utils/error_screen.dart';
 import '../classes/group.dart';
 import '../utils/loading.dart';
 import '../Routes/main_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GroupSelection extends StatelessWidget {
   final IOUser usr;
@@ -19,6 +20,8 @@ class GroupSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
+
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("users")
@@ -26,7 +29,7 @@ class GroupSelection extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return errorScreen('Something went wrong with groups');
+            return errorScreen(t.err1);
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -46,8 +49,8 @@ class GroupSelection extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                Text("Nothing to display", style: TextStyle(color: Colors.red),),
-              Text("create or join a group to continue", style: TextStyle(color: Colors.red),),
+                Text(t.nothingDisplay, style: TextStyle(color: Colors.red),),
+              Text(t.createJoin, style: TextStyle(color: Colors.red),),
               ],
               ),
             );
@@ -139,29 +142,31 @@ _confirmLeaveGroup(BuildContext context, String usrId, String group) {
     context: context,
     barrierDismissible: true,
     builder: (BuildContext context) {
+      AppLocalizations t = AppLocalizations.of(context);
+
       return AlertDialog(
-        title: Text('Leave group'),
+        title: Text(t.leaveGroup),
         content: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Text('Are you sure you want to leave this group ?'),
+              Text(t.confirmLeaveGroup),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel'),
+            child: Text(t.cancel),
             onPressed: () {
               if (spam == false) spam = true;
               Navigator.of(context).pop();
             },
           ),
           TextButton(
-            child: Text('Leave'),
+            child: Text(t.leave),
             onPressed: () async {
               if (spam == false) {
                 spam = true;
-                String err = await leaveGroup(usrId, group);
+                String err = await leaveGroup(usrId, group, context);
                 Navigator.of(context).popUntil(ModalRoute.withName('/joinGroup'));
                 if (err != null) displayError(err, context);
               }

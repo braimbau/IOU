@@ -4,6 +4,8 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import 'classes/group.dart';
 import 'classes/user.dart';
@@ -59,7 +61,8 @@ Future<void> checkGroup(IOUser usr, String group) async {
   }
 }
 
-Future<String> getGroupDynamicLink(String group, String groupName) async {
+Future<String> getGroupDynamicLink(String group, String groupName, BuildContext context) async {
+  AppLocalizations t = AppLocalizations.of(context);
   final DynamicLinkParameters parameters = DynamicLinkParameters(
     uriPrefix: 'https://altua.page.link',
     link: Uri.parse('https://iouapp.carrd.co/?group=$group'),
@@ -72,7 +75,7 @@ Future<String> getGroupDynamicLink(String group, String groupName) async {
       appStoreId: '1575234438',
     ),
     socialMetaTagParameters: SocialMetaTagParameters(
-      title: "IOU - Invitation to $groupName",
+      title: t.dynamicInvitationTitle + groupName,
       imageUrl: Uri.parse("https://firebasestorage.googleapis.com/v0/b/iou-71bca.appspot.com/o/InvitationPreview.png?alt=media&token=6ed44008-7fcd-4a4e-9bd0-18462da18bda"),
 
     )
@@ -184,17 +187,18 @@ Future<void> changePhotoUrl(String id, String url, String group) async {
   ref.doc(id).update({"url": url});
 }
 
-Future<String> leaveGroup(String usrId, String group) async {
+Future<String> leaveGroup(String usrId, String group, BuildContext context) async {
+  AppLocalizations t = AppLocalizations.of(context);
   final db = FirebaseFirestore.instance;
   return await db.runTransaction((Transaction tr) async {
 
     if (!await groupExistT(group, tr))
-      return("You can't leave a group that doesn't exist anymore");
+      return(t.leaveGroupDeletedErr);
     if (!await userIsInGroupT(group, usrId, tr)) {
-      return ("This user already left the group");
+      return (t.userLeftErr);
     }
     if (await getBalanceT(usrId, group, tr) != 0)
-      return ("You need to have a null balance to leave a group");
+      return (t.balanceNotNullerr);
 
     CollectionReference ref = FirebaseFirestore.instance.collection('users');
     var doc = await tr.get(ref.doc(usrId));
@@ -230,8 +234,8 @@ Future<String> leaveGroup(String usrId, String group) async {
     }
     return value;
   }).catchError((error) {
-    print("Transaction error : $error");
-    return "An error occured, please retry";
+    print(t.transactionError + error);
+    return t.err2;
   });
 }
 
@@ -348,13 +352,15 @@ Future<bool> addGroupT(String group, String userId, Transaction tr) async {
   }
 }
 
-Future<String> joinGroupT(String usrId, String groupId) async {
+Future<String> joinGroupT(String usrId, String groupId, BuildContext context) async {
   final db = FirebaseFirestore.instance;
+  AppLocalizations t = AppLocalizations.of(context);
+
   return await db.runTransaction((Transaction tr) async {
     if (! await groupExistT(groupId, tr))
-      return ("This group doesn't exist");
+      return (t.groupDeletedErr);
     if (await userIsInGroupT(groupId, usrId, tr))
-      return ("User is already in this group");
+      return (t.userAlreadyInGroupErr);
     if (await addGroupT(groupId, usrId, tr))
       checkGroup(await getUserById(usrId), groupId);
     return null;
@@ -362,15 +368,17 @@ Future<String> joinGroupT(String usrId, String groupId) async {
     return value;
   }).catchError((error) {
     print("Transaction error : $error");
-    return "An error occured, please retry";
+    return t.err2;
   });
 }
 
-Future<String> renameGroupT(String groupId, String groupName) async {
+Future<String> renameGroupT(String groupId, String groupName, BuildContext context) async {
   final db = FirebaseFirestore.instance;
+  AppLocalizations t = AppLocalizations.of(context);
+
   return await db.runTransaction((Transaction tr) async {
     if (! await groupExistT(groupId, tr))
-      return ("This group doesn't exist");
+      return (t.groupDeletedErr);
     DocumentReference ref = db.collection('groups').doc(groupId);
     await ref.update({'name': groupName});
     return null;
@@ -378,6 +386,6 @@ Future<String> renameGroupT(String groupId, String groupName) async {
     return value;
   }).catchError((error) {
     print("Transaction error : $error");
-    return "An error occured, please retry";
+    return t.err2;
   });
 }

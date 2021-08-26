@@ -16,6 +16,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../utils/image_import.dart';
 import 'dart:io';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import '../utils/image_import.dart';
 import '../Routes/log_screen.dart';
@@ -48,6 +50,7 @@ class _UserMenuState extends State<UserMenu> {
     IOUser usr = this.widget.usr;
     BuildContext context = this.widget.context;
     newName = usr.getName();
+    AppLocalizations t = AppLocalizations.of(context);
 
     return Card(
         shape: RoundedRectangleBorder(
@@ -76,7 +79,7 @@ class _UserMenuState extends State<UserMenu> {
                                 initialValue: usr.getName(),
                                 onChanged: (String txt) {
                                   if (newName.characters.length == 20 && txt.characters.length == 20)
-                                    displayError("Max name length is 20 characters", context);
+                                    displayError(t.maxLengthUserName, context);
                                   newName = txt;
                                 },
                                 cursorColor: Theme.of(context).primaryColor,
@@ -103,7 +106,7 @@ class _UserMenuState extends State<UserMenu> {
                               child: RichText(
                                   text: TextSpan(children: [
                                   TextSpan(
-                                      text: 'Logged in as\n',
+                                      text: t.loggedAs,
                                       style: Theme.of(context).textTheme.bodyText1),
                                   TextSpan(
                                       text: usr.getName(),
@@ -151,7 +154,7 @@ class _UserMenuState extends State<UserMenu> {
                             logOut(context);
                           },
                           child: SizedBox(
-                              width: 60, child: Center(child: Text('Log out'))),
+                              width: 60, child: Center(child: Text(t.logout))),
                           style: ElevatedButton.styleFrom(
                               shape: StadiumBorder(), primary: Colors.red),
                         ),
@@ -163,7 +166,7 @@ class _UserMenuState extends State<UserMenu> {
                             });
                           },
                           child: SizedBox(
-                              width: 60, child: Center(child: Text('Edit'))),
+                              width: 60, child: Center(child: Text(t.edit))),
                           style:
                               ElevatedButton.styleFrom(shape: StadiumBorder()),
                         ),
@@ -182,7 +185,7 @@ class _UserMenuState extends State<UserMenu> {
                             });
                           },
                           child: SizedBox(
-                              width: 60, child: Center(child: Text('Cancel'))),
+                              width: 60, child: Center(child: Text(t.cancel))),
                           style: ElevatedButton.styleFrom(
                               shape: StadiumBorder(), primary: Colors.red),
                         ),
@@ -190,7 +193,7 @@ class _UserMenuState extends State<UserMenu> {
                           onPressed: () async {
                             if (newName == "") {
                               displayError(
-                                  "You can't have an empty name", context);
+                                  t.emptyNameErr, context);
                               return;
                             }
 
@@ -214,7 +217,7 @@ class _UserMenuState extends State<UserMenu> {
                                 usr: usr, group: this.widget.group));
                           },
                           child: SizedBox(
-                              width: 60, child: Center(child: Text('Confirm'))),
+                              width: 60, child: Center(child: Text(t.confirm))),
                           style:
                               ElevatedButton.styleFrom(shape: StadiumBorder()),
                         ),

@@ -55,15 +55,6 @@ class _ChangeThemeButtonWidgetState extends State<ChangeThemeButtonWidget> {
         ),
       ),
     );
-    return IconButton(
-        icon: Icon(Icons.lightbulb),
-        onPressed: () {
-          theme++;
-          if (theme == 3) theme = 0;
-          final provider = Provider.of<ThemeProvider>(context, listen: false);
-          provider.toggleTheme(theme);
-          print(theme);
-        });
   }
 }
 

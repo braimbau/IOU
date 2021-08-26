@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../Utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class ManualJoin extends StatelessWidget {
   final BuildContext context;
@@ -19,6 +21,8 @@ class ManualJoin extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController ctrl = TextEditingController();
     String groupId;
+    AppLocalizations t = AppLocalizations.of(context);
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -44,7 +48,7 @@ class ManualJoin extends StatelessWidget {
                   child: Icon(Icons.build_outlined),
                 ),
                 Text(
-                  "Manual join",
+                  t.manualJoin,
                   style: Theme.of(context).textTheme.headline2,
                 ),
               ],
@@ -65,7 +69,7 @@ class ManualJoin extends StatelessWidget {
                       decoration: InputDecoration(
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8)),
-                          hintText: 'Group code',
+                          hintText: t.groupCode,
                           filled: true),
                       onChanged: (String str) {
                         groupId = str;
@@ -79,10 +83,10 @@ class ManualJoin extends StatelessWidget {
                       print(groupId);
                       WidgetsBinding.instance.focusManager.primaryFocus
                           ?.unfocus();
-                      String err = await joinGroupT(usr.getId(), groupId);
+                      String err = await joinGroupT(usr.getId(), groupId, context);
                       showFlushBar(
                           (err == null)
-                              ? "You've successfully join this group"
+                              ? t.groupJoined
                               : err,
                           (err == null) ? Colors.green : Colors.red,
                           (err == null) ? Icons.info_outline : Icons.error_outline,
@@ -104,7 +108,7 @@ class ManualJoin extends StatelessWidget {
                   SizedBox(
                     width: 200,
                     child: Text(
-                        "You can get the group Id by long pressing the group pill",
+                        t.getGroupId,
                         style: TextStyle(color: Colors.grey[500],)),
                   ),
                 ],

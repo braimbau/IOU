@@ -12,6 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../Utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+
 
 class HistoryElement extends StatefulWidget {
   final IouTransaction transaction;
@@ -33,7 +36,7 @@ class _HistoryElementState extends State<HistoryElement> {
   Widget build(BuildContext context) {
     var date = DateTime.fromMillisecondsSinceEpoch(
         this.widget.transaction.getTimestamp());
-    var formattedDate = DateFormat.yMMMd().add_Hm().format(date); // Apr 8, 2020
+    var formattedDate = DateFormat.yMMMd().add_Hm().format(date);
     String evo = (((this.widget.transaction.getBalanceEvo() > 0) ? "+" : "") +
         (this.widget.transaction.getBalanceEvo() / 100).toString());
     double displayedAmount = this.widget.transaction.getDisplayedAmount() / 100;
@@ -47,6 +50,9 @@ class _HistoryElementState extends State<HistoryElement> {
       selectedUsers
           .add(userList.firstWhere((element) => element.getId() == el));
     });
+
+    AppLocalizations t = AppLocalizations.of(context);
+
     return InkWell(
         onTap: () {
           setState(() {
@@ -80,14 +86,14 @@ class _HistoryElementState extends State<HistoryElement> {
                 Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Payer: ${userList.firstWhere((element) => element.getId() == transaction.getPayer()).getName()}",
+                      t.payer + " " + userList.firstWhere((element) => element.getId() == transaction.getPayer()).getName(),
                       style: Theme.of(context).textTheme.bodyText1,
                     )),
               if (isExpanded)
                 Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Total amount: $displayedAmount€",
+                      t.totalAmount + displayedAmount.toString() + "€",
                       style: Theme.of(context).textTheme.bodyText1,
                     )),
               if (isExpanded &&
@@ -117,7 +123,7 @@ class _HistoryElementState extends State<HistoryElement> {
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 8),
                                     child: Text(
-                                      "Receivers:",
+                                      t.receivers,
                                       style:
                                           Theme.of(context).textTheme.bodyText1,
                                     ),
@@ -188,7 +194,7 @@ class _HistoryElementState extends State<HistoryElement> {
                           );
                         },
                         child: Row(
-                          children: [Icon(Icons.repeat), Text("Repeat")],
+                          children: [Icon(Icons.repeat), Text(t.repeat)],
                         )),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(primary: Colors.red),
@@ -202,23 +208,23 @@ class _HistoryElementState extends State<HistoryElement> {
                             selectedUsers,
                             this.widget.group,
                             -transaction.getActualAmount(),
-                            payer);
+                            payer, t);
                         if (err == null) {
                           newTransaction(
                               -transaction.getDisplayedAmount(),
                               -transaction.getActualAmount(),
                               payer,
                               selectedUsers,
-                              'Revert of ${transaction.getLabel()}',
+                              t.revertOf + transaction.getLabel(),
                               this.widget.group,
                               this.widget.usr.getId());
                         }
                         else {
-                          displayError("An error occured, please retry", context);
+                          displayError(t.err2, context);
                         }
                       },
                       child: Row(
-                        children: [Icon(Icons.replay), Text("Revert")],
+                        children: [Icon(Icons.replay), Text(t.revert)],
                       ),
                     )
                   ],
@@ -252,26 +258,28 @@ Future<bool> confirmRevert(BuildContext context) async {
     context: context,
     barrierDismissible: true,
     builder: (BuildContext context) {
+      AppLocalizations t = AppLocalizations.of(context);
+
       return AlertDialog(
-        title: Text('Revert Transaction', style: TextStyle(color: Colors.red),),
+        title: Text(t.revertTransaction, style: TextStyle(color: Colors.red),),
         content: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              Text('This will make an inverse transaction to cancel the effects of the transaction.', style: Theme.of(context).textTheme.bodyText1,),
-              Align(alignment: Alignment.centerLeft, child: Text('It will be visible in history', style: Theme.of(context).textTheme.bodyText1,)),
-              Align(alignment: Alignment.centerLeft, child: Text('Do you want to continue ?', style: Theme.of(context).textTheme.bodyText1,)),
+              Text(t.revertWarning1, style: Theme.of(context).textTheme.bodyText1,),
+              Align(alignment: Alignment.centerLeft, child: Text(t.revertWarning2, style: Theme.of(context).textTheme.bodyText1,)),
+              Align(alignment: Alignment.centerLeft, child: Text(t.revertWarning3, style: Theme.of(context).textTheme.bodyText1,)),
             ],
           ),
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('No'),
+            child: Text(t.no),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
           ),
           TextButton(
-            child: Text('Yes'),
+            child: Text(t.yes),
             onPressed: () async {
                 Navigator.of(context).pop(true);
             },

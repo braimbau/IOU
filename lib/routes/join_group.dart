@@ -1,7 +1,5 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:deed/Other/user_display.dart';
-import 'package:deed/Other/user_menu.dart';
 import 'package:deed/group/group_creation.dart';
 import 'package:deed/Other/invitation.dart';
 import 'package:deed/group/manual_join.dart';
@@ -17,6 +15,8 @@ import 'main_page.dart';
 import '../classes/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class JoinGroupArgs {
   IOUser usr;
@@ -49,6 +49,9 @@ class _JoinGroupState extends State<JoinGroup> {
 
   @override
   Widget build(BuildContext context) {
+
+    var t = AppLocalizations.of(context);
+
     IOUser usr = this.widget.args.usr;
     String groupInvite = this.widget.args.groupInvite;
 
@@ -81,7 +84,7 @@ class _JoinGroupState extends State<JoinGroup> {
               InkWell(
                 customBorder: CircleBorder(),
                 onTap: () {
-                  displayError("You can only edit profile in the group interface.", context);
+                  displayError(t.editProfileOnlyGroup, context);
                 },
                 child: CircleAvatar(
                   backgroundColor: Theme.of(context).primaryColor,
@@ -111,7 +114,7 @@ class _JoinGroupState extends State<JoinGroup> {
               onPressed: () {
                 showManualJoin(context, usr);
               },
-              child: Text("join group manually", style: TextStyle(color: Colors.grey, decoration: TextDecoration.underline),),
+              child: Text(t.joinGroupManually, style: TextStyle(color: Colors.grey, decoration: TextDecoration.underline),),
             ),
             Divider(
               color: Theme.of(context).primaryColor,
@@ -129,7 +132,7 @@ class _JoinGroupState extends State<JoinGroup> {
   }
 }
 
-Future<String> createGroupT(String groupName, String creatorId) async {
+Future<String> createGroupT(String groupName, String creatorId, AppLocalizations t) async {
   return await FirebaseFirestore.instance
       .runTransaction((Transaction tr) async {
     final DocumentReference ref =
@@ -141,7 +144,7 @@ Future<String> createGroupT(String groupName, String creatorId) async {
     print("__$value");
     return value;
   }).catchError((error) {
-    print("Transaction error : $error");
+    print(t.transactionError + error);
     return null;
   }).timeout(Duration(seconds: 1), onTimeout: () {return null;});
 }

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:deed/classes/group.dart';
 import 'package:flutter/rendering.dart';
-import 'package:share_plus/share_plus.dart';
 import '../Utils.dart';
 import '../Routes/main_page.dart';
 import '../classes/user.dart';
@@ -9,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/error_screen.dart';
-import '../utils/loading.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GroupPicker extends StatelessWidget {
   final IOUser usr;
@@ -20,6 +19,8 @@ class GroupPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
+
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("users")
@@ -27,7 +28,7 @@ class GroupPicker extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return errorScreen('Something went wrong with groups');
+            return errorScreen(t.err1);
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {

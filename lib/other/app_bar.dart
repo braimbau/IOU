@@ -13,8 +13,12 @@ import '../classes/user.dart';
 import 'user_display.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 Widget topAppBar(IOUser usr, String group, BuildContext context) {
+  AppLocalizations t = AppLocalizations.of(context);
+
   return AppBar(
     automaticallyImplyLeading: false,
     title: Row(
@@ -48,7 +52,7 @@ Widget topAppBar(IOUser usr, String group, BuildContext context) {
                   },
                   onLongPress: () {
                     Clipboard.setData(ClipboardData(text: group));
-                    displayMessage("Group Id succesffully pasted in clipboard !", context);
+                    displayMessage(t.groupIdCopied, context);
                   },
                   child: Container(
                       decoration: BoxDecoration(

@@ -1,24 +1,16 @@
 import 'dart:io' show Platform;
 
 import 'package:deed/Routes/join_group.dart';
-import 'package:deed/Utils.dart';
 import 'package:deed/utils/error.dart';
 import 'package:deed/utils/themes.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../main.dart';
-import '../main.dart';
-import '../utils/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../utils/error_screen.dart';
 import '../utils/oauth.dart';
-import 'main_page.dart';
 import '../classes/user.dart';
 
 class LogScreen extends StatefulWidget {
@@ -46,6 +38,7 @@ class _LogScreenState extends State<LogScreen> {
   @override
   Widget build(BuildContext context) {
     String groupInvite = this.widget.args;
+    AppLocalizations t = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -56,11 +49,14 @@ class _LogScreenState extends State<LogScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Visibility(
+            InkWell(
+              child: Text("FR", style: Theme.of(context).textTheme.headline3,),
+            ),
+        Visibility(
               visible: groupInvite != null && groupInvite != "",
                 child: IconButton(
                   onPressed: () {
-                    displayMessage("Log in to accept the invitation", context);
+                    displayMessage(t.invitationErr, context);
                   },
               icon: Icon(Icons.mail, color: Colors.orange,),
             )),
@@ -73,7 +69,7 @@ class _LogScreenState extends State<LogScreen> {
         children: [
           Center(
               child: Text(
-            "Welcome to",
+            t.welcome,
             style: Theme.of(context).textTheme.headline1,
           )),
           Center(

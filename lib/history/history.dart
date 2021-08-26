@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import '../utils/error_screen.dart';
 import '../classes/user.dart';
 import '../classes/iou_transaction.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class History extends StatelessWidget {
   final IOUser usr;
@@ -17,6 +19,8 @@ class History extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection("users")
@@ -27,7 +31,7 @@ class History extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return errorScreen("something went wrong in history 2");
+          return errorScreen(t.err1);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -35,7 +39,7 @@ class History extends StatelessWidget {
         }
 
         if (snapshot.data.docs.length == 0) {
-          return errorScreen("No transactions for this user");
+          return errorScreen(t.noTransactions);
         }
 
         List<IouTransaction> transactionList =

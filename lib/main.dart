@@ -1,4 +1,5 @@
 import 'package:deed/Routes/join_group.dart';
+import 'package:deed/classes/user_prefs.dart';
 import 'package:deed/utils/error.dart';
 import 'package:deed/Other/invitation.dart';
 import 'package:deed/Routes/main_page.dart';
@@ -14,17 +15,27 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Routes/log_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import 'classes/user.dart';
 import 'other/update_screen.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  UserPrefs usrPrefs = UserPrefs();
+  usrPrefs.get(prefs);
+  runApp(MyApp(userPrefs: usrPrefs,));
 }
 
 class MyApp extends StatelessWidget {
+  final UserPrefs userPrefs;
+
+  MyApp({this.userPrefs});
 
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
@@ -32,6 +43,16 @@ class MyApp extends StatelessWidget {
       builder: (context, _) {
         final themProvider = Provider.of<ThemeProvider>(context);
         return MaterialApp(
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            Locale('en', ''), // English, no country code
+            Locale('fr', ''), // french, no country code
+          ],
           debugShowCheckedModeBanner: false,
           themeMode: themProvider.themeMode,
           theme: MyThemes.light,
@@ -127,11 +148,12 @@ Future<void> handleDynamicLink(
     BuildContext context,
     ) async {
   final Uri deepLink = dynamicLink?.link;
+  AppLocalizations t = AppLocalizations.of(context);
 
   if (deepLink != null) {
     String group = deepLink.queryParameters['group'];
     if (!await groupExist(group)) {
-      displayError("This group doesn't exist anymore", context);
+      displayError(t.groupDeletedErr, context);
       return;
     }
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -147,7 +169,7 @@ Future<void> handleDynamicLink(
     else {
       String groupName = await getGroupNameById(group);
       displayError(
-          "You've been invited to join the group $groupName, but you're already in that group",
+          t.invitationTo + groupName + ", " + t.alreadyInGroup,
           context);
     }
   } else

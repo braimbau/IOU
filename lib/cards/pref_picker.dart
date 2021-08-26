@@ -10,6 +10,8 @@ import '../classes/InputInfo.dart';
 import 'amount_input.dart';
 import '../classes/user.dart';
 import 'selection.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class PrefPicker extends StatelessWidget {
   final String group;
@@ -18,6 +20,8 @@ class PrefPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations tr = AppLocalizations.of(context);
+
     ValueNotifier<int> amountToPayPerUser = ValueNotifier(0);
     List<IOUser> selectedUsers = [];
     ValueNotifier<String> emoji = ValueNotifier("");
@@ -25,7 +29,7 @@ class PrefPicker extends StatelessWidget {
     ValueNotifier<String> secondaryDisplay = ValueNotifier("");
     InputInfo inputInfo = InputInfo(false, 0);
 
-    String label = "unnamed quick pref";
+    String label = tr.unnamedQuickPref;
 
     void updateAmountToPay() {
       if (inputInfo.getIsIndividual() == false) {
@@ -36,13 +40,13 @@ class PrefPicker extends StatelessWidget {
         } else {
           amountToPayPerUser.value = amountToPay.value ~/ selectedUsers.length;
           double dAmount = amountToPayPerUser.value / 100;
-          secondaryDisplay.value =  (amountToPayPerUser.value > 0) ? " Each user owe $dAmount" : "";
+          secondaryDisplay.value =  (amountToPayPerUser.value > 0) ? tr.usersOwe + dAmount.toString() : "";
         }
       } else {
         amountToPayPerUser.value = inputInfo.getAmount();
         amountToPay.value = amountToPayPerUser.value * selectedUsers.length;
         double dAmount = amountToPay.value / 100;
-        secondaryDisplay.value =  (amountToPay.value > 0) ? " The total amount is $dAmount" : "";
+        secondaryDisplay.value =  (amountToPay.value > 0) ? tr.totalAmount + dAmount.toString() : "";
       }
     }
 
@@ -69,14 +73,14 @@ class PrefPicker extends StatelessWidget {
       stream: FirebaseFirestore.instance.collection("groups").doc(group).collection("users").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return errorScreen("Something went wrong");
+          return errorScreen(tr.err1);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Loading();
         }
 
-        if (snapshot.data.docs.length == 0) return Text("No users to display");
+        if (snapshot.data.docs.length == 0) return Text(tr.noUsers);
 
         List<IOUser> userList = List<IOUser>.empty(growable: true);
         for (int i = 0; i < snapshot.data.docs.length; i++) {
@@ -210,12 +214,12 @@ class PrefPicker extends StatelessWidget {
   }
 }
 
-String amountError(int amount, int nbUsers, String emoji) {
-  if (emoji == null || emoji == "") return ("Please select an emoji");
-  if (nbUsers == 0) return ("You have to select at least one user");
-  if (amount <= 0) return ("Enter an amount");
-  if (amount ~/ nbUsers == 0) return ("Bro...");
-  if (amount > 100000000) return ("You're not Jeff Bezos");
+String amountError(int amount, int nbUsers, String emoji, AppLocalizations t) {
+  if (emoji == null || emoji == "") return (t.amountError5);
+  if (nbUsers == 0) return (t.amountError1);
+  if (amount <= 0) return (t.amountError2);
+  if (amount ~/ nbUsers == 0) return (t.amountError3);
+  if (amount > 100000000) return (t.amountError4);
   return null;
 }
 
@@ -237,7 +241,8 @@ Future<void> onValidation(
     String label,
     String groupId, bool isIndividual) {
   WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
-  String err = amountError(amountToPay.value, selectedUsers.length, emoji);
+  AppLocalizations t = AppLocalizations.of(context);
+  String err = amountError(amountToPay.value, selectedUsers.length, emoji, t);
   if (err != null) {
     Flushbar(
       message: err,
@@ -257,7 +262,7 @@ Future<void> onValidation(
     //pop until main page to avoid poping only flushbar
     Navigator.of(context).popUntil(ModalRoute.withName('/mainPage'));
     Flushbar(
-      message: "Quick pref $label is registred",
+      message: t.quickAdd + label + t.isRegistered,
       backgroundColor: Colors.green,
       borderRadius: BorderRadius.all(Radius.circular(50)),
       icon: Icon(

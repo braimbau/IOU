@@ -8,6 +8,8 @@ import 'package:share_plus/share_plus.dart';
 import '../Utils.dart';
 import '../utils/error.dart';
 import '../Routes/join_group.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class GroupCreation extends StatefulWidget {
   final IOUser usr;
@@ -34,6 +36,7 @@ class _GroupCreationState extends State<GroupCreation> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations t = AppLocalizations.of(context);
     if (isCreated == false)
       return Card(
           shape: RoundedRectangleBorder(
@@ -53,7 +56,7 @@ class _GroupCreationState extends State<GroupCreation> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  "Create a new group",
+                  t.createGroup,
                   style: Theme.of(context).textTheme.headline3,
                 ),
               ),
@@ -72,7 +75,7 @@ class _GroupCreationState extends State<GroupCreation> {
                                   counterText: '',
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8)),
-                                  hintText: 'Group name',
+                                  hintText: t.groupHint,
                                   filled: true),
                               onChanged: (String str) {
                                 setState(() {
@@ -105,14 +108,14 @@ class _GroupCreationState extends State<GroupCreation> {
                               WidgetsBinding.instance.focusManager.primaryFocus
                                   ?.unfocus();
                               displayError(
-                                  "Chose a name to create a group", context);
+                                  t.choseNameErr, context);
                               return;
                             }
                             if (groupName.characters.length > 10) {
                               WidgetsBinding.instance.focusManager.primaryFocus
                                   ?.unfocus();
                               displayError(
-                                  "The max length of the group name is 10 characters",
+                                  t.maxLengthGroupName,
                                   context);
                               return;
                             }
@@ -121,16 +124,16 @@ class _GroupCreationState extends State<GroupCreation> {
                             setState(() {
                               isLoading = true;
                             });
-                            groupId = await createGroupT(groupName, usr.getId());
+                            groupId = await createGroupT(groupName, usr.getId(), t);
                             setState(() {
                               isLoading = false;
                             });
                             if (groupId == null)
                               displayError(
-                                  "An error occured, please retry", context);
+                                  t.err2, context);
                             else {
                               displayMessage(
-                                  'Group $groupName is created', context);
+                                  t.groupa + groupName + t.isCreated, context);
                               addGroup(groupId, usr.getId());
                               checkGroup(usr, groupId);
                               setState(() {
@@ -173,7 +176,7 @@ class _GroupCreationState extends State<GroupCreation> {
                         child: Center(
                           child: FittedBox(
                             child: Text(
-                              "Group $groupName created !",
+                              t.groupa + groupName + t.isCreated,
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -197,7 +200,7 @@ class _GroupCreationState extends State<GroupCreation> {
                   ElevatedButton(
                       onPressed: () async {
                         String url =
-                            await getGroupDynamicLink(groupId, groupName);
+                            await getGroupDynamicLink(groupId, groupName, context);
                         await Share.share(url);
                       },
                       style: ElevatedButton.styleFrom(
@@ -213,7 +216,7 @@ class _GroupCreationState extends State<GroupCreation> {
                             ),
                           ),
                           Text(
-                            "Send Invitation",
+                            t.sendInvitation,
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold,

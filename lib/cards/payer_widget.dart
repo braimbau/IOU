@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../classes/user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class PayerWidget extends StatefulWidget {
   final List<IOUser> userList;
@@ -51,19 +53,22 @@ class PayerDropDown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    AppLocalizations t = AppLocalizations.of(context);
+
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection("users").snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return Text('Something went wrong');
+          return Text(t.err1);
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Text("Loading");
+          return Text(t.loading);
         }
 
         if (snapshot.data.docs.length == 0)
-          return Text("No users to display");
+          return Text(t.noUsers);
 
         List<IOUser> userList = List<IOUser>.empty(growable: true);
         for (int i = 0; i < snapshot.data.docs.length; i++){
