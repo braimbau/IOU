@@ -40,7 +40,6 @@
     "groupIdCopied": "Group Id copied in clipboard !",
     "groupJoined": "You've successfully join the group",
     "groupMembers": "Group members",
-    "helloWorld": "Hello World!",
     "history": "History",
     "invitationErr": "Log in to accept the invitation",
     "invitationTo": "You've been invited to join : ",
@@ -55,7 +54,8 @@
     "leaveGroup": "Leave group",
     "leaveGroupDeletedErr": "You can't leave a group that doesn't exist anymore",
     "loading": "Loading",
-    "loggedAs": "Logged in as",
+    "loggedAs": "Logged in as\n",
+    "loggedAs": "Logged in as\n",
     "logout": "Log out",
     "manualJoin": "Manual join",
     "maxLengthGroupName": "The max length of the group name is 10 characters",
@@ -74,7 +74,6 @@
     "refund": "Refund ",
     "refunds": " refunds",
     "repeat": "Repeat",
-    "retry": "Retry",
     "retry": "Retry",
     "revert": "Revert",
     "revertOf": "Revert of ",
@@ -98,5 +97,7 @@
     "usersOwe": " Each user owe ",
     "welcome": "Welcome to",
     "yeah": "yeah !",
-    "yes": "Yes"
+    "yes": "Yes",
+    "signinwg": "Sign In with Google",
+    "signinwa": "Sign In with Apple"
 }

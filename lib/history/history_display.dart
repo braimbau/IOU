@@ -85,9 +85,13 @@ class _HistoryDisplayState extends State<HistoryDisplay> {
                         })
                   ],
                 ),
-                Text(t.history,
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 50)),
+                Expanded(
+                  child: FittedBox(
+                    child: Text(t.history,
+                        style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 50)),
+                  ),
+                ),
                 IconButton(
                   icon: Icon(Icons.close, size: 40),
                   onPressed: () {

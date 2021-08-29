@@ -46,6 +46,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Locale _locale;
+  ThemeMode _themeMode;
 
   void setLocale(Locale value) {
     setState(() {
@@ -53,17 +54,22 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  void setThemeMode(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
+
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
-      builder: (context, _) {
+  Widget build(BuildContext context) {
         if (UserPrefs.language != null)
           _locale = (Locale.fromSubtags(languageCode: UserPrefs.language));
         else {
           UserPrefs.language = Platform.localeName.split("_")[0];
           this.widget.prefs.setString(UserPrefs.languageKey, UserPrefs.language);
         }
-        final themProvider = Provider.of<ThemeProvider>(context);
+        if (UserPrefs.theme == null)
+          UserPrefs.theme = 0;
         return MaterialApp(
           locale: _locale,
           localizationsDelegates: [
@@ -77,7 +83,7 @@ class _MyAppState extends State<MyApp> {
             Locale('fr', ''), // french, no country code
           ],
           debugShowCheckedModeBanner: false,
-          themeMode: themProvider.themeMode,
+          themeMode: _themeMode,
           theme: MyThemes.light,
           darkTheme: MyThemes.dark,
           title: 'IOU',
@@ -94,7 +100,7 @@ class _MyAppState extends State<MyApp> {
                 ),
           },
         );
-      });
+      }
 }
 
 class Home extends StatefulWidget {

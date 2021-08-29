@@ -83,9 +83,13 @@ class _HistoryGroupDisplayState extends State<HistoryGroupDisplay> {
                         })
                   ],
                 ),
-                Text(t.groupHistory,
-                    style:
-                    TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                Expanded(
+                  child: FittedBox(
+                    child: Text(t.groupHistory,
+                        style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                  ),
+                ),
                 IconButton(
                   icon: Icon(Icons.close, size: 40),
                   onPressed: () {

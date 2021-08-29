@@ -12,10 +12,15 @@ class UserPrefs {
     language = prefs.getString(languageKey);
   }
 
-  void toggleLanguage() {
+  static void toggleLanguage() {
     if (language == 'fr')
       language = 'en';
     else
       language = 'fr';
+  }
+
+  static void toggleTheme() {
+    theme++;
+    if (theme == 3) theme = 0;
   }
 }

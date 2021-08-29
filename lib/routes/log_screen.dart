@@ -55,8 +55,7 @@ class _LogScreenState extends State<LogScreen> {
               onTap: () async {
                 final SharedPreferences prefs = await SharedPreferences.getInstance();
                 String lang = prefs.getString(UserPrefs.languageKey);
-                UserPrefs usrPrefs = UserPrefs();
-                usrPrefs.toggleLanguage();
+                UserPrefs.toggleLanguage();
                 prefs.setString(UserPrefs.languageKey, UserPrefs.language);
                 MyApp.of(context).setLocale(Locale.fromSubtags(languageCode: 'fr'));
               },
@@ -91,6 +90,7 @@ class _LogScreenState extends State<LogScreen> {
           if (Platform.isIOS)
             SignInButton(
             Buttons.Apple,
+            text: t.signinwa,
             onPressed: () async {
               IOUser usr = await signInWithApple();
               Navigator.pushReplacementNamed(context, '/joinGroup',
@@ -99,6 +99,7 @@ class _LogScreenState extends State<LogScreen> {
           ),
           SignInButton(
             Buttons.Google,
+            text: t.signinwg,
             onPressed: () async {
               IOUser usr = await signInWithGoogle();
               Navigator.pushReplacementNamed(context, '/joinGroup',

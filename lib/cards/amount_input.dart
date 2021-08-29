@@ -48,7 +48,8 @@ class _AmountTextInputState extends State<AmountTextInput> {
               double tmp;
               try {
                 tmp = double.parse(str.replaceAll(',', '.')) * 100;
-                inputInfo.setAmount(tmp.toInt());
+                print(tmp);
+                inputInfo.setAmount(tmp.ceil());
                 this.widget.changeInputInfo(inputInfo);
               } on Exception catch (_) {
                 inputInfo.setAmount(-1);

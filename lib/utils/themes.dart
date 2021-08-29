@@ -1,24 +1,9 @@
+import 'package:deed/classes/user_prefs.dart';
+import 'package:deed/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-class ThemeProvider extends ChangeNotifier {
-  ThemeMode themeMode = ThemeMode.system;
-
-  int getTheme() {
-    if (themeMode == ThemeMode.system) return 0;
-    if (themeMode == ThemeMode.dark) return 1;
-    return 2;
-  }
-
-  void toggleTheme(int state) {
-    if (state == 0) themeMode = ThemeMode.system;
-    if (state == 1) themeMode = ThemeMode.dark;
-    if (state == 2) themeMode = ThemeMode.light;
-    notifyListeners();
-  }
-}
 
 class ChangeThemeButtonWidget extends StatefulWidget {
   @override
@@ -29,15 +14,14 @@ class ChangeThemeButtonWidget extends StatefulWidget {
 class _ChangeThemeButtonWidgetState extends State<ChangeThemeButtonWidget> {
   @override
   Widget build(BuildContext context) {
-    final themProvider = Provider.of<ThemeProvider>(context);
-    int theme = themProvider.getTheme();
-    print("_$theme");
     return InkWell(
-      onTap: () {
-        theme++;
-        if (theme == 3) theme = 0;
-        final provider = Provider.of<ThemeProvider>(context, listen: false);
-        provider.toggleTheme(theme);
+      onTap: () async {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        UserPrefs.toggleTheme();
+        prefs.setString(UserPrefs.languageKey, UserPrefs.language);
+        if (UserPrefs.theme == 0) MyApp.of(context).setThemeMode(ThemeMode.system);
+        if (UserPrefs.theme == 1) MyApp.of(context).setThemeMode(ThemeMode.dark);
+        if (UserPrefs.theme == 2) MyApp.of(context).setThemeMode(ThemeMode.light);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -45,7 +29,7 @@ class _ChangeThemeButtonWidgetState extends State<ChangeThemeButtonWidget> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Visibility(
-                visible: theme == 0,
+                visible: UserPrefs.theme == 0,
                 child: Text(
                   "A",
                   style: Theme.of(context).textTheme.headline3,
