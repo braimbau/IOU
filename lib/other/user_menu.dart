@@ -154,7 +154,7 @@ class _UserMenuState extends State<UserMenu> {
                             logOut(context);
                           },
                           child: SizedBox(
-                              width: 60, child: Center(child: Text(t.logout))),
+                              width: 60, child: Center(child: FittedBox(child: Text(t.logout)))),
                           style: ElevatedButton.styleFrom(
                               shape: StadiumBorder(), primary: Colors.red),
                         ),
@@ -217,7 +217,7 @@ class _UserMenuState extends State<UserMenu> {
                                 usr: usr, group: this.widget.group));
                           },
                           child: SizedBox(
-                              width: 60, child: Center(child: Text(t.confirm))),
+                              width: 60, child: Center(child: FittedBox(child: Text(t.confirm)))),
                           style:
                               ElevatedButton.styleFrom(shape: StadiumBorder()),
                         ),
