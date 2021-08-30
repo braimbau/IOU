@@ -54,7 +54,6 @@ class _LogScreenState extends State<LogScreen> {
             InkWell(
               onTap: () async {
                 final SharedPreferences prefs = await SharedPreferences.getInstance();
-                String lang = prefs.getString(UserPrefs.languageKey);
                 UserPrefs.toggleLanguage();
                 prefs.setString(UserPrefs.languageKey, UserPrefs.language);
                 MyApp.of(context).setLocale(Locale.fromSubtags(languageCode: 'fr'));

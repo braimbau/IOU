@@ -7,7 +7,7 @@ class UserPrefs {
   static const String languageKey = "language";
   static String language = "en";
 
-  void update(SharedPreferences prefs) {
+  static void update(SharedPreferences prefs) {
     theme = prefs.getInt(themeKey);
     language = prefs.getString(languageKey);
   }

@@ -29,7 +29,7 @@ final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  UserPrefs().update(prefs);
+  UserPrefs.update(prefs);
   runApp(MyApp(prefs: prefs));
 }
 
@@ -70,6 +70,11 @@ class _MyAppState extends State<MyApp> {
         }
         if (UserPrefs.theme == null)
           UserPrefs.theme = 0;
+        if (UserPrefs.theme == 0) _themeMode = ThemeMode.system;
+        if (UserPrefs.theme == 1) _themeMode = ThemeMode.dark;
+        if (UserPrefs.theme == 2) _themeMode = ThemeMode.light;
+        print(UserPrefs.theme);
+        print(UserPrefs.language);
         return MaterialApp(
           locale: _locale,
           localizationsDelegates: [

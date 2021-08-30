@@ -18,7 +18,7 @@ class _ChangeThemeButtonWidgetState extends State<ChangeThemeButtonWidget> {
       onTap: () async {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         UserPrefs.toggleTheme();
-        prefs.setString(UserPrefs.languageKey, UserPrefs.language);
+        prefs.setInt(UserPrefs.themeKey, UserPrefs.theme);
         if (UserPrefs.theme == 0) MyApp.of(context).setThemeMode(ThemeMode.system);
         if (UserPrefs.theme == 1) MyApp.of(context).setThemeMode(ThemeMode.dark);
         if (UserPrefs.theme == 2) MyApp.of(context).setThemeMode(ThemeMode.light);
